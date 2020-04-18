@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.WindowsAPICodePack.Dialogs;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -46,6 +47,21 @@ namespace TD_Loader.Classes
                 List<string> files = new List<string>();
                 files.AddRange(fileDiag.FileNames);
                 return files;
+            }
+            else
+                return null;
+        }
+        public static string BrowseForDirectory(string title, string startDir)
+        {
+            CommonOpenFileDialog dialog = new CommonOpenFileDialog();
+            dialog.IsFolderPicker = true;
+            dialog.Title = title;
+            dialog.Multiselect = false;
+            dialog.InitialDirectory = startDir;
+
+            if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+            {
+                return dialog.FileName;
             }
             else
                 return null;

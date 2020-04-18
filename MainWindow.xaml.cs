@@ -32,35 +32,78 @@ namespace TD_Loader
 
             Main.Closing += Main_Closing;
         }
-
-        private void Main_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            Settings.SaveSettings();
-            //Settings.SaveGameFile();
-        }
-
         private void Startup()
         {
-            Settings.LoadSettings();
-
+            Settings.LoadSettings();            
+        }
+        private void FinishedLoading()
+        {
             switch (Settings.settings.GameName)
             {
                 case "BTD5":
-                    if(Settings.settings.BTD5Dir != "")
+                    if (Settings.settings.BTD5Dir != "")
+                    {
                         BTD5_Image.Source = new BitmapImage(new Uri("Resources/btd5.png", UriKind.Relative));
+                        GameHandling();
+                    }
                     break;
                 case "BTDB":
                     if (Settings.settings.BTDBDir != "")
+                    {
                         BTDB_Image.Source = new BitmapImage(new Uri("Resources/btdb 2.png", UriKind.Relative));
+                        GameHandling();
+                    }
                     break;
                 case "BMC":
                     if (Settings.settings.BMCDir != "")
+                    {
                         BMC_Image.Source = new BitmapImage(new Uri("Resources/bmc.png", UriKind.Relative));
+                        GameHandling();
+                    }
                     break;
             }
-            
         }
 
+        private void GameHandling()
+        {
+            string modsDir = "";
+            switch (Settings.settings.GameName)
+            {
+                case "BTD5":
+                    {
+                        modsDir = Settings.settings.BTD5ModsDir;
+                    }
+                    break;
+                case "BTDB":
+                    {
+                        modsDir = Settings.settings.BTDBModsDir;
+                    }
+                    break;
+                case "BMC":
+                    {
+                        modsDir = Settings.settings.BMCModsDir;
+                    }
+                    break;
+            }
+
+            if(modsDir == "" || modsDir == null)
+            {
+                Game.SetModsDir(Settings.settings.GameName);
+            }
+        }
+
+
+        //
+        //Main events
+        //
+        private void Main_Activated(object sender, EventArgs e)
+        {
+            FinishedLoading();
+        }
+        private void Main_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            Settings.SaveSettings();
+        }
 
 
         //
@@ -102,7 +145,6 @@ namespace TD_Loader
                     BTD5_Image.Source = new BitmapImage(new Uri("Resources/btd5.png", UriKind.Relative));
             }
         }
-
         private void BTD5_Image_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (Settings.settings.GameName != "BTD5")
@@ -111,12 +153,13 @@ namespace TD_Loader
                 Settings.SaveSettings();
                 ResetGamePictures();
                 BTD5_Image.Source = new BitmapImage(new Uri("Resources/btd5.png", UriKind.Relative));
+                GameHandling();
 
-                if(Settings.settings.BTD5Dir == "")
+                if (Settings.settings.BTD5Dir == "" || Settings.settings.BTD5Dir == null)
                 {
                     Steam steam = new Steam();
                     string dir = steam.SearchForSteam("BTD5");
-                    if(dir != "")
+                    if(dir != "" && dir != null)
                     {
                         Settings.settings.BTD5Dir = dir;
                         Settings.SaveSettings();
@@ -146,12 +189,13 @@ namespace TD_Loader
                 Settings.SaveSettings();
                 ResetGamePictures();
                 BTDB_Image.Source = new BitmapImage(new Uri("Resources/btdb 2.png", UriKind.Relative));
+                GameHandling();
 
-                if (Settings.settings.BTDBDir == "")
+                if (Settings.settings.BTDBDir == "" || Settings.settings.BTDBDir == null)
                 {
                     Steam steam = new Steam();
                     string dir = steam.SearchForSteam("BTDB");
-                    if (dir != "")
+                    if (dir != "" && dir != null)
                     {
                         Settings.settings.BTDBDir = dir;
                         Settings.SaveSettings();
@@ -181,12 +225,13 @@ namespace TD_Loader
                 Settings.SaveSettings();
                 ResetGamePictures();
                 BMC_Image.Source = new BitmapImage(new Uri("Resources/bmc.png", UriKind.Relative));
+                GameHandling();
 
-                if (Settings.settings.BMCDir == "")
+                if (Settings.settings.BMCDir == "" || Settings.settings.BMCDir == null)
                 {
                     Steam steam = new Steam();
                     string dir = steam.SearchForSteam("BMC");
-                    if (dir != "")
+                    if (dir != "" && dir != null)
                     {
                         Settings.settings.BMCDir = dir;
                         Settings.SaveSettings();
