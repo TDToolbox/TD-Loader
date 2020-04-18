@@ -117,6 +117,73 @@ namespace TD_Loader.Classes
                 Log.OutputNotice("Unknown error occured... Path to settings is invalid...");
             }
         }
+        public static void SetGameDir(string game, string path)
+        {
+            switch (game)
+            {
+                case "BTD5":
+                    settings.BTD5Dir = path;
+                    break;
+                case "BTDB":
+                    settings.BTDBDir = path;
+                    break;
+                case "BMC":
+                    settings.BMCDir = path;
+                    break;
+            }
+            SaveSettings();
+        }
+        public static string GetGameDir(string game)
+        {
+            string gameDir = "";
+            switch (game)
+            {
+                case "BTD5":
+                    gameDir = settings.BTD5Dir;
+                    break;
+                case "BTDB":
+                    gameDir = settings.BTDBDir;
+                    break;
+                case "BMC":
+                    gameDir = settings.BMCDir;
+                    break;
+            }
+            return gameDir;
+        }
+
+        public static void SetBackupDir(string game, string path)
+        {
+            switch (game)
+            {
+                case "BTD5":
+                    settings.BTD5BackupDir = path;
+                    break;
+                case "BTDB":
+                    settings.BTDBBackupDir = path;
+                    break;
+                case "BMC":
+                    settings.BMCBackupDir = path;
+                    break;
+            }
+            SaveSettings();
+        }
+        public static string GetBackupDir(string game)
+        {
+            string backupDir = "";
+            switch (game)
+            {
+                case "BTD5":
+                    backupDir = settings.BTD5BackupDir;
+                    break;
+                case "BTDB":
+                    backupDir = settings.BTDBBackupDir;
+                    break;
+                case "BMC":
+                    backupDir = settings.BMCBackupDir;
+                    break;
+            }
+            return backupDir;
+        }
         /*public static void CreateGameFile()
         {
             game = new GameFile();
