@@ -10,13 +10,6 @@ namespace TD_Loader.Classes
 {
     class FileIO
     {
-        public static string BrowseForGame()
-        {
-            Log.Output("Failed to automatically find " + Settings.settings.GameName);
-            MessageBox.Show("Failed to automatically find " + Settings.settings.GameName + " . Please browse for the game's .exe file to set the game directory");
-
-            return FileIO.BrowseForFile("Browse for .exe", "exe", "Exe files (*.exe)|*.exe|All files (*.*)|*.*", "");
-        }
         public static string BrowseForFile(string title, string defaultExt, string filter, string startDir)
         {
             OpenFileDialog fileDiag = new OpenFileDialog();

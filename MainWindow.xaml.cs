@@ -22,6 +22,7 @@ namespace TD_Loader
     /// </summary>
     public partial class MainWindow : Window
     {
+        bool finishedLoading = false;
         public MainWindow()
         {
             InitializeComponent();
@@ -38,29 +39,42 @@ namespace TD_Loader
         }
         private void FinishedLoading()
         {
+            bool dirNotFound = false;
             switch (Settings.settings.GameName)
             {
                 case "BTD5":
-                    if (Settings.settings.BTD5Dir != "")
-                    {
+                    if (Settings.settings.BTD5Dir != "" && Settings.settings.BTD5Dir != null)
                         BTD5_Image.Source = new BitmapImage(new Uri("Resources/btd5.png", UriKind.Relative));
-                        GameHandling();
-                    }
+                    else
+                        dirNotFound = true;
                     break;
+
+
                 case "BTDB":
-                    if (Settings.settings.BTDBDir != "")
-                    {
+                    if (Settings.settings.BTDBDir != "" && Settings.settings.BTDBDir != null)
                         BTDB_Image.Source = new BitmapImage(new Uri("Resources/btdb 2.png", UriKind.Relative));
-                        GameHandling();
-                    }
+                    else
+                        dirNotFound = true;
                     break;
+
+
                 case "BMC":
-                    if (Settings.settings.BMCDir != "")
-                    {
+                    if (Settings.settings.BMCDir != "" && Settings.settings.BMCDir != null)
                         BMC_Image.Source = new BitmapImage(new Uri("Resources/bmc.png", UriKind.Relative));
-                        GameHandling();
-                    }
+                    else
+                        dirNotFound = true;
                     break;
+            }
+
+            //if (Settings.settings.GameName != null && Settings.settings.GameName != "")
+            if(!dirNotFound)
+            {
+                GameHandling();
+            }
+            else
+            {
+                Settings.settings.GameName = "";
+                Settings.SaveSettings();
             }
         }
 
@@ -86,10 +100,8 @@ namespace TD_Loader
                     break;
             }
 
-            if(modsDir == "" || modsDir == null)
-            {
+            if((Settings.settings.GameName != "" && Settings.settings.GameName != null) && (modsDir == "" || modsDir == null))
                 Game.SetModsDir(Settings.settings.GameName);
-            }
         }
 
 
@@ -98,7 +110,11 @@ namespace TD_Loader
         //
         private void Main_Activated(object sender, EventArgs e)
         {
-            FinishedLoading();
+            if (finishedLoading == false)
+            {
+                finishedLoading = true;
+                FinishedLoading();
+            }
         }
         private void Main_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
@@ -153,32 +169,22 @@ namespace TD_Loader
                 Settings.SaveSettings();
                 ResetGamePictures();
                 BTD5_Image.Source = new BitmapImage(new Uri("Resources/btd5.png", UriKind.Relative));
-                GameHandling();
 
                 if (Settings.settings.BTD5Dir == "" || Settings.settings.BTD5Dir == null)
                 {
-                    Steam steam = new Steam();
-                    string dir = steam.SearchForSteam("BTD5");
-                    if(dir != "" && dir != null)
-                    {
-                        Settings.settings.BTD5Dir = dir;
-                        Settings.SaveSettings();
-                    }
+                    string path = Game.SetGameDir(Settings.settings.GameName);
+
+                    if (path == "" || path == null)
+                        Log.Output("Something went wrong... Failed to aquire game directory...");
                     else
                     {
-                        string result = FileIO.BrowseForGame();
-                        if (result != "" && result != null)
-                        {
-                            Log.Output("You selected " + result);
-                            Settings.settings.BTD5Dir = result;
-                            Settings.SaveSettings();
-                        }
-                        else
-                        {
-                            Log.Output("Something went wrong... Failed to aquire game directory...");
-                        }
+                        Log.Output("You selected " + path + " for your game directory");
+                        Settings.settings.BTD5Dir = path;
+                        Settings.SaveSettings();
                     }
                 }
+
+                GameHandling();
             }
         }
         private void BTDB_Image_MouseDown(object sender, MouseButtonEventArgs e)
@@ -189,32 +195,22 @@ namespace TD_Loader
                 Settings.SaveSettings();
                 ResetGamePictures();
                 BTDB_Image.Source = new BitmapImage(new Uri("Resources/btdb 2.png", UriKind.Relative));
-                GameHandling();
 
                 if (Settings.settings.BTDBDir == "" || Settings.settings.BTDBDir == null)
                 {
-                    Steam steam = new Steam();
-                    string dir = steam.SearchForSteam("BTDB");
-                    if (dir != "" && dir != null)
-                    {
-                        Settings.settings.BTDBDir = dir;
-                        Settings.SaveSettings();
-                    }
+                    string path = Game.SetGameDir(Settings.settings.GameName);
+
+                    if (path == "" || path == null)
+                        Log.Output("Something went wrong... Failed to aquire game directory...");
                     else
                     {
-                        string result = FileIO.BrowseForGame();
-                        if (result != "" && result != null)
-                        {
-                            Log.Output("You selected " + result);
-                            Settings.settings.BTDBDir = result;
-                            Settings.SaveSettings();
-                        }
-                        else
-                        {
-                            Log.Output("Something went wrong... Failed to aquire game directory...");
-                        }
+                        Log.Output("You selected " + path + " for your game directory");
+                        Settings.settings.BTDBDir = path;
+                        Settings.SaveSettings();
                     }
                 }
+
+                GameHandling();
             }
         }
         private void BMC_Image_MouseDown(object sender, MouseButtonEventArgs e)
@@ -225,32 +221,22 @@ namespace TD_Loader
                 Settings.SaveSettings();
                 ResetGamePictures();
                 BMC_Image.Source = new BitmapImage(new Uri("Resources/bmc.png", UriKind.Relative));
-                GameHandling();
 
                 if (Settings.settings.BMCDir == "" || Settings.settings.BMCDir == null)
                 {
-                    Steam steam = new Steam();
-                    string dir = steam.SearchForSteam("BMC");
-                    if (dir != "" && dir != null)
-                    {
-                        Settings.settings.BMCDir = dir;
-                        Settings.SaveSettings();
-                    }
+                    string path = Game.SetGameDir(Settings.settings.GameName);
+
+                    if (path == "" || path == null)
+                        Log.Output("Something went wrong... Failed to aquire game directory...");
                     else
                     {
-                        string result = FileIO.BrowseForGame();
-                        if (result != "" && result != null)
-                        {
-                            Log.Output("You selected " + result);
-                            Settings.settings.BMCDir = result;
-                            Settings.SaveSettings();
-                        }
-                        else
-                        {
-                            Log.Output("Something went wrong... Failed to aquire game directory...");
-                        }
+                        Log.Output("You selected " + path + " for your game directory");
+                        Settings.settings.BMCDir = path;
+                        Settings.SaveSettings();
                     }
                 }
+
+                GameHandling();
             }
         }
     }

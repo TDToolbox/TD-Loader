@@ -11,6 +11,21 @@ namespace TD_Loader.Classes
 {
     class Game
     {
+        public static string SetGameDir(string game)
+        {
+            string path = "";
+
+            Steam steam = new Steam();
+            path = steam.SearchForSteam(game);
+            if (path == "" || path == null)
+            {
+                Log.Output("Failed to automatically find " + Settings.settings.GameName);
+                MessageBox.Show("Failed to automatically find " + Settings.settings.GameName + " . Please browse for the game's .exe file to set the game directory");
+
+                path = FileIO.BrowseForFile("Browse for .exe", "exe", "Exe files (*.exe)|*.exe|All files (*.*)|*.*", "");
+            }
+            return path;
+        }
         public static void SetModsDir(string game)
         {
             string path = "";
@@ -25,7 +40,7 @@ namespace TD_Loader.Classes
                 path = FileIO.BrowseForDirectory("Choose a directory for your mods", Environment.CurrentDirectory);
             }
                 
-            if(path != "")
+            if(path != "" && path != null)
             {
                 Log.Output("You chose " + path + " as your mods directory for " + game);
                 Directory.CreateDirectory(path);
@@ -56,6 +71,10 @@ namespace TD_Loader.Classes
             {
                 Log.Output("You didnt select a valid directory");
             }
+        }
+        public static void CreateBackup(string game)
+        {
+
         }
     }
 }
