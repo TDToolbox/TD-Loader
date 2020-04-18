@@ -133,8 +133,14 @@ namespace TD_Loader.Classes
                     string gameDir = Settings.GetGameDir(game);
 
                     bool error = false;
-                    if (!Directory.Exists(backupDir))
-                        Directory.CreateDirectory(backupDir);
+
+                    try
+                    {
+                        if (Directory.Exists(backupDir))
+                            Directory.Delete(backupDir, true);
+                    }
+                    catch { }
+                    Directory.CreateDirectory(backupDir);
 
                     if (gameDir == "" || gameDir == null)
                     {
