@@ -84,7 +84,7 @@ namespace TD_Loader.Classes
             }
 
             Log.Output("Validating " + game);
-            Process.Start(url);
+            Process validationProc = Process.Start(url);
 
             Thread thread = new Thread(delegate () { AwaitSteamValidate("start"); });
             thread.Start();
@@ -101,7 +101,7 @@ namespace TD_Loader.Classes
 
             done = false;
             Log.Output("Validation finished.");
-            Windows.CloseWindow("Validating Steam files - 100% complete");
+            validationProc.Kill();
 
             return true;
         }
