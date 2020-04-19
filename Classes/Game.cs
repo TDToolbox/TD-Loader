@@ -44,7 +44,7 @@ namespace TD_Loader.Classes
             {
                 Log.Output("You chose " + path + " as your mods directory for " + game);
                 Directory.CreateDirectory(path);
-                Settings.SetGameDir(game, path);
+                Settings.SetModsDir(game, path);
             }
             else
             {
