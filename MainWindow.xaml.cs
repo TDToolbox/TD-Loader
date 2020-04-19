@@ -88,6 +88,23 @@ namespace TD_Loader
         private async void GameHandling()
         {
             doingWork = true;
+
+            string version = Game.GetVersion(Settings.settings.GameName);
+            if (version != Settings.GetGameVersion(Settings.settings.GameName))
+            {
+                MessageBox.Show("Game has been updated... Reaquiring files...");
+                Log.Output("Game has been updated... Reaquiring files...");
+                string backupdir = Settings.GetBackupDir(Settings.settings.GameName);
+                if (backupdir == "" || backupdir == null)
+                    Game.CreateBackupDir(Settings.settings.GameName);
+
+                await Game.CreateBackupAsync(Settings.settings.GameName);
+                Log.Output("Done making backup");
+
+                Settings.SetGameVersion(Settings.settings.GameName, version);
+            }
+
+            
             string modsDir = Settings.GetModsDir(Settings.settings.GameName);
 
             if((Settings.settings.GameName != "" && Settings.settings.GameName != null) && (modsDir == "" || modsDir == null))
@@ -161,7 +178,7 @@ namespace TD_Loader
         }
         private void AddMods_Button_Click(object sender, RoutedEventArgs e)
         {
-            if(!doingWork)
+            if (!doingWork)
             {
                 doingWork = true;
                 if (Settings.settings.GameName != "" && Settings.settings.GameName != null)
@@ -182,10 +199,10 @@ namespace TD_Loader
                             string filename = split[split.Length - 1];
                             string copiedMod = Mods.CopyMod(mod, modD + "\\" + filename);
 
-                            if(copiedMod != "")
+                            if (copiedMod != "")
                             {
                                 FileInfo f = new FileInfo(copiedMod);
-                                
+
                                 CheckBox a = new CheckBox();
                                 a.Content = f.Name;
                                 a.Foreground = Brushes.White;

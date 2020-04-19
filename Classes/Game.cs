@@ -1,7 +1,8 @@
-﻿using System;
+﻿using Ionic.Zip;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -51,6 +52,27 @@ namespace TD_Loader.Classes
                 Log.Output("You didnt select a valid directory");
             }
         }
+        public static string GetEXEName(string game)
+        {
+            string exeName = "";
+            switch (game)
+            {
+                case "BTD5":
+                    exeName = "BTD5-Win.exe";
+                    break;
+                case "BTDB":
+                    exeName = "Battles-Win.exe";
+                    break;
+                case "BMC":
+                    exeName = "MonkeyCity-Win.exe";
+                    break;
+            }
+            return exeName;
+        }
+
+        //
+        //Backup stuff
+        //
         public static void CreateBackupDir(string game)
         {
             string path = "";
@@ -171,6 +193,28 @@ namespace TD_Loader.Classes
                     }
                 }
             }
+        }
+
+        //
+        //Game Version Stuff
+        //
+        public static string GetVersion(string game)
+        {
+            string gameDir = Settings.GetGameDir(game);
+            string exeName = GetEXEName(game);
+            string exePath = gameDir + "\\" + exeName;
+            string version = "";
+
+            if (File.Exists(exePath))
+            {
+                var versionInfo = FileVersionInfo.GetVersionInfo(exePath);
+                version = versionInfo.FileVersion;
+            }
+            else
+            {
+                Log.Output("Game EXE not found! unable to get version");
+            }
+            return version;
         }
     }
 }

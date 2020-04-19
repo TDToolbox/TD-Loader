@@ -153,6 +153,41 @@ namespace TD_Loader.Classes
             return gameDir;
         }
 
+        public static string GetGameVersion(string game)
+        {
+            string gameVer = "";
+            switch (game)
+            {
+                case "BTD5":
+                    gameVer = settings.BTD5Version;
+                    break;
+                case "BTDB":
+                    gameVer = settings.BTDBVersion;
+                    break;
+                case "BMC":
+                    gameVer = settings.BMCVersion;
+                    break;
+            }
+            return gameVer;
+        }
+        public static void SetGameVersion(string game, string gameVer)
+        {
+            switch (game)
+            {
+                case "BTD5":
+                    settings.BTD5Version = gameVer;
+                    break;
+                case "BTDB":
+                    settings.BTDBVersion = gameVer;
+                    break;
+                case "BMC":
+                    settings.BMCVersion = gameVer;
+                    break;
+            }
+            SaveSettings();
+        }
+
+
         public static void SetBackupDir(string game, string path)
         {
             switch (game)
@@ -271,47 +306,5 @@ namespace TD_Loader.Classes
             }
             return loadedMods;
         }
-        /*public static void CreateGameFile()
-        {
-            game = new GameFile();
-            game.GameName = "";
-            game.GameVersion = "";
-            game.GameDir = "";
-            game.GameBackupDir = "";
-            game.ModsDir = "";
-            game.LoadedMods = new List<string>();
-
-            SaveGameFile();
-        }
-        public static GameFile LoadGameFile(string path)
-        {
-            //if(!File.Exists(path))
-            string json = File.ReadAllText(path);
-            if (JSON.IsJsonValid(json))
-            {
-                game = JsonConvert.DeserializeObject<GameFile>(json);
-            }
-            else
-            {
-                Log.Output("Game file has invalid json, generating a new Game file.");
-                CreateGameFile();
-            }
-            return game;
-        }
-        public static void SaveGameFile()
-        {
-            string output = JsonConvert.SerializeObject(game, Formatting.Indented);
-            string GameFilePath = Environment.CurrentDirectory + "\\" + game.GameName + ".profile";
-            if (GameFilePath != "" && GameFilePath != null)
-            {
-                StreamWriter serialize = new StreamWriter(GameFilePath, false);
-                serialize.Write(output);
-                serialize.Close();
-            }
-            else
-            {
-                Log.OutputNotice("Unknown error occured... Path to game profile is invalid...");
-            }
-        }*/
     }
 }
