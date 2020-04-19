@@ -133,6 +133,8 @@ namespace TD_Loader
                         else
                         {
                             Log.Output("Something went wrong... Failed to aquire game directory...");
+                            ResetGamePictures();
+                            Settings.settings.GameName = "None";
                         }
                     }
                 }
@@ -168,6 +170,8 @@ namespace TD_Loader
                         else
                         {
                             Log.Output("Something went wrong... Failed to aquire game directory...");
+                            ResetGamePictures();
+                            Settings.settings.GameName = "None";
                         }
                     }
                 }
@@ -203,6 +207,8 @@ namespace TD_Loader
                         else
                         {
                             Log.Output("Something went wrong... Failed to aquire game directory...");
+                            ResetGamePictures();
+                            Settings.settings.GameName = "None";
                         }
                     }
                 }

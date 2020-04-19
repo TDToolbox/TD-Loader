@@ -12,9 +12,16 @@ namespace TD_Loader.Classes
         public static string BrowseForGame()
         {
             Log.Output("Failed to automatically find " + Settings.settings.GameName);
-            MessageBox.Show("Failed to automatically find " + Settings.settings.GameName + " . Please browse for the game's .exe file to set the game directory");
+            if(MessageBox.Show("Failed to automatically find " + Settings.settings.GameName + " . Please browse for the game's .exe file to set the game directory", "Couldn't find game .exe", MessageBoxButtons.OKCancel) == DialogResult.OK)
+            {
+                return FileIO.BrowseForFile("Browse for .exe", "exe", "Exe files (*.exe)|*.exe|All files (*.*)|*.*", "");
+            }
+            else
+            {
+                MessageBox.Show("You will not be able to use the mod loader for " + Settings.settings.GameName + " without the exe!");
+                return "";
+            }
 
-            return FileIO.BrowseForFile("Browse for .exe", "exe", "Exe files (*.exe)|*.exe|All files (*.*)|*.*", "");
         }
         public static string BrowseForFile(string title, string defaultExt, string filter, string startDir)
         {
