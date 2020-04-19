@@ -99,7 +99,7 @@
                     </Grid.RowDefinitions>
 
                     <Button x:Name="AddMods_Button" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Left" MinWidth="200" MinHeight="50" MaxWidth="150" Height="auto" Width="auto" Click="AddMods_Button_Click">Add Mods</Button>
-                        <ListBox x:Name="Mods_ListBox" Grid.Row="3" Grid.Column="1" >
+                        <ListBox x:Name="Mods_ListBox" Grid.Row="3" Grid.Column="1" ScrollViewer.VerticalScrollBarVisibility="Auto">
                         <ListBox.OpacityMask>
                             <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                                 <GradientStop Color="Black" Offset="0"/>

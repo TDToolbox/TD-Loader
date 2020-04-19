@@ -101,6 +101,7 @@ namespace TD_Loader
                 Log.Output("Done making backup");
             }
 
+            Mods_ListBox.Items.Clear();
             PopulateMods(Settings.settings.GameName);
             doingWork = false;
         }
@@ -157,8 +158,46 @@ namespace TD_Loader
         }
         private void AddMods_Button_Click(object sender, RoutedEventArgs e)
         {
-            if (Settings.settings.GameName != "" && Settings.settings.GameName != null)
-                Mods.AddMods(Settings.settings.GameName);
+            if(!doingWork)
+            {
+                doingWork = true;
+                if (Settings.settings.GameName != "" && Settings.settings.GameName != null)
+                {
+                    List<string> mods = Mods.AddMods();
+                    string modD = Settings.GetModsDir(Settings.settings.GameName);
+                    if (modD == "" || modD == null)
+                    {
+                        Log.Output("Your mods directory is invalid");
+                        Game.SetModsDir(Settings.settings.GameName);
+                    }
+
+                    if (modD != "" && modD != null)
+                    {
+                        foreach (string mod in mods)
+                        {
+                            string[] split = mod.Split('\\');
+                            string filename = split[split.Length - 1];
+                            string copiedMod = Mods.CopyMod(mod, modD + "\\" + filename);
+
+                            if(copiedMod != "")
+                            {
+                                FileInfo f = new FileInfo(copiedMod);
+                                
+                                CheckBox a = new CheckBox();
+                                a.Content = f.Name;
+                                a.Foreground = Brushes.White;
+                                Mods_ListBox.Items.Add(a);
+                            }
+                        }
+                    }
+                    else
+                        Log.Output("Mods directory not found... Please try again");
+                }
+                else
+                    Log.ForceOutput("You need to choose a game before you can add mods!");
+
+                doingWork = false;
+            }
         }
         private void BMC_Image_IsMouseDirectlyOverChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
