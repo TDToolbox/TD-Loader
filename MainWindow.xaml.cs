@@ -89,6 +89,8 @@ namespace TD_Loader
         {
             doingWork = true;
 
+
+            //
             //Check for Game Updated
             string version = Game.GetVersion(Settings.settings.GameName);
             if (version != Settings.GetGameVersion(Settings.settings.GameName))
@@ -105,11 +107,46 @@ namespace TD_Loader
                 Settings.SetGameVersion(Settings.settings.GameName, version);
             }
 
+
+            //
+            //Check game dir
+            bool error = false;
+            string gameD = Settings.GetGameDir(Settings.settings.GameName);
+            if (gameD != "" && gameD != null)
+            {
+                if(Directory.Exists(gameD))
+                    Log.Output("Game Directory Found!");
+                else
+                {
+                    error = true;
+                    Log.Output("The saved game directory couldnt be found!");
+                }
+            }
+            else
+                error = true;
+
+            if (error)
+            {
+                string dir = Game.SetGameDir(Settings.settings.GameName);
+                if (dir != "" && dir != null)
+                    Settings.SetGameDir(Settings.settings.GameName, dir);
+                else
+                {
+                    Log.Output("Something went wrong... Failed to aquire game directory...");
+                    ResetGamePictures();
+                    return;
+                }
+            }
+            
+
+            //
             //Check Mods Dir
             string modsDir = Settings.GetModsDir(Settings.settings.GameName);
             if((Settings.settings.GameName != "" && Settings.settings.GameName != null) && (modsDir == "" || modsDir == null))
                 Game.SetModsDir(Settings.settings.GameName);
 
+
+            //
             //Check Backup
             bool valid = Game.VerifyBackup(Settings.settings.GameName);
             if(!valid)
@@ -122,10 +159,14 @@ namespace TD_Loader
                 Log.Output("Done making backup");
             }
 
+
+            //
             //Populate Mods
             Mods_ListBox.Items.Clear();
             PopulateMods(Settings.settings.GameName);
 
+
+            //
             //Done
             doingWork = false;
         }
@@ -259,26 +300,10 @@ namespace TD_Loader
             {
                 if (Settings.settings.GameName != "BTD5")
                 {
-
-                    string dir = Steam.GetGameDir(Steam.BTD5AppID);
-                    if(dir != "" && dir != null)
-                    {
-                        Settings.settings.BTD5Dir = dir;
-                        Settings.SaveSettings();
-                    }
-                    else
-                    {
-                        string path = Game.SetGameDir(Settings.settings.GameName);
-
-                        if (path == "" || path == null)
-                            Log.Output("Something went wrong... Failed to aquire game directory...");
-                        else
-                        {
-                            Log.Output("You selected " + path + " for your game directory");
-                            Settings.settings.BTD5Dir = path;
-                            Settings.SaveSettings();
-                        }
-                    }
+                    Settings.settings.GameName = "BTD5";
+                    Settings.SaveSettings();
+                    ResetGamePictures();
+                    BTD5_Image.Source = new BitmapImage(new Uri("Resources/btd5.png", UriKind.Relative));
 
                     GameHandling();
                 }
@@ -292,25 +317,10 @@ namespace TD_Loader
             {
                 if (Settings.settings.GameName != "BTDB")
                 {
-                    string dir = Steam.GetGameDir(Steam.BTDBAppID);
-                    if (dir != "" && dir != null)
-                    {
-                        Settings.settings.BTDBDir = dir;
-                        Settings.SaveSettings();
-                    }
-                    else
-                    {
-                        string path = Game.SetGameDir(Settings.settings.GameName);
-
-                        if (path == "" || path == null)
-                            Log.Output("Something went wrong... Failed to aquire game directory...");
-                        else
-                        {
-                            Log.Output("You selected " + path + " for your game directory");
-                            Settings.settings.BTDBDir = path;
-                            Settings.SaveSettings();
-                        }
-                    }
+                    Settings.settings.GameName = "BTDB";
+                    Settings.SaveSettings();
+                    ResetGamePictures();
+                    BTDB_Image.Source = new BitmapImage(new Uri("Resources/btdb 2.png", UriKind.Relative));
 
                     GameHandling();
                 }
@@ -326,25 +336,10 @@ namespace TD_Loader
                 if (Settings.settings.GameName != "BMC")
                 {
 
-                    string dir = Steam.GetGameDir(Steam.BMCAppID);
-                    if (dir != "" && dir != null)
-                    {
-                        Settings.settings.BMCDir = dir;
-                        Settings.SaveSettings();
-                    }
-                    else
-                    {
-                        string path = Game.SetGameDir(Settings.settings.GameName);
-
-                        if (path == "" || path == null)
-                            Log.Output("Something went wrong... Failed to aquire game directory...");
-                        else
-                        {
-                            Log.Output("You selected " + path + " for your game directory");
-                            Settings.settings.BMCDir = path;
-                            Settings.SaveSettings();
-                        }
-                    }
+                    Settings.settings.GameName = "BMC";
+                    Settings.SaveSettings();
+                    ResetGamePictures();
+                    BMC_Image.Source = new BitmapImage(new Uri("Resources/bmc.png", UriKind.Relative));
 
                     GameHandling();
                 }

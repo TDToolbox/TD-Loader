@@ -166,22 +166,15 @@ namespace TD_Loader.Classes
             Log.Output("Validating " + game);
             Process validationProc = Process.Start(url);
 
-            Thread thread = new Thread(delegate () { AwaitSteamValidate("start"); });
-            thread.Start();
-
-            while (!done)
-                await Task.Delay(250);
-            done = false;
-            thread.Abort();
-
-            thread = new Thread(delegate () { AwaitSteamValidate("stop"); });
+            Thread thread = new Thread(delegate () { SteamValidate("stop"); });
             thread.Start();
             while (!done)
                 await Task.Delay(250);
 
             done = false;
             Log.Output("Validation finished.");
-            validationProc.Kill();
+            //validationProc.Kill();
+            Windows.CloseWindow(" - 100% ");    //For all the Mallis's out there whose PC is in Italian
 
             return true;
         }
@@ -199,7 +192,7 @@ namespace TD_Loader.Classes
             }
             return false;
         }
-        private void AwaitSteamValidate(string op)
+        private void SteamValidate(string op)
         {
             bool result = false;
             if (op == "stop")
@@ -210,7 +203,7 @@ namespace TD_Loader.Classes
             while(!result)
             {
                 Thread.Sleep(250);
-                AwaitSteamValidate(op);
+                SteamValidate(op);
             }
             if (result)
                 done = true;

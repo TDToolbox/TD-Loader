@@ -15,9 +15,19 @@ namespace TD_Loader.Classes
         public static string SetGameDir(string game)
         {
             string path = "";
-
-            Steam steam = new Steam();
-            path = steam.SearchForSteam(game);
+            
+            switch (game)
+            {
+                case "BTD5":
+                    path = Steam.GetGameDir(Steam.BTD5AppID);
+                    break;
+                case "BTDB":
+                    path = Steam.GetGameDir(Steam.BTDBAppID);
+                    break;
+                case "BMC":
+                    path = Steam.GetGameDir(Steam.BMCAppID);
+                    break;
+            }
             if (path == "" || path == null)
             {
                 Log.Output("Failed to automatically find " + Settings.settings.GameName);

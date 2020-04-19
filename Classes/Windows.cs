@@ -15,7 +15,8 @@ namespace TD_Loader.Classes
 
             foreach (var a in openWindowProcesses)
             {
-                if (a.MainWindowTitle == windowMainTitle)
+                //if (a.MainWindowTitle == windowMainTitle)
+                if (a.MainWindowTitle.Contains(windowMainTitle))
                 {
                     Log.Output("Closing validator window");
                     a.CloseMainWindow();
