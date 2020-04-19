@@ -89,6 +89,7 @@ namespace TD_Loader
         {
             doingWork = true;
 
+            //Check for Game Updated
             string version = Game.GetVersion(Settings.settings.GameName);
             if (version != Settings.GetGameVersion(Settings.settings.GameName))
             {
@@ -104,12 +105,12 @@ namespace TD_Loader
                 Settings.SetGameVersion(Settings.settings.GameName, version);
             }
 
-            
+            //Check Mods Dir
             string modsDir = Settings.GetModsDir(Settings.settings.GameName);
-
             if((Settings.settings.GameName != "" && Settings.settings.GameName != null) && (modsDir == "" || modsDir == null))
                 Game.SetModsDir(Settings.settings.GameName);
 
+            //Check Backup
             bool valid = Game.VerifyBackup(Settings.settings.GameName);
             if(!valid)
             {
@@ -121,8 +122,11 @@ namespace TD_Loader
                 Log.Output("Done making backup");
             }
 
+            //Populate Mods
             Mods_ListBox.Items.Clear();
             PopulateMods(Settings.settings.GameName);
+
+            //Done
             doingWork = false;
         }
         private void PopulateMods(string game)

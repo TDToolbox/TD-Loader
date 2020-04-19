@@ -7,5 +7,6 @@ namespace TD_Loader.Classes
 {
     class Merger
     {
+
     }
 }
