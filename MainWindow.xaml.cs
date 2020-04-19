@@ -157,8 +157,7 @@ namespace TD_Loader
 
                 if (Settings.settings.BTD5Dir == "" || Settings.settings.BTD5Dir == null)
                 {
-                    Steam steam = new Steam();
-                    string dir = steam.SearchForSteam("BTD5");
+                    string dir = Steam.GetGameDir(Steam.BTD5AppID);
                     if(dir != "" && dir != null)
                     {
                         Settings.settings.BTD5Dir = dir;
@@ -193,8 +192,7 @@ namespace TD_Loader
 
                 if (Settings.settings.BTDBDir == "" || Settings.settings.BTDBDir == null)
                 {
-                    Steam steam = new Steam();
-                    string dir = steam.SearchForSteam("BTDB");
+                    string dir = Steam.GetGameDir(Steam.BTDBAppID);
                     if (dir != "" && dir != null)
                     {
                         Settings.settings.BTDBDir = dir;
@@ -229,8 +227,7 @@ namespace TD_Loader
 
                 if (Settings.settings.BMCDir == "" || Settings.settings.BMCDir == null)
                 {
-                    Steam steam = new Steam();
-                    string dir = steam.SearchForSteam("BMC");
+                    string dir = Steam.GetGameDir(Steam.BMCAppID);
                     if (dir != "" && dir != null)
                     {
                         Settings.settings.BMCDir = dir;
