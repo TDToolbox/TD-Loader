@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -11,6 +12,8 @@ namespace TD_Loader.Classes
 {
     class Steam
     {
+        bool done = false;
+
         //
         //Autofind steam dir stuff
         //
@@ -82,36 +85,25 @@ namespace TD_Loader.Classes
 
             Log.Output("Validating " + game);
             Process.Start(url);
-            
-            for(int i = 0; i < 55; i++)
-            {
-                if(await AwaitSteamValidate("start"))   //success, wait for it to finish
-                {
-                    Log.Output("Validation started. Waiting for it to finish...");
-                    for (int j = 0; j < 600; j++)   //wait up to 5 minutes for validation to finish
-                    {
-                        if (await AwaitSteamValidate("stop"))   //success, files finished validating
-                        {
-                            Log.Output("Validation finished.");
-                            //Close the validator window
-                            var openWindowProcesses = System.Diagnostics.Process.GetProcesses()
-                .Where(p => p.MainWindowHandle != IntPtr.Zero && p.ProcessName != "explorer");
 
-                            foreach (var a in openWindowProcesses)
-                            {
-                                if (a.MainWindowTitle == "Validating Steam files - 100% complete")
-                                {
-                                    Log.Output("Closing validator window");
-                                    a.CloseMainWindow();
-                                }
-                            }
+            Thread thread = new Thread(delegate () { AwaitSteamValidate("start"); });
+            thread.Start();
 
-                            return true;
-                        }
-                    }
-                }
-            }
-            return false;
+            while (!done)
+                await Task.Delay(250);
+            done = false;
+            thread.Abort();
+
+            thread = new Thread(delegate () { AwaitSteamValidate("stop"); });
+            thread.Start();
+            while (!done)
+                await Task.Delay(250);
+
+            done = false;
+            Log.Output("Validation finished.");
+            Windows.CloseWindow("Validating Steam files - 100% complete");
+
+            return true;
         }
         private bool GetValidatorProc(string proc, string percentComplete)
         {
@@ -127,7 +119,7 @@ namespace TD_Loader.Classes
             }
             return false;
         }
-        private async Task<bool> AwaitSteamValidate(string op)
+        private void AwaitSteamValidate(string op)
         {
             bool result = false;
             if (op == "stop")
@@ -135,15 +127,13 @@ namespace TD_Loader.Classes
             else
                 result = GetValidatorProc("Validating Steam files - ", "");
 
-            if (result)
+            while(!result)
             {
-                return true;
+                Thread.Sleep(250);
+                AwaitSteamValidate(op);
             }
-            else
-            {
-                await Task.Delay(500);
-                return false;
-            }   
+            if (result)
+                done = true;
         }
     }
 }

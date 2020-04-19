@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Microsoft.WindowsAPICodePack.Dialogs;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,6 +11,7 @@ namespace TD_Loader.Classes
 {
     class FileIO
     {
+        public static bool done;
         public static string BrowseForGame()
         {
             Log.Output("Failed to automatically find " + Settings.settings.GameName);
@@ -56,6 +59,36 @@ namespace TD_Loader.Classes
             }
             else
                 return null;
+        }
+        public static string BrowseForDirectory(string title, string startDir)
+        {
+            CommonOpenFileDialog dialog = new CommonOpenFileDialog();
+            dialog.IsFolderPicker = true;
+            dialog.Title = title;
+            dialog.Multiselect = false;
+            dialog.InitialDirectory = startDir;
+
+            if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+            {
+                return dialog.FileName;
+            }
+            else
+                return null;
+        }
+        public static void CopyDirsAndContents(string source, string destination)
+        {
+            string[] split = source.Split('\\');
+            string dirname = split[split.Length - 1];
+
+            Log.Output("Copying " + dirname + "...");
+            foreach (string dirPath in Directory.GetDirectories(source, "*", SearchOption.AllDirectories))
+                Directory.CreateDirectory(dirPath.Replace(source, destination));
+
+            foreach (string newPath in Directory.GetFiles(source, "*.*", SearchOption.AllDirectories))
+                File.Copy(newPath, newPath.Replace(source, destination), true);
+            Log.Output("Copied " + dirname + "!");
+
+            done = true;
         }
     }
 }

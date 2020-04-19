@@ -117,47 +117,194 @@ namespace TD_Loader.Classes
                 Log.OutputNotice("Unknown error occured... Path to settings is invalid...");
             }
         }
-        /*public static void CreateGameFile()
-        {
-            game = new GameFile();
-            game.GameName = "";
-            game.GameVersion = "";
-            game.GameDir = "";
-            game.GameBackupDir = "";
-            game.ModsDir = "";
-            game.LoadedMods = new List<string>();
 
-            SaveGameFile();
-        }
-        public static GameFile LoadGameFile(string path)
+
+        public static void SetGameDir(string game, string path)
         {
-            //if(!File.Exists(path))
-            string json = File.ReadAllText(path);
-            if (JSON.IsJsonValid(json))
+            switch (game)
             {
-                game = JsonConvert.DeserializeObject<GameFile>(json);
+                case "BTD5":
+                    settings.BTD5Dir = path;
+                    break;
+                case "BTDB":
+                    settings.BTDBDir = path;
+                    break;
+                case "BMC":
+                    settings.BMCDir = path;
+                    break;
             }
-            else
-            {
-                Log.Output("Game file has invalid json, generating a new Game file.");
-                CreateGameFile();
-            }
-            return game;
+            SaveSettings();
         }
-        public static void SaveGameFile()
+        public static string GetGameDir(string game)
         {
-            string output = JsonConvert.SerializeObject(game, Formatting.Indented);
-            string GameFilePath = Environment.CurrentDirectory + "\\" + game.GameName + ".profile";
-            if (GameFilePath != "" && GameFilePath != null)
+            string gameDir = "";
+            switch (game)
             {
-                StreamWriter serialize = new StreamWriter(GameFilePath, false);
-                serialize.Write(output);
-                serialize.Close();
+                case "BTD5":
+                    gameDir = settings.BTD5Dir;
+                    break;
+                case "BTDB":
+                    gameDir = settings.BTDBDir;
+                    break;
+                case "BMC":
+                    gameDir = settings.BMCDir;
+                    break;
             }
-            else
+            return gameDir;
+        }
+
+        public static string GetGameVersion(string game)
+        {
+            string gameVer = "";
+            switch (game)
             {
-                Log.OutputNotice("Unknown error occured... Path to game profile is invalid...");
+                case "BTD5":
+                    gameVer = settings.BTD5Version;
+                    break;
+                case "BTDB":
+                    gameVer = settings.BTDBVersion;
+                    break;
+                case "BMC":
+                    gameVer = settings.BMCVersion;
+                    break;
             }
-        }*/
+            return gameVer;
+        }
+        public static void SetGameVersion(string game, string gameVer)
+        {
+            switch (game)
+            {
+                case "BTD5":
+                    settings.BTD5Version = gameVer;
+                    break;
+                case "BTDB":
+                    settings.BTDBVersion = gameVer;
+                    break;
+                case "BMC":
+                    settings.BMCVersion = gameVer;
+                    break;
+            }
+            SaveSettings();
+        }
+
+
+        public static void SetBackupDir(string game, string path)
+        {
+            switch (game)
+            {
+                case "BTD5":
+                    settings.BTD5BackupDir = path;
+                    break;
+                case "BTDB":
+                    settings.BTDBBackupDir = path;
+                    break;
+                case "BMC":
+                    settings.BMCBackupDir = path;
+                    break;
+            }
+            SaveSettings();
+        }
+        public static string GetBackupDir(string game)
+        {
+            string backupDir = "";
+            switch (game)
+            {
+                case "BTD5":
+                    backupDir = settings.BTD5BackupDir;
+                    break;
+                case "BTDB":
+                    backupDir = settings.BTDBBackupDir;
+                    break;
+                case "BMC":
+                    backupDir = settings.BMCBackupDir;
+                    break;
+            }
+            return backupDir;
+        }
+
+        public static void SetModsDir(string game, string path)
+        {
+            switch (game)
+            {
+                case "BTD5":
+                    settings.BTD5ModsDir = path;
+                    break;
+                case "BTDB":
+                    settings.BTDBModsDir = path;
+                    break;
+                case "BMC":
+                    settings.BMCModsDir = path;
+                    break;
+            }
+            SaveSettings();
+        }
+        public static string GetModsDir(string game)
+        {
+            string modsDir = "";
+            switch (game)
+            {
+                case "BTD5":
+                    modsDir = settings.BTD5ModsDir;
+                    break;
+                case "BTDB":
+                    modsDir = settings.BTDBModsDir;
+                    break;
+                case "BMC":
+                    modsDir = settings.BMCModsDir;
+                    break;
+            }
+            return modsDir;
+        }
+
+
+        public static void AddLoadedMod(string game, string modName)
+        {
+            switch (game)
+            {
+                case "BTD5":
+                    settings.BTD5LoadedMods.Add(modName);
+                    break;
+                case "BTDB":
+                    settings.BTDBLoadedMods.Add(modName);
+                    break;
+                case "BMC":
+                    settings.BMCLoadedMods.Add(modName);
+                    break;
+            }
+            SaveSettings();
+        }
+        public static void SetLoadedMods(string game, List<string> mods)
+        {
+            switch (game)
+            {
+                case "BTD5":
+                    settings.BTD5LoadedMods = mods;
+                    break;
+                case "BTDB":
+                    settings.BTDBLoadedMods = mods;
+                    break;
+                case "BMC":
+                    settings.BMCLoadedMods = mods;
+                    break;
+            }
+            SaveSettings();
+        }
+        public static List<string> GetLoadedMods(string game)
+        {
+            List<string> loadedMods = new List<string>();
+            switch (game)
+            {
+                case "BTD5":
+                    loadedMods = settings.BTD5LoadedMods;
+                    break;
+                case "BTDB":
+                    loadedMods = settings.BTDBLoadedMods;
+                    break;
+                case "BMC":
+                    loadedMods = settings.BMCLoadedMods;
+                    break;
+            }
+            return loadedMods;
+        }
     }
 }

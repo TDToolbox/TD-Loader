@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TD_Loader"
         mc:Ignorable="d"
-        Title="TD Loader" Height="450" Width="800" WindowState="Maximized" WindowStyle="SingleBorderWindow" MinHeight="300" MinWidth="600">
+        Title="TD Loader" Height="450" Width="800" WindowState="Maximized" WindowStyle="SingleBorderWindow" MinHeight="300" MinWidth="600" Activated="Main_Activated">
     <Window.Resources>
         <FontFamily x:Key="nkfont">/Fonts/#Oetztype</FontFamily>
     </Window.Resources>
@@ -92,11 +92,14 @@
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="20"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="15"/>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="20"/>
                     </Grid.RowDefinitions>
 
-                    <ListBox x:Name="Mods_ListBox" Grid.Row="1" Grid.Column="1" >
+                    <Button x:Name="AddMods_Button" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Left" MinWidth="200" MinHeight="50" MaxWidth="150" Height="auto" Width="auto" Click="AddMods_Button_Click">Add Mods</Button>
+                        <ListBox x:Name="Mods_ListBox" Grid.Row="3" Grid.Column="1" ScrollViewer.VerticalScrollBarVisibility="Auto">
                         <ListBox.OpacityMask>
                             <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                                 <GradientStop Color="Black" Offset="0"/>
@@ -109,7 +112,6 @@
                                 <GradientStop Color="#FF555555" Offset="0"/>
                             </LinearGradientBrush>
                         </ListBox.Background>
-                        <CheckBox Content="ListBoxItem"/>
                     </ListBox>
                 </Grid>
 
