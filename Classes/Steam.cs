@@ -7,60 +7,140 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using Microsoft.Win32;
+using System.Text.RegularExpressions;
 
 namespace TD_Loader.Classes
 {
     class Steam
     {
+
         bool done = false;
 
-        //
-        //Autofind steam dir stuff
-        //
-        public static List<string> drives = new List<string>() { "A:\\", "B:\\", "C:\\","D:\\", "E:\\", "F:\\",
-            "G:\\", "H:\\", "I:\\","J:\\", "K:\\", "L:\\","M:\\", "N:\\", "O:\\","P:\\", "Q:\\", "R:\\",
-            "S:\\", "T:\\", "U:\\","V:\\", "W:\\", "X:\\","Y:\\", "Z:\\"
-        };
-        public static List<string> paths = new List<string>() { "", "Program Files", "Program Files (x86)", "Games", "Programs" };
-        public string SearchForSteam(string game)
-        {
-            string gameFolder = "";
+        
 
-            switch (game)
+        public const UInt64 BTD6AppID = 960090;
+        public const string BTD6Name = "BloonsTD6";
+
+        public const UInt64 BTD5AppID = 306020;
+        public const string BTD5Name = "BloonsTD5";
+
+        public const UInt64 BTDBAppID = 444640;
+        public const string BTDBName = "Bloons TD Battles";
+
+        public const UInt64 BMCAppID = 1252780;
+        public const string BMCName = "Bloons Monkey City";
+
+        private static Dictionary<UInt64, string> steamGames = new Dictionary<UInt64, string>
+        {{BTD6AppID, BTD6Name}, {BTD5AppID, BTD5Name}, {BTDBAppID, BTDBName}, {BMCAppID, BMCName}};
+
+
+        private class Utils
+        {
+            // Takes any quotation marks out of a string.
+            public static string StripQuotes(string str)
             {
-                case "BTD5":
-                    gameFolder = "BloonsTD5";
-                    break;
-                case "BTDB":
-                    gameFolder = "Bloons TD Battles";
-                    break;
-                case "BMC":
-                    gameFolder = "Bloons Monkey City";
-                    break;
+                return str.Replace("\"", "");
             }
-            return CheckDirsForSteam(gameFolder);
-        }
-        public string CheckDirsForSteam(string searchFolder)
-        {
-            string path = "";
 
-            //Check if Steam is in the main drive
-            foreach (string drive in drives)
+            public static string UnixToWindowsPath(string UnixPath)
             {
-                foreach (string p in paths)
+                return UnixPath.Replace("/", "\\");
+            }
+        }
+
+        public static bool IsGameRunning(UInt64 appid)
+        {
+            int isGameRunning = (int)Registry.GetValue(Registry.CurrentUser + 
+                "\\Software\\Valve\\Steam\\Apps\\" + appid, "Running", null);
+            if (isGameRunning == 1) // Cant type true because its of type System.Bool.
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public static string GetGameDir(UInt64 appid)
+        {
+            return GetGameDir(appid, steamGames[appid]);
+        }
+
+        public static string GetGameDir(UInt64 appid, string gameName)
+        {
+
+
+            string steamDir = (string)Registry.GetValue(Registry.CurrentUser + 
+                "\\Software\\Valve\\Steam", "SteamPath", null);
+            if (steamDir == null)
+            {
+                Log.Output("Failed to find steam in registry!");
+                return null;
+            }
+
+            //
+            // Check if game is installed first
+            //
+
+            int isGameInstalled = (int)Registry.GetValue(Registry.CurrentUser + 
+                "\\Software\\Valve\\Steam\\Apps\\" + appid, "Installed", null);
+            if (isGameInstalled != 1)
+            {
+                Log.Output(gameName + " is not installed!");
+                return null;
+            }
+
+            //
+            // Get game Directory...
+            //
+
+            string configFileDir = steamDir + "\\steamapps\\libraryfolders.vdf";
+            List<string> SteamLibDirs = new List<string>();
+            SteamLibDirs.Add(Utils.UnixToWindowsPath(steamDir)); // This steam Directory is always here.
+            string[] configFile = File.ReadAllLines(configFileDir);
+            for (int i = 0; i < configFile.Length; i++)
+            {
+                // To Example lines are
+                // 	"ContentStatsID"		"-4535501642230800231"
+                // "1"     "C:\\SteamLibrary"
+                // So, we scan for the items in quotes, if the first one is numeric, 
+                // then the second one will be a steam library.
+                Regex reg = new Regex("\".*?\"");
+                MatchCollection matches = reg.Matches(configFile[i]);
+                for (int match = 0; match < matches.Count; match++)
                 {
-                    path = drive + p + "\\Steam";
-                    if (Directory.Exists(path))
+                    if (match == 0)
                     {
-                        string finalpath = path + "\\steamapps\\common\\" + searchFolder;
-                        if (Directory.Exists(finalpath))
+
+                        if (int.TryParse(Utils.StripQuotes(matches[match].Value.ToString()), out int n))
                         {
-                            return finalpath;
+                            // We dont actually need N, we just need to check if the value is an integer.
                         }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                    if (match == 1)
+                    {
+                        SteamLibDirs.Add(Utils.UnixToWindowsPath(Utils.StripQuotes(matches[match].Value.ToString())));
                     }
                 }
             }
-            return "";
+            for (int i = 0; i < SteamLibDirs.Count; i++)
+            {
+                string GameFolder = SteamLibDirs[i] + "\\steamapps\\common\\" + gameName;
+                if (Directory.Exists(GameFolder))
+                {
+                    Log.Output("Found " + gameName + " directory at: " + GameFolder);
+                    return GameFolder;
+                }
+            }
+
+            Log.Output(gameName + "'s Directory not found!");
+            return null;
         }
 
         //

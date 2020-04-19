@@ -259,12 +259,14 @@ namespace TD_Loader
             {
                 if (Settings.settings.GameName != "BTD5")
                 {
-                    Settings.settings.GameName = "BTD5";
-                    Settings.SaveSettings();
-                    ResetGamePictures();
-                    BTD5_Image.Source = new BitmapImage(new Uri("Resources/btd5.png", UriKind.Relative));
 
-                    if (Settings.settings.BTD5Dir == "" || Settings.settings.BTD5Dir == null)
+                    string dir = Steam.GetGameDir(Steam.BTD5AppID);
+                    if(dir != "" && dir != null)
+                    {
+                        Settings.settings.BTD5Dir = dir;
+                        Settings.SaveSettings();
+                    }
+                    else
                     {
                         string path = Game.SetGameDir(Settings.settings.GameName);
 
@@ -290,12 +292,13 @@ namespace TD_Loader
             {
                 if (Settings.settings.GameName != "BTDB")
                 {
-                    Settings.settings.GameName = "BTDB";
-                    Settings.SaveSettings();
-                    ResetGamePictures();
-                    BTDB_Image.Source = new BitmapImage(new Uri("Resources/btdb 2.png", UriKind.Relative));
-
-                    if (Settings.settings.BTDBDir == "" || Settings.settings.BTDBDir == null)
+                    string dir = Steam.GetGameDir(Steam.BTDBAppID);
+                    if (dir != "" && dir != null)
+                    {
+                        Settings.settings.BTDBDir = dir;
+                        Settings.SaveSettings();
+                    }
+                    else
                     {
                         string path = Game.SetGameDir(Settings.settings.GameName);
 
@@ -322,12 +325,14 @@ namespace TD_Loader
             {
                 if (Settings.settings.GameName != "BMC")
                 {
-                    Settings.settings.GameName = "BMC";
-                    Settings.SaveSettings();
-                    ResetGamePictures();
-                    BMC_Image.Source = new BitmapImage(new Uri("Resources/bmc.png", UriKind.Relative));
 
-                    if (Settings.settings.BMCDir == "" || Settings.settings.BMCDir == null)
+                    string dir = Steam.GetGameDir(Steam.BMCAppID);
+                    if (dir != "" && dir != null)
+                    {
+                        Settings.settings.BMCDir = dir;
+                        Settings.SaveSettings();
+                    }
+                    else
                     {
                         string path = Game.SetGameDir(Settings.settings.GameName);
 
