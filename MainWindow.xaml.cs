@@ -69,6 +69,9 @@ namespace TD_Loader
                     else
                         dirNotFound = true;
                     break;
+                default:
+                    dirNotFound = true;
+                    break;
             }
 
             //if (Settings.settings.GameName != null && Settings.settings.GameName != "")

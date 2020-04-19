@@ -27,7 +27,7 @@ namespace TD_Loader.Classes
                     int i = 1;
                     while(File.Exists(dest))
                     {
-                        dest = destDir + filename.Replace(fileExt, "") + " Copy " + i + fileExt;
+                        dest = destDir + filename.Replace(fileExt, "") + " - Copy " + i + fileExt;
                         i++;
                     }
                 }
