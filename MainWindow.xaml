@@ -6,16 +6,30 @@
         xmlns:local="clr-namespace:TD_Loader"
         mc:Ignorable="d"
         Title="TD Loader" Height="450" Width="800" WindowState="Maximized" WindowStyle="SingleBorderWindow" MinHeight="520" MinWidth="720" Activated="Main_Activated">
+
     <Window.Resources>
-        <FontFamily x:Key="nkfont">/Fonts/#Oetztype</FontFamily>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Resources/Resources.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <Style x:Key="GameViewbox" TargetType="{x:Type Viewbox}">
+                <Setter Property="MaxWidth" Value="175"/>
+                <Setter Property="MaxHeight" Value="100"/>
+                <Setter Property="Margin"  Value="35,0"/>
+            </Style>
+
+        </ResourceDictionary>
     </Window.Resources>
-    <Window.Background>
+    
+    <!--<Window.Background>
         <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
             <GradientStop Color="Black" Offset="0"/>
             <GradientStop Color="White" Offset="5"/>
         </LinearGradientBrush>
-    </Window.Background>
-    <Grid>
+    </Window.Background>-->
+
+    <Grid Background="{StaticResource BrushBackgroundL}">
         <Grid.RowDefinitions>
             <RowDefinition Height="26" />
             <RowDefinition Height="*" />
@@ -29,15 +43,10 @@
         </ToolBar>
 
 
-        <TabControl x:Name="Main_TabController" TabStripPlacement="Left" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Row="1" Background="Black">
-            <TabItem Header="     Games     " FontSize="25">
-                <TabItem.Background>
-                    <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
-                        <GradientStop Color="#FFF0F0F0" Offset="0"/>
-                        <GradientStop Color="White" Offset="10"/>
-                    </LinearGradientBrush>
-                </TabItem.Background>
-                <Grid Background="#FF323232">
+        <TabControl x:Name="Main_TabController" TabStripPlacement="Left" VerticalAlignment="Stretch" 
+                    HorizontalAlignment="Stretch" Grid.Row="1" Background="Black" BorderBrush="Black">
+            <TabItem Header="Games">
+                <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="40"/>
                         <ColumnDefinition Width="*"/>
@@ -56,36 +65,27 @@
                     </Grid.RowDefinitions>
 
 
-                    <Viewbox Grid.Row="2" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="175" MaxHeight="100"  Margin="35,0">
-                        <TextBlock x:Name="BTD5_Text" Text="BTD5" Foreground="#FFF0F0F0" FontFamily="{StaticResource nkfont}" FontSize="1"/>
+                    <Viewbox Grid.Row="2" Grid.Column="1" Style="{StaticResource GameViewbox}">
+                        <TextBlock x:Name="BTD5_Text" Text="BTD5" Style="{StaticResource VBTexbox}"/>
                     </Viewbox>
-                    <Image x:Name="BTD5_Image" Grid.Column="1" Grid.Row="3" Source="Resources/btd5_not loaded.png" Margin="10,0" MouseDown="BTD5_Image_MouseDown" HorizontalAlignment="Center"/>
+                    <Image x:Name="BTD5_Image" Grid.Column="1" Grid.Row="3" Source="Resources/btd5_not loaded.png" Margin="10,0" MouseDown="BTD5_Image_MouseDown"/>
 
-                    <Viewbox Grid.Row="2" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="175" MaxHeight="100"  Margin="35,0">
-                        <TextBlock x:Name="BTDB_Text" Text="BTDB" Foreground="#FFF0F0F0" FontFamily="{StaticResource nkfont}" FontSize="1"/>
+                    <Viewbox Grid.Row="2" Grid.Column="2" Style="{StaticResource GameViewbox}">
+                        <TextBlock x:Name="BTDB_Text" Text="BTDB" Style="{StaticResource VBTexbox}"/>
                     </Viewbox>
-                    <Image x:Name="BTDB_Image" Grid.Column="2" Grid.Row="3" Source="Resources/btdb 2_not loaded.png" Margin="10,0" MouseDown="BTDB_Image_MouseDown" HorizontalAlignment="Center"/>
+                    <Image x:Name="BTDB_Image" Grid.Column="2" Grid.Row="3" Source="Resources/btdb 2_not loaded.png" Margin="10,0" MouseDown="BTDB_Image_MouseDown"/>
 
-                    <Viewbox Grid.Row="2" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="175" MaxHeight="100" Margin="35,0">
-                        <TextBlock x:Name="BMC_Text" Text="BMC" Foreground="#FFF0F0F0" FontFamily="{StaticResource nkfont}" FontSize="1" />
+                    <Viewbox Grid.Row="2" Grid.Column="3" Style="{StaticResource GameViewbox}">
+                        <TextBlock x:Name="BMC_Text" Text="BMC" Style="{StaticResource VBTexbox}"/>
                     </Viewbox>
-                    <Image x:Name="BMC_Image" Grid.Row="3" Grid.Column="3" Source="Resources/bmc_not loaded.png" Margin="10,0" MouseDown="BMC_Image_MouseDown" HorizontalAlignment="Center"/>
+                    <Image x:Name="BMC_Image" Grid.Row="3" Grid.Column="3" Source="Resources/bmc_not loaded.png" Margin="10,0" MouseDown="BMC_Image_MouseDown"/>
                 </Grid>
 
 
             </TabItem>
-            <TabItem x:Name="Mods_Tab" Header="     Mods     " FontSize="25" Padding="5" MouseDown="Mods_Tab_MouseDown">
-                <TabItem.Background>
-                    <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
-                        <GradientStop Color="#FFF0F0F0" Offset="0"/>
-                        <GradientStop Color="White" Offset="10"/>
-                    </LinearGradientBrush>
-                </TabItem.Background>
+            <TabItem x:Name="Mods_Tab" Header="Mods" MouseDown="Mods_Tab_MouseDown">
 
-
-
-
-                <Grid Background="#FF414141">
+                <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="20"/>
                         <ColumnDefinition Width="*"/>
@@ -103,40 +103,20 @@
                 </Grid>
 
 
-
-
             </TabItem>
-            <TabItem Name="Plugins_Tab" Header="     Plugins     " FontSize="25" Padding="5">
-                <TabItem.Background>
-                    <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
-                        <GradientStop Color="#FFF0F0F0" Offset="0"/>
-                        <GradientStop Color="White" Offset="10"/>
-                    </LinearGradientBrush>
-                </TabItem.Background>
-                <Grid x:Name="PluginsUserControl" Background="#FF414141">
+            <TabItem Name="Plugins_Tab" Header="Plugins">
+                <Grid x:Name="PluginsUserControl">
                     
                 </Grid>
             </TabItem>
 
-            <TabItem Header="     Saves     " FontSize="25" Padding="5" >
-                <TabItem.Background>
-                    <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
-                        <GradientStop Color="#FFF0F0F0" Offset="0"/>
-                        <GradientStop Color="White" Offset="10"/>
-                    </LinearGradientBrush>
-                </TabItem.Background>
-                <Grid Background="#FF414141"/>
+            <TabItem Header="Saves" >
+                <Grid/>
             </TabItem>
 
 
-            <TabItem Header="     Help     " FontSize="25" Padding="5" >
-                <TabItem.Background>
-                    <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
-                        <GradientStop Color="#FFF0F0F0" Offset="0"/>
-                        <GradientStop Color="White" Offset="10"/>
-                    </LinearGradientBrush>
-                </TabItem.Background>
-                <Grid Background="#FF414141"/>
+            <TabItem Header="Help">
+                <Grid/>
             </TabItem>
         </TabControl>
 
