@@ -33,10 +33,11 @@
         <Canvas Background="#FF424242" Grid.Column="3">
             
         </Canvas>
-        <Viewbox Grid.Column="3"  MinWidth="120" MinHeight="20" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0">
-            <TextBlock x:Name="ModName" Foreground="White" Margin="20,0"></TextBlock>
+        <Viewbox Grid.Column="3"  MinWidth="120" MinHeight="20" HorizontalAlignment="Left" Margin="0,0">
+            <TextBlock x:Name="ModName" Margin="20,0"></TextBlock>
         </Viewbox>
         
+        <!-- Idk what this plans to have so idk what to theme it to... -->
         <xctk:SplitButton Grid.Column="5" FontSize="17" Content="  More  " Background="#FF00B7E0" Foreground="White">
             <xctk:SplitButton.DropDownContent>
                 <xctk:ButtonChrome></xctk:ButtonChrome>

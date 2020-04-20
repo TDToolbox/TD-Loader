@@ -9,7 +9,7 @@
     <Color x:Key="DebugColor">#FFFF00FF</Color>
     <SolidColorBrush x:Key="DebugBrush" Color="{StaticResource DebugColor}"/>
 
-    
+
     <Color x:Key="ColorFont">#FFF0F0F0</Color>
     <SolidColorBrush x:Key="BrushFont" Color="{StaticResource ColorFont}"/>
 
@@ -22,36 +22,39 @@
 
     <Color x:Key="ColorBackgroundD">#FF2D2D2D</Color>
     <SolidColorBrush x:Key="BrushBackgroundD" Color="{StaticResource ColorBackgroundD}"/>
-    
+
 
     <Color x:Key="ColorMidgroundL">#FF444444</Color>
     <SolidColorBrush x:Key="BrushMidgroundL" Color="{StaticResource ColorMidgroundL}"/>
 
     <Color x:Key="ColorMidground">#FF424242</Color>
     <SolidColorBrush x:Key="BrushMidground" Color="{StaticResource ColorMidground}"/>
-    
+
     <Color x:Key="ColorMidgroundD">#FF404040</Color>
     <SolidColorBrush x:Key="BrushMidgroundD" Color="{StaticResource ColorMidgroundD}"/>
 
-    
+
     <Color x:Key="ColorForeground">#FF424242</Color>
     <SolidColorBrush x:Key="BrushForeground" Color="{StaticResource ColorForeground}"/>
 
-    
-    
+
+
     <Color x:Key="ColorBorder">#FF2A2A2A</Color>
     <SolidColorBrush x:Key="BrushBorder" Color="{StaticResource ColorBorder}"/>
 
-    
+    <Color x:Key="OrangeMid">#FFEEA145</Color>
+    <SolidColorBrush x:Key="BrushOrangeMid" Color="{StaticResource OrangeMid}"/>
+
+
 
 
 
     <!--        -->
-                                    <!-- Styles -->
-                                    <!--        -->
+    <!-- Styles -->
+    <!--        -->
 
     <!-- Base type for all styles to inherit off-->
-    
+
     <Style TargetType="{x:Type Control}" x:Key="baseStyle">
         <Setter Property="FontSize" Value="25" />
         <Setter Property="Foreground" Value="{StaticResource BrushFont}"/>
@@ -100,11 +103,20 @@
         </Setter>
     </Style>
 
-    <Style TargetType="{x:Type Viewbox}"/>
+    <Style TargetType="{x:Type Viewbox}">
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
 
     <Style TargetType="{x:Type Image}">
         <Setter Property="HorizontalAlignment" Value="Center"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+
+    <Style x:Key="VBTexbox" TargetType="{x:Type TextBlock}">
+        <Setter Property="FontFamily" Value="{DynamicResource nkfont}"/>
+        <Setter Property="FontSize" Value="1"/>
+        <Setter Property="Foreground" Value="{StaticResource BrushFont}"/>
     </Style>
 
 
@@ -112,8 +124,8 @@
         <Setter Property="Background" Value="{StaticResource BrushMidground}"/>
         <Setter Property="BorderBrush" Value="{StaticResource BrushMidground}"/>
     </Style>-->
-    
-    
+
+
     <!-- Explicit Styles -->
 
     <!-- A checkbox that looks like a button, Green = Enabled, Red = Disabled with Enabled/Disabled text. -->
@@ -301,6 +313,76 @@
         </Setter>
     </Style>
 
+    <Style x:Key="BlueButton" TargetType="{x:Type Button}" BasedOn="{StaticResource baseStyle}">
+        <Style.Resources>
+            <Color x:Key="BlueLight">#FF00C7F5</Color>
+            <Color x:Key="BlueMid">#FF00B7E0</Color>
+            <Color x:Key="BlueDark">#FF00B0D0</Color>
+            <Color x:Key="BlueDDark">#FF00A0C0</Color>
+
+            <LinearGradientBrush x:Key="ButtonBrush" StartPoint="0,0" EndPoint="1,0">
+                <LinearGradientBrush.GradientStops>
+                    <GradientStopCollection>
+                        <GradientStop Color="{StaticResource BlueLight}" Offset="0"/>
+                        <GradientStop Color="{StaticResource BlueMid}" Offset="1"/>
+                    </GradientStopCollection>
+                </LinearGradientBrush.GradientStops>
+            </LinearGradientBrush>
+
+            <LinearGradientBrush x:Key="SelectedBrush" StartPoint="0,0" EndPoint="1,0">
+                <LinearGradientBrush.GradientStops>
+                    <GradientStopCollection>
+                        <GradientStop Color="{StaticResource BlueMid}" Offset="0"/>
+                        <GradientStop Color="{StaticResource BlueDark}" Offset="1"/>
+                    </GradientStopCollection>
+                </LinearGradientBrush.GradientStops>
+            </LinearGradientBrush>
+
+            <LinearGradientBrush x:Key="ClickedBrush" StartPoint="0,0" EndPoint="1,0">
+                <LinearGradientBrush.GradientStops>
+                    <GradientStopCollection>
+                        <GradientStop Color="{StaticResource BlueDark}" Offset="0"/>
+                        <GradientStop Color="{StaticResource BlueDDark}" Offset="1"/>
+                    </GradientStopCollection>
+                </LinearGradientBrush.GradientStops>
+            </LinearGradientBrush>
+
+        </Style.Resources>
+
+
+        <Setter Property="SnapsToDevicePixels"
+          Value="true" />
+        <Setter Property="OverridesDefaultStyle"
+          Value="true" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border TextBlock.Foreground="{TemplateBinding Foreground}"
+                        x:Name="Border"
+                        CornerRadius="2"
+                        BorderThickness="1"
+                        BorderBrush="{StaticResource BrushBorder}"
+                        Background="{StaticResource ButtonBrush}">
+                        <ContentPresenter Margin="2"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            RecognizesAccessKey="True" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Border" Property="Background" Value="{StaticResource SelectedBrush}"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Border" Property="Background" Value="{StaticResource ClickedBrush}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    
+    <!-- User controls -->
 
 
 </ResourceDictionary>

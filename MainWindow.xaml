@@ -14,14 +14,7 @@
                 <ResourceDictionary Source="pack://application:,,,/Resources/Resources.xaml"/>
             </ResourceDictionary.MergedDictionaries>
 
-            <Style x:Key="GameName" TargetType="{x:Type TextBlock}">
-                <Setter Property="FontFamily" Value="{StaticResource nkfont}"/>
-                <Setter Property="FontSize" Value="1"/>
-            </Style>
-
             <Style x:Key="GameViewbox" TargetType="{x:Type Viewbox}">
-                <Setter Property="HorizontalAlignment" Value="Center"/>
-                <Setter Property="VerticalAlignment" Value="Center"/>
                 <Setter Property="MaxWidth" Value="175"/>
                 <Setter Property="MaxHeight" Value="100"/>
                 <Setter Property="Margin"  Value="35,0"/>
@@ -73,17 +66,17 @@
 
 
                     <Viewbox Grid.Row="2" Grid.Column="1" Style="{StaticResource GameViewbox}">
-                        <TextBlock x:Name="BTD5_Text" Text="BTD5" Style="{StaticResource GameName}"/>
+                        <TextBlock x:Name="BTD5_Text" Text="BTD5" Style="{StaticResource VBTexbox}"/>
                     </Viewbox>
                     <Image x:Name="BTD5_Image" Grid.Column="1" Grid.Row="3" Source="Resources/btd5_not loaded.png" Margin="10,0" MouseDown="BTD5_Image_MouseDown"/>
 
                     <Viewbox Grid.Row="2" Grid.Column="2" Style="{StaticResource GameViewbox}">
-                        <TextBlock x:Name="BTDB_Text" Text="BTDB" Style="{StaticResource GameName}"/>
+                        <TextBlock x:Name="BTDB_Text" Text="BTDB" Style="{StaticResource VBTexbox}"/>
                     </Viewbox>
                     <Image x:Name="BTDB_Image" Grid.Column="2" Grid.Row="3" Source="Resources/btdb 2_not loaded.png" Margin="10,0" MouseDown="BTDB_Image_MouseDown"/>
 
                     <Viewbox Grid.Row="2" Grid.Column="3" Style="{StaticResource GameViewbox}">
-                        <TextBlock x:Name="BMC_Text" Text="BMC" Style="{StaticResource GameName}"/>
+                        <TextBlock x:Name="BMC_Text" Text="BMC" Style="{StaticResource VBTexbox}"/>
                     </Viewbox>
                     <Image x:Name="BMC_Image" Grid.Row="3" Grid.Column="3" Source="Resources/bmc_not loaded.png" Margin="10,0" MouseDown="BMC_Image_MouseDown"/>
                 </Grid>
