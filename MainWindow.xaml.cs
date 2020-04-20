@@ -209,10 +209,6 @@ namespace TD_Loader
                 BTDB_Image.Source = new BitmapImage(new Uri("Resources/btdb 2_not loaded.png", UriKind.Relative));
                 BMC_Image.Source = new BitmapImage(new Uri("Resources/bmc_not loaded.png", UriKind.Relative));
         }
-        private void AddMods_Button_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
         private void BMC_Image_IsMouseDirectlyOverChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             if(Settings.settings.GameName != "BMC")

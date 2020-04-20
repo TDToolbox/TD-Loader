@@ -27,11 +27,18 @@ namespace TD_Loader
         {
             InitializeComponent();
             instance = this;
+
+            HighestPriority.IsEnabled = false;
+            RaisePriority.IsEnabled = false;
+            LowestPriority.IsEnabled = false;
+            LowerPriority.IsEnabled = false;
+            SelectedMods_ListBox.SelectionChanged += SelectedMods_ListBox_SelectionChanged;
         }
 
         public void PopulateMods(string game)
         {
             Mods_ListBox.Items.Clear();
+            SelectedMods_ListBox.Items.Clear();
             var mods = new DirectoryInfo(Settings.GetModsDir(game)).GetFiles("*.*");
             foreach (var mod in mods)
             {
@@ -51,6 +58,9 @@ namespace TD_Loader
                             margin.Top = 10;
                             item.Margin = margin;
                         }
+
+                        item.modName = mod.Name;
+                        item.modPath = mod.FullName;
                         Mods_ListBox.Items.Add(item);
                     }
                 }
@@ -114,6 +124,100 @@ namespace TD_Loader
 
                 MainWindow.doingWork = false;
             }
+        }
+
+        public void HandlePriorityButtons()
+        {
+            HighestPriority.IsEnabled = false;
+            RaisePriority.IsEnabled = false;
+            LowestPriority.IsEnabled = false;
+            LowerPriority.IsEnabled = false;
+            
+            if(SelectedMods_ListBox.Items.Count == 1)
+            {
+                SelectedMods_ListBox.SelectedIndex = 0;
+            }
+            else if (SelectedMods_ListBox.SelectedIndex == SelectedMods_ListBox.Items.Count +1)
+            {
+                SelectedMods_ListBox.SelectedIndex = SelectedMods_ListBox.Items.Count - 1;
+            }
+            else if (SelectedMods_ListBox.Items.Count > 1)
+            {
+                if (SelectedMods_ListBox.SelectedIndex == 0)
+                {
+                    LowestPriority.IsEnabled = true;
+                    LowerPriority.IsEnabled = true;
+                }
+                else if (SelectedMods_ListBox.SelectedIndex == SelectedMods_ListBox.Items.Count - 1)
+                {
+                    HighestPriority.IsEnabled = true;
+                    RaisePriority.IsEnabled = true;
+                }
+                else
+                {
+                    HighestPriority.IsEnabled = true;
+                    RaisePriority.IsEnabled = true;
+                    LowestPriority.IsEnabled = true;
+                    LowerPriority.IsEnabled = true;
+                }
+            }
+        }
+        private void SelectedMods_ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            HandlePriorityButtons();
+        }
+
+        private void RaisePriority_Click(object sender, RoutedEventArgs e)
+        {
+            int index = SelectedMods_ListBox.SelectedIndex;
+            string temp = SelectedMods_ListBox.Items.GetItemAt(index - 1).ToString();
+
+            SelectedMods_ListBox.Items[index - 1] = SelectedMods_ListBox.SelectedItem;
+            SelectedMods_ListBox.Items[index] = temp;
+            SelectedMods_ListBox.SelectedIndex = index - 1;
+        }
+        private void LowerPriority_Click(object sender, RoutedEventArgs e)
+        {
+            int index = SelectedMods_ListBox.SelectedIndex;
+            string temp = SelectedMods_ListBox.Items.GetItemAt(index + 1).ToString();
+
+            SelectedMods_ListBox.Items[index + 1] = SelectedMods_ListBox.SelectedItem;
+            SelectedMods_ListBox.Items[index] = temp;
+            SelectedMods_ListBox.SelectedIndex = index + 1;
+        }
+
+        private void HighestPriority_Click(object sender, RoutedEventArgs e)
+        {
+            string temp = SelectedMods_ListBox.Items.GetItemAt(SelectedMods_ListBox.SelectedIndex).ToString();
+            var newItems = new DataGrid().Items;
+
+            SelectedMods_ListBox.Items.RemoveAt(SelectedMods_ListBox.SelectedIndex);
+            newItems.Add(temp);
+            foreach (var item in SelectedMods_ListBox.Items)
+                newItems.Add(item);
+
+            SelectedMods_ListBox.Items.Clear();
+            foreach (var i in newItems)
+                SelectedMods_ListBox.Items.Add(i);
+
+            SelectedMods_ListBox.SelectedIndex = 0;
+        }
+
+        private void LowestPriority_Click(object sender, RoutedEventArgs e)
+        {
+            string temp = SelectedMods_ListBox.Items.GetItemAt(SelectedMods_ListBox.SelectedIndex).ToString();
+            var newItems = new DataGrid().Items;
+
+            SelectedMods_ListBox.Items.RemoveAt(SelectedMods_ListBox.SelectedIndex);
+            foreach (var item in SelectedMods_ListBox.Items)
+                newItems.Add(item);
+            newItems.Add(temp);
+
+            SelectedMods_ListBox.Items.Clear();
+            foreach (var i in newItems)
+                SelectedMods_ListBox.Items.Add(i);
+
+            SelectedMods_ListBox.SelectedIndex = SelectedMods_ListBox.Items.Count-1;
         }
     }
 }

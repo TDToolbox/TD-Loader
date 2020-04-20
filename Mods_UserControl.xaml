@@ -46,7 +46,7 @@
                 <ColumnDefinition Width="125"/>
             </Grid.ColumnDefinitions>
 
-            <ListBox x:Name="SelectedMods_ListBox" Grid.Row="0" Grid.Column="0" ScrollViewer.VerticalScrollBarVisibility="Auto" Background="#FF363636"/>
+            <ListBox x:Name="SelectedMods_ListBox" Grid.Row="0" Grid.Column="0" ScrollViewer.VerticalScrollBarVisibility="Auto" Background="#FF363636" Foreground="White"/>
             <Grid Grid.Column="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="20"/>
@@ -70,12 +70,12 @@
                         <RowDefinition Height="auto"/>
                     </Grid.RowDefinitions>
 
-                    <Button x:Name="HighestPriority" Grid.Row="0" MaxHeight="35" Grid.ColumnSpan="2" >
+                    <Button x:Name="HighestPriority" Grid.Row="0" MaxHeight="35" Grid.ColumnSpan="2" Click="HighestPriority_Click" >
                         <Viewbox HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0">
                             <TextBlock Text="Top"></TextBlock>
                         </Viewbox>
                     </Button>
-                    <Button x:Name="RaisePriority" Grid.Row="1" VerticalContentAlignment="Top" MaxHeight="35" Grid.ColumnSpan="2">
+                    <Button x:Name="RaisePriority" Grid.Row="1" VerticalContentAlignment="Top" MaxHeight="35" Grid.ColumnSpan="2" Click="RaisePriority_Click">
                         <Viewbox MinHeight="20" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0">
                             <TextBlock>⮝</TextBlock>
                         </Viewbox>
@@ -88,12 +88,12 @@
                         <RowDefinition Height="auto"/>
                     </Grid.RowDefinitions>
 
-                    <Button x:Name="LowerPriority" Grid.Row="0" Grid.Column="1" VerticalContentAlignment="Center" MaxHeight="35">
+                    <Button x:Name="LowerPriority" Grid.Row="0" Grid.Column="1" VerticalContentAlignment="Center" MaxHeight="35" Click="LowerPriority_Click">
                         <Viewbox HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0">
                             <TextBlock>⮟</TextBlock>
                         </Viewbox>
                     </Button>
-                    <Button x:Name="LowestPriority" Grid.Row="2" Grid.Column="1" VerticalContentAlignment="Center" MaxHeight="35">
+                    <Button x:Name="LowestPriority" Grid.Row="2" Grid.Column="1" VerticalContentAlignment="Center" MaxHeight="35" Click="LowestPriority_Click">
                         <Viewbox HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0">
                             <TextBlock>Bottom</TextBlock>
                         </Viewbox>
