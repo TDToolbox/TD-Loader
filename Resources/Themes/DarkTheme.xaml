@@ -67,7 +67,7 @@
             <Color x:Key="ColorBtnOnD">#FF119911</Color>
             <Color x:Key="ColorBtnOnDD">#FF117711</Color>
 
-            <Color x:Key="ColorBtnOffL">#FFEE1111</Color>
+            <Color x:Key="ColorBtnOffL">#FFDE2525</Color>
             <Color x:Key="ColorBtnOffN">#FFCC1111</Color>
             <Color x:Key="ColorBtnOffD">#FFBB1111</Color>
             <Color x:Key="ColorBtnOffDD">#FFAA1111</Color>
