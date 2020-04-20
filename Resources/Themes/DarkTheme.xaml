@@ -7,22 +7,46 @@
 
     <!-- Hot Pink. Used to easily spot something you do/dont want to see. -->
     <Color x:Key="DebugColor">#FFFF00FF</Color>
-    <SolidColorBrush x:Key="DebugBrush" Color="{StaticResource ColorForeground}"/>
+    <SolidColorBrush x:Key="DebugBrush" Color="{StaticResource DebugColor}"/>
 
+    
     <Color x:Key="ColorFont">#FFF0F0F0</Color>
     <SolidColorBrush x:Key="BrushFont" Color="{StaticResource ColorFont}"/>
+
+
+    <Color x:Key="ColorBackgroundL">#FF353535</Color>
+    <SolidColorBrush x:Key="BrushBackgroundL" Color="{StaticResource ColorBackgroundL}"/>
 
     <Color x:Key="ColorBackground">#FF323232</Color>
     <SolidColorBrush x:Key="BrushBackground" Color="{StaticResource ColorBackground}"/>
 
+    <Color x:Key="ColorBackgroundD">#FF2D2D2D</Color>
+    <SolidColorBrush x:Key="BrushBackgroundD" Color="{StaticResource ColorBackgroundD}"/>
+    
+
+    <Color x:Key="ColorMidgroundL">#FF444444</Color>
+    <SolidColorBrush x:Key="BrushMidgroundL" Color="{StaticResource ColorMidgroundL}"/>
+
     <Color x:Key="ColorMidground">#FF424242</Color>
     <SolidColorBrush x:Key="BrushMidground" Color="{StaticResource ColorMidground}"/>
+    
+    <Color x:Key="ColorMidgroundD">#FF404040</Color>
+    <SolidColorBrush x:Key="BrushMidgroundD" Color="{StaticResource ColorMidgroundD}"/>
 
+    
     <Color x:Key="ColorForeground">#FF424242</Color>
     <SolidColorBrush x:Key="BrushForeground" Color="{StaticResource ColorForeground}"/>
 
+    
+    
+    <Color x:Key="ColorBorder">#FF2A2A2A</Color>
+    <SolidColorBrush x:Key="BrushBorder" Color="{StaticResource ColorBorder}"/>
 
-                                    <!--        -->
+    
+
+
+
+    <!--        -->
                                     <!-- Styles -->
                                     <!--        -->
 
@@ -35,7 +59,7 @@
 
     <!-- Default Styles -->
     <Style TargetType="{x:Type Grid}">
-        <Setter Property="Background" Value="{StaticResource BrushBackground}"/>
+        <Setter Property="Background" Value="{StaticResource BrushMidground}"/>
     </Style>
 
     <Style TargetType="{x:Type Label}" BasedOn="{StaticResource baseStyle}">
@@ -51,10 +75,44 @@
         <Setter Property="Background" Value="{StaticResource BrushBackground}"/>
     </Style>
 
-    <Style TargetType="{x:Type TabControl}" BasedOn="{StaticResource baseStyle}">
+    <Style TargetType="{x:Type TabItem}" BasedOn="{StaticResource baseStyle}">
+        <Setter Property="Padding" Value="5"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TabItem">
+                    <Grid Name="Panel">
+                        <ContentPresenter x:Name="ContentSite"
+                                        VerticalAlignment="Center"
+                                        HorizontalAlignment="Center"
+                                        ContentSource="Header"
+                                        Margin="10,0,10,0"/>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter TargetName="Panel" Property="Background" Value="{StaticResource BrushBorder}" />
+                        </Trigger>
+                        <Trigger Property="IsSelected" Value="False">
+                            <Setter TargetName="Panel" Property="Background" Value="{StaticResource BrushMidground}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type Viewbox}"/>
+
+    <Style TargetType="{x:Type Image}">
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+
+
+    <!--<Style TargetType="{x:Type TabControl}" BasedOn="{StaticResource baseStyle}">
         <Setter Property="Background" Value="{StaticResource BrushMidground}"/>
         <Setter Property="BorderBrush" Value="{StaticResource BrushMidground}"/>
-    </Style>
+    </Style>-->
+    
     
     <!-- Explicit Styles -->
 
