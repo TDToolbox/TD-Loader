@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TD_Loader"
         mc:Ignorable="d"
-        Title="TD Loader" Height="450" Width="800" WindowState="Maximized" WindowStyle="SingleBorderWindow" MinHeight="300" MinWidth="600" Activated="Main_Activated">
+        Title="TD Loader" Height="450" Width="800" WindowState="Maximized" WindowStyle="SingleBorderWindow" MinHeight="450" MinWidth="720" Activated="Main_Activated">
     <Window.Resources>
         <FontFamily x:Key="nkfont">/Fonts/#Oetztype</FontFamily>
     </Window.Resources>
@@ -28,7 +28,7 @@
         </ToolBar>
 
 
-        <TabControl TabStripPlacement="Left" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Row="1" Background="Black">
+        <TabControl x:Name="Main_TabController" TabStripPlacement="Left" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Row="1" Background="Black">
             <TabItem Header="     Games     " FontSize="25">
                 <TabItem.Background>
                     <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
@@ -73,7 +73,7 @@
 
 
             </TabItem>
-            <TabItem Header="     Mods     " FontSize="25" Padding="5">
+            <TabItem x:Name="Mods_Tab" Header="     Mods     " FontSize="25" Padding="5" MouseDown="Mods_Tab_MouseDown">
                 <TabItem.Background>
                     <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
                         <GradientStop Color="#FFF0F0F0" Offset="0"/>
@@ -97,29 +97,27 @@
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="20"/>
                     </Grid.RowDefinitions>
+                    
 
-                    <Button x:Name="AddMods_Button" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Left" MinWidth="200" MinHeight="50" MaxWidth="150" Height="auto" Width="auto" Click="AddMods_Button_Click">Add Mods</Button>
-                        <ListBox x:Name="Mods_ListBox" Grid.Row="3" Grid.Column="1" ScrollViewer.VerticalScrollBarVisibility="Auto">
-                        <ListBox.OpacityMask>
-                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                                <GradientStop Color="Black" Offset="0"/>
-                                <GradientStop Color="White" Offset="1"/>
-                            </LinearGradientBrush>
-                        </ListBox.OpacityMask>
-                        <ListBox.Background>
-                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                                <GradientStop Color="Black" Offset="0"/>
-                                <GradientStop Color="#FF555555" Offset="0"/>
-                            </LinearGradientBrush>
-                        </ListBox.Background>
-                    </ListBox>
                 </Grid>
 
 
 
 
             </TabItem>
-            <TabItem Header="     Plugins     " FontSize="25" Padding="5">
+            <TabItem Name="Plugins_Tab" Header="     Plugins     " FontSize="25" Padding="5">
+                <TabItem.Background>
+                    <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+                        <GradientStop Color="#FFF0F0F0" Offset="0"/>
+                        <GradientStop Color="White" Offset="10"/>
+                    </LinearGradientBrush>
+                </TabItem.Background>
+                <Grid x:Name="PluginsUserControl" Background="#FF414141">
+                    
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="     Saves     " FontSize="25" Padding="5" >
                 <TabItem.Background>
                     <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
                         <GradientStop Color="#FFF0F0F0" Offset="0"/>
@@ -128,7 +126,9 @@
                 </TabItem.Background>
                 <Grid Background="#FF414141"/>
             </TabItem>
-            <TabItem Header="     Saves     " FontSize="25" Padding="5" >
+
+
+            <TabItem Header="     Help     " FontSize="25" Padding="5" >
                 <TabItem.Background>
                     <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
                         <GradientStop Color="#FFF0F0F0" Offset="0"/>

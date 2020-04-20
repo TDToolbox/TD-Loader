@@ -1,0 +1,106 @@
+﻿<UserControl x:Class="TD_Loader.Mods_UserControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:TD_Loader"
+             mc:Ignorable="d" x:Name="ModsUC"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <FontFamily x:Key="nkfont">/Fonts/#Oetztype</FontFamily>
+    </UserControl.Resources>
+
+    <Grid x:Name="ModsUserControl" Background="#FF323232" SizeChanged="ModsUserControl_SizeChanged">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="60"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="60"/>
+            <RowDefinition Height="*" MaxHeight="300"/>
+            <RowDefinition Height="20"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="20"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="20"/>
+        </Grid.ColumnDefinitions>
+
+        <Canvas Grid.Row="1" Grid.Column="1" Background="#FFEEA145" MaxHeight="50"/>
+        <Button x:Name="AddMods_Button" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Right" Margin="20,0" MinWidth="230" MaxHeight="43" Background="#FF00B7E0" Foreground="White" Click="AddMods_Button_Click">Add Mods</Button>
+        
+        <Viewbox Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="35,0">
+            <TextBlock Text="Mods" Foreground="#FFF0F0F0" FontFamily="{StaticResource nkfont}" FontSize="1"/>
+        </Viewbox>
+        <Viewbox Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0">
+            <TextBlock Text="Selected Mods" Foreground="#FFF0F0F0" FontFamily="{StaticResource nkfont}" FontSize="1"/>
+        </Viewbox>
+
+        <ListBox x:Name="Mods_ListBox" Grid.Row="2" Grid.Column="1" ScrollViewer.VerticalScrollBarVisibility="Auto" Background="#FF363636"/>
+
+        <Grid x:Name="SelectedMods" Grid.Row="4" Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="125"/>
+            </Grid.ColumnDefinitions>
+
+            <ListBox x:Name="SelectedMods_ListBox" Grid.Row="0" Grid.Column="0" ScrollViewer.VerticalScrollBarVisibility="Auto" Background="#FF363636"/>
+            <Grid Grid.Column="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="0"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="0"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="1" Grid.Column="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="31*"/>
+                        <ColumnDefinition Width="4*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Button x:Name="HighestPriority" Grid.Row="0" MaxHeight="35" Grid.ColumnSpan="2" >
+                        <Viewbox HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0">
+                            <TextBlock Text="Top"></TextBlock>
+                        </Viewbox>
+                    </Button>
+                    <Button x:Name="RaisePriority" Grid.Row="1" VerticalContentAlignment="Top" MaxHeight="35" Grid.ColumnSpan="2">
+                        <Viewbox MinHeight="20" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0">
+                            <TextBlock>⮝</TextBlock>
+                        </Viewbox>
+                    </Button>
+                </Grid>
+
+                <Grid Grid.Row="3" Grid.Column="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Button x:Name="LowerPriority" Grid.Row="0" Grid.Column="1" VerticalContentAlignment="Center" MaxHeight="35">
+                        <Viewbox HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0">
+                            <TextBlock>⮟</TextBlock>
+                        </Viewbox>
+                    </Button>
+                    <Button x:Name="LowestPriority" Grid.Row="2" Grid.Column="1" VerticalContentAlignment="Center" MaxHeight="35">
+                        <Viewbox HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0">
+                            <TextBlock>Bottom</TextBlock>
+                        </Viewbox>
+                    </Button>
+                </Grid>
+
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>
