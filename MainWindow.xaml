@@ -16,6 +16,8 @@
         </LinearGradientBrush>
     </Window.Background>
     <Grid>
+
+
         <Grid.RowDefinitions>
             <RowDefinition Height="26" />
             <RowDefinition Height="*" />
@@ -138,5 +140,8 @@
                 <Grid Background="#FF414141"/>
             </TabItem>
         </TabControl>
+
+
+        
     </Grid>
 </Window>

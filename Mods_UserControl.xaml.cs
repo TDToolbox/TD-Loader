@@ -23,6 +23,7 @@ namespace TD_Loader
     public partial class Mods_UserControl : UserControl
     {
         public static Mods_UserControl instance;
+        public List<string> modPaths = new List<string>();
         public Mods_UserControl()
         {
             InitializeComponent();
@@ -171,18 +172,28 @@ namespace TD_Loader
         {
             int index = SelectedMods_ListBox.SelectedIndex;
             string temp = SelectedMods_ListBox.Items.GetItemAt(index - 1).ToString();
+            string tempPath = modPaths[index - 1];
 
             SelectedMods_ListBox.Items[index - 1] = SelectedMods_ListBox.SelectedItem;
+            modPaths[index - 1] = modPaths[index];
+
             SelectedMods_ListBox.Items[index] = temp;
+            modPaths[index] = tempPath;
+
             SelectedMods_ListBox.SelectedIndex = index - 1;
         }
         private void LowerPriority_Click(object sender, RoutedEventArgs e)
         {
             int index = SelectedMods_ListBox.SelectedIndex;
             string temp = SelectedMods_ListBox.Items.GetItemAt(index + 1).ToString();
+            string tempPath = modPaths[index + 1];
 
             SelectedMods_ListBox.Items[index + 1] = SelectedMods_ListBox.SelectedItem;
+            modPaths[index + 1] = modPaths[index];
+
             SelectedMods_ListBox.Items[index] = temp;
+            modPaths[index] = tempPath;
+
             SelectedMods_ListBox.SelectedIndex = index + 1;
         }
 
@@ -190,6 +201,7 @@ namespace TD_Loader
         {
             string temp = SelectedMods_ListBox.Items.GetItemAt(SelectedMods_ListBox.SelectedIndex).ToString();
             var newItems = new DataGrid().Items;
+            string tempPath = modPaths[SelectedMods_ListBox.SelectedIndex];
 
             SelectedMods_ListBox.Items.RemoveAt(SelectedMods_ListBox.SelectedIndex);
             newItems.Add(temp);
@@ -199,6 +211,9 @@ namespace TD_Loader
             SelectedMods_ListBox.Items.Clear();
             foreach (var i in newItems)
                 SelectedMods_ListBox.Items.Add(i);
+
+            modPaths.Remove(tempPath);
+            modPaths.Insert(0, tempPath);
 
             SelectedMods_ListBox.SelectedIndex = 0;
         }
@@ -207,6 +222,7 @@ namespace TD_Loader
         {
             string temp = SelectedMods_ListBox.Items.GetItemAt(SelectedMods_ListBox.SelectedIndex).ToString();
             var newItems = new DataGrid().Items;
+            string tempPath = modPaths[SelectedMods_ListBox.SelectedIndex];
 
             SelectedMods_ListBox.Items.RemoveAt(SelectedMods_ListBox.SelectedIndex);
             foreach (var item in SelectedMods_ListBox.Items)
@@ -216,6 +232,11 @@ namespace TD_Loader
             SelectedMods_ListBox.Items.Clear();
             foreach (var i in newItems)
                 SelectedMods_ListBox.Items.Add(i);
+
+
+            modPaths.Remove(tempPath);
+            modPaths.Insert(SelectedMods_ListBox.Items.Count-1, tempPath);
+
 
             SelectedMods_ListBox.SelectedIndex = SelectedMods_ListBox.Items.Count-1;
         }
