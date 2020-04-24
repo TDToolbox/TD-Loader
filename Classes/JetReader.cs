@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows;
 
 namespace TD_Loader.Classes
 {
@@ -28,6 +29,16 @@ namespace TD_Loader.Classes
 
         #endregion
 
+
+        public bool CompareFiles()
+        {
+            Zip original = new Zip(Settings.settings.BMCBackupDir + "\\Assets\\data.jet", BTD5Password);
+            Zip modded = new Zip(Settings.settings.BMCModsDir + "\\data.jet", BTD5Password);
+
+            string text = original.ReadFileInZip("Assets\\JSON\\Audio\\game_sfx.json", BTD5Password);
+            MessageBox.Show(text);
+            return false;
+        }
 
         /// <summary>
         /// Gets password list from raw github link. Uses methods from other classes

@@ -27,7 +27,7 @@ namespace TD_Loader.Classes
         /// <param name="path">path to create zip from. The created zip will be in memory and contain entries from path</param>
         public Zip(string path) : this()
         {
-
+            Archive.Name = path;
         }
 
         /// <summary>
@@ -37,7 +37,8 @@ namespace TD_Loader.Classes
         /// <param name="password">password to use with zip file</param>
         public Zip(string path, string password) : this()
         {
-
+            Archive.Password = password;
+            Archive.Name = path;
         }
 
         #endregion
@@ -47,45 +48,17 @@ namespace TD_Loader.Classes
 
         #endregion
 
+        
+
         /// <summary>
         /// Extracts file from the ZipFile "Archive" that this class creates by default
         /// </summary>
         /// /// <param name="destination">path to the extract destination</param>
-        public void ExtractFile(string destination)
+        public void Extract(string destination)
         {
 
         }
 
-        /// <summary>
-        /// Creates a temporary zip file from the path provided to extract a file from the zip at that location
-        /// </summary>
-        /// <param name="pathToZip">full path to the zip file on disk</param>
-        /// <param name="destination">path to the extract destination</param>
-        public void ExtractFile(string pathToZip, string destination)
-        {
-
-        }
-
-
-        /// <summary>
-        /// Extracts all files from the ZipFile "Archive" that this class creates by default
-        /// </summary>
-        /// <param name="destination">path to the extract destination</param>
-        public void ExtractAll(string destination)
-        {
-
-        }
-
-        /// <summary>
-        /// Creates a temporary zip file from the path provided to extract all files from the zip to the destination
-        /// </summary>
-        /// <param name="pathToZip">full path to the zip file on disk</param>
-        /// <param name="destination">path to the extract destination</param>
-        public void ExtractAll(string pathToZip, string destination)
-        {
-
-        }
-        
 
         public void Compile()
         {
@@ -98,12 +71,7 @@ namespace TD_Loader.Classes
         /// </summary>
         /// <param name="filePathInZip">The path inside the zip to the file you want to read from</param>
         /// <returns></returns>
-        public string ReadFileInZip(string filePathInZip)
-        {
-
-            return "";
-        }
-
+        public string ReadFileInZip(string filePathInZip) => ReadFileInZip(filePathInZip, null);
 
         /// <summary>
         /// Reads the text from a file in the ZipFile "Archive" that the class creates by default
@@ -113,31 +81,16 @@ namespace TD_Loader.Classes
         /// <returns></returns>
         public string ReadFileInZip(string filePathInZip, string password)
         {
-
-            return "";
-        }
-
-
-        /// <summary>
-        /// Creates a temporary zip to read from, and returns the text from the file it read
-        /// </summary>
-        /// <param name="pathToZip">The path to the zip on disk</param>
-        /// <param name="filePathInZip">The path inside the zip to the file you want to read from</param>
-        /// <param name="password">The password to the zip</param>
-        /// <returns></returns>
-        public string ReadFileInZip(string pathToZip, string filePathInZip, string password)
-        {
             string returnText = "";
-            var zip = ZipFile.Read(pathToZip);
-            
-            if (zip.ContainsEntry(filePathInZip))
+
+            if (this.Archive.ContainsEntry(filePathInZip))
             {
-                foreach (var entry in zip.Entries)
+                foreach (var entry in this.Archive.Entries)
                 {
                     if (entry.FileName.Replace("/", "\\").Contains(filePathInZip))
                     {
                         Stream s;
-                        if (password != "")
+                        if (Guard.IsStringValid(password))
                         {
                             entry.Password = password;
                             s = entry.OpenReader(password);
@@ -152,10 +105,19 @@ namespace TD_Loader.Classes
             }
             else
             {
-                    System.Windows.MessageBox.Show("Not found\n\n" + filePathInZip + "\n\nCount " + zip.Count() );
-                Log.Output("Unable to read " + filePathInZip.Replace(zip.Name,"") + "  because it wasnt found");
+                System.Windows.MessageBox.Show("Not found\n\n" + filePathInZip + "\n\nCount " + this.Archive.Count());
+                Log.Output("Unable to read " + filePathInZip.Replace(this.Archive.Name, "") + "  because it wasnt found");
             }
             return returnText;
+        }
+
+        /// <summary>
+        /// Use ToString to get the name(path) of the zip object
+        /// </summary>
+        /// <returns>The name (path) of the current zip object</returns>
+        public override string ToString()
+        {
+            return "Zip: " + Archive.Name;
         }
     }
 }
