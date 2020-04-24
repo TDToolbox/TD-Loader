@@ -247,7 +247,7 @@ namespace TD_Loader.Classes
         }
 
         /// <summary>
-        /// Takes raw text from github and turnsit into a list of passwords
+        /// Takes raw text from github and turns it into a list of passwords
         /// </summary>
         /// <param name="rawTextFromGithub">The raw text from the github page, returned from Game.GetPasswordsListAsync</param>
         /// <returns></returns>

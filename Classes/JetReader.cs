@@ -24,6 +24,7 @@ namespace TD_Loader.Classes
 
         public List<string> Passwords { get; set; }
         public string GameName { get; set; } = Settings.settings.GameName;
+        public string BTD5Password { get; } = "Q%_{6#Px]]";
 
         #endregion
 
