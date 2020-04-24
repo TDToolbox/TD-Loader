@@ -28,6 +28,10 @@ namespace TD_Loader.Classes
         #endregion
 
 
+        /// <summary>
+        /// Gets password list from raw github link. Uses methods from other classes
+        /// </summary>
+        /// <returns>A string list of passwords</returns>
         public async System.Threading.Tasks.Task<List<string>> GetPasswordsList()
         {
             string result = await game.GetPasswordsListAsync();
