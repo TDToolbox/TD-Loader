@@ -88,6 +88,7 @@ namespace TD_Loader
             if(!dirNotFound)
             {
                 GameHandling();
+                
             }
             else
             {
