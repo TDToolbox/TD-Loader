@@ -38,19 +38,19 @@ namespace TD_Loader
 
             Main.Closing += Main_Closing;
         }
+       
         private void Startup()
         {
             Settings.LoadSettings();
 
+            mods_User = new Mods_UserControl();
             var tab = new TabItem();
             tab.Header = "     Mods     ";
             tab.Padding = new Thickness(5);
             tab.FontSize = 25;
-            tab.Content = new Mods_UserControl();
+            tab.Content = mods_User;//new Mods_UserControl();
             Main_TabController.Items[1] = tab;
             
-            //Mods_Tab.Content = new Mods_UserControl();
-
         }
         private void FinishedLoading()
         {
@@ -88,7 +88,6 @@ namespace TD_Loader
             if(!dirNotFound)
             {
                 GameHandling();
-                
             }
             else
             {
@@ -174,7 +173,7 @@ namespace TD_Loader
             //
             //Clear mods list
             Mods_UserControl.instance.PopulateMods(Settings.settings.GameName);
-
+            Mods_UserControl.instance.Mods_TextBlock.Text = Settings.settings.GameName + " Mods";
             //
             //Done
             doingWork = false;
@@ -297,6 +296,19 @@ namespace TD_Loader
         {
             
             //Main_TabController.Items.Add()
+        }
+
+
+        private async void Launch_Button_Clicked(object sender, RoutedEventArgs e)
+        {
+            Game game = new Game();
+            string passwords = await game.GetPasswordsListAsync();
+            List<string> passList = game.CreatePasswordsList(passwords);
+
+
+            Zip original = new Zip(Settings.settings.BTDBBackupDir + "\\Assets\\data.jet");
+            string password = original.DiscoverZipPassword(original.Archive, passList);
+            MessageBox.Show("The returned password is " + password);
         }
     }
 }

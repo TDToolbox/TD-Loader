@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Windows;
 
 namespace TD_Loader.Classes
 {
@@ -18,7 +19,7 @@ namespace TD_Loader.Classes
         /// </summary>
         public Zip()
         {
-            this.Archive = new ZipFile();
+            Archive = new ZipFile();
         }
 
         /// <summary>
@@ -27,6 +28,7 @@ namespace TD_Loader.Classes
         /// <param name="path">path to create zip from. The created zip will be in memory and contain entries from path</param>
         public Zip(string path) : this()
         {
+            Archive = new ZipFile(path);
             Archive.Name = path;
         }
 
@@ -35,20 +37,24 @@ namespace TD_Loader.Classes
         /// </summary>
         /// <param name="path">path to create zip from. The created zip will be in memory and contain entries from path</param>
         /// <param name="password">password to use with zip file</param>
-        public Zip(string path, string password) : this()
+        public Zip(string path, string password)
         {
-            Archive.Password = password;
+            Archive = new ZipFile(path);
             Archive.Name = path;
+
+            Archive.Password = password;
+            CurrentPassword = password;
         }
 
         #endregion
 
         #region Properties
         public ZipFile Archive { get; set; }
+        public string CurrentPassword { get; set; }
 
         #endregion
 
-        
+
 
         /// <summary>
         /// Extracts file from the ZipFile "Archive" that this class creates by default
@@ -65,6 +71,49 @@ namespace TD_Loader.Classes
 
         }
 
+        /// <summary>
+        /// Checks each password from the password list on github to see if any work, and returns the one that does
+        /// </summary>
+        /// <param name="zip">The zip file we need the password for</param>
+        /// <param name="passwords">the list of passwords we got from github</param>
+        /// <returns>the password for the zip</returns>
+        public string DiscoverZipPassword(ZipFile zip, List<string> passwords)
+        {
+            if (zip == null)
+            {
+                Log.Output("Failed to get zip password. Zip file is null");
+                return null;
+            }
+            
+            if(passwords.Count <= 0)
+            {
+                Log.Output("Failed to get zip password. The list of passwords was empty");
+                return null;
+            }
+
+            Stream s;
+            string password = "";
+            foreach (var entry in zip)
+            {
+                if (!entry.IsDirectory)
+                {
+                    foreach (var pass in passwords)
+                    {
+                        try
+                        {
+                            s = entry.OpenReader(pass);
+                            password = pass;
+                            break;
+                        }
+                        catch (Ionic.Zip.BadPasswordException) {  }
+                    }
+                    break;
+                }
+            }
+        return password;
+        }
+
+        
         /// <summary>
         /// Reads the text from a file in the ZipFile "Archive" that the class creates by default. Use this if zip
         /// doesn't have a password

@@ -270,11 +270,21 @@ namespace TD_Loader.Classes
                 {
                     if (line.Contains("-"))
                     {
-                        string removeText = line.Remove(line.IndexOf('-') + 1, line.Length - (line.IndexOf('-') + 1));
-                        string password = line.Replace(removeText, "");
+                        if(line.Contains("Password"))
+                        {
+                            passwords.Add("Q%_{6#Px]]");
+                        }
+                        else
+                        {
+                            string removeText = line.Remove(line.IndexOf('-') + 1, line.Length - (line.IndexOf('-') + 1));
+                            //string removeText = line.Remove(line.IndexOf('-'), line.Length - (line.IndexOf('-')));
+                            string password = line.Replace(removeText + " ", "");
 
-                        if (password.Length > 0)
-                            passwords.Add(password);
+                            if (password.Length <= 16)
+                            {
+                                passwords.Add(password);
+                            }
+                        }
                     }
                 }
 
