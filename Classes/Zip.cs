@@ -128,42 +128,64 @@ namespace TD_Loader.Classes
 
 
         #region Password Stuff
+        /// <summary>
+        /// Combines Password-Getter methods to get the zip password on thread
+        /// </summary>
+        /// <returns>password</returns>
         public string GetPassword()
         {
-            string gitText = "";
-            Thread thread = new Thread(delegate () 
+            List<string> passList = new List<string>();
+
+            string passwordsFile = Settings.settings.MainSettingsDir + "\\passwords.txt";
+            if (File.Exists(passwordsFile) && Settings.settings.DidBtdbUpdate == false)
             {
-                bool error = false;
-                for (int i = 0; i < 100; i++)
+                MessageBox.Show("Reading from file");
+                StringReader reader = new StringReader(File.ReadAllText(passwordsFile));
+                string line = string.Empty;
+                do
                 {
-                    try { gitText = GetPasswordsList(); break; }
-                    catch (System.Net.WebException) 
-                    {
-                        if(!error)
-                        {
-                            MessageBox.Show("Failed to read passwords list... Will continue trying for the next 10 seconds...");
-                            error = true;
-                        }
-                        Thread.Sleep(100);
-                    }
-                }
-            });
-
-            thread.Start();
-            thread.Join();            
-
-            if(!Guard.IsStringValid(gitText))
-            {
-                Log.Output("Failed to get password...");
-                MessageBox.Show("Failed to get password... Please try again...");
-                return "";
+                    line = reader.ReadLine();
+                    if (line != null)
+                        passList.Add(line);
+                } while (line != null);
             }
+            else
+            {
+                MessageBox.Show("Reaquiring password list..");
+                string gitText = "";
+                Thread thread = new Thread(delegate ()
+                {
+                    bool error = false;
+                    for (int i = 0; i < 100; i++)
+                    {
+                        try { gitText = GetPasswordsList(); break; }
+                        catch (System.Net.WebException)
+                        {
+                            if (!error)
+                            {
+                                MessageBox.Show("Failed to read passwords list... Will continue trying for the next 10 seconds...");
+                                error = true;
+                            }
+                            Thread.Sleep(100);
+                        }
+                    }
+                });
 
-            List<string> passList = CreatePasswordsList(gitText);
+                thread.Start();
+                thread.Join();
+
+                if (!Guard.IsStringValid(gitText))
+                {
+                    Log.Output("Failed to get password...");
+                    MessageBox.Show("Failed to get password... Please try again...");
+                    return "";
+                }
+
+                passList = CreatePasswordsList(gitText);
+            }
+            
             return DiscoverZipPasswordThread(passList);
         }
-
-
 
         /// <summary>
         /// Threaded version of DiscoverZipPassword. Checks each password from the password list on github to see if 
@@ -281,7 +303,31 @@ namespace TD_Loader.Classes
 
             } while (line != null);
 
+            if(Settings.settings.GameName == "BTDB")
+            {
+                CreatePasswordFile(passwords);
+            }
+
             return passwords;
+        }
+
+        /// <summary>
+        /// Creates a list of the passwords and stores it on disk
+        /// </summary>
+        /// <param name="passwords">the list of passwords gotten from github</param>
+        private void CreatePasswordFile(List<string> passwords)
+        {
+            string passwordsFile = Settings.settings.MainSettingsDir + "\\passwords.txt";
+            if (File.Exists(passwordsFile))
+                File.Delete(passwordsFile);
+
+            using (StreamWriter writetext = new StreamWriter(passwordsFile))
+            {
+                foreach (string password in passwords)
+                {
+                    writetext.WriteLine(password);
+                }
+            }            
         }
         #endregion
 

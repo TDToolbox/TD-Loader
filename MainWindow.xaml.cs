@@ -116,6 +116,16 @@ namespace TD_Loader
                 Log.Output("Done making backup");
 
                 Settings.SetGameVersion(Settings.settings.GameName, version);
+
+                if(Settings.settings.GameName == "BTDB")
+                {
+                    Settings.settings.DidBtdbUpdate = true;
+                    Settings.SaveSettings();
+
+                    Zip original = new Zip(Settings.settings.BTDBBackupDir + "\\Assets\\data.jet");
+                    Thread thread = new Thread(delegate () { original.GetPassword(); });
+                    thread.Start();
+                }
             }
 
 

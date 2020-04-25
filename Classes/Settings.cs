@@ -18,6 +18,7 @@ namespace TD_Loader.Classes
 
         public class SettingsFile
         {
+            public string MainSettingsDir { get; } = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\TD Loader";
             public string TDLoaderVersion { get; set; }
             public string GameName { get; set; }
 
@@ -29,6 +30,7 @@ namespace TD_Loader.Classes
             public List<string> BTD5LoadedMods { get; set; }
 
 
+            public bool DidBtdbUpdate { get; set; }
             public string BTDBDir { get; set; }
             public string BTDBVersion { get; set; }
             public string BTDBBackupDir { get; set; }
@@ -72,6 +74,7 @@ namespace TD_Loader.Classes
             settings.BTDBVersion = "";
             settings.BTDBBackupDir = "";
             settings.BTDBModsDir = "";
+            settings.DidBtdbUpdate = false;
             settings.BTDBLoadedMods = new List<string>();
 
 
