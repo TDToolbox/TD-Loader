@@ -230,67 +230,6 @@ namespace TD_Loader.Classes
 
 
 
-        //
-        //Get Passwords stuff
-        //
-
-        /// <summary>
-        /// Gets the list of passwords from Github
-        /// </summary>
-        /// <returns>raw text read from url</returns>
-        public async Task<string> GetPasswordsListAsync()
-        {
-            string url = "https://raw.githubusercontent.com/TDToolbox/BTDToolbox-2019_LiveFIles/master/BTD%20Battles%20Passwords";
-            HttpClient _httpClient = new HttpClient();
-            var stringData = await _httpClient.GetStringAsync(url);
-            return stringData;
-        }
-
-        /// <summary>
-        /// Takes raw text from github and turns it into a list of passwords
-        /// </summary>
-        /// <param name="rawTextFromGithub">The raw text from the github page, returned from Game.GetPasswordsListAsync</param>
-        /// <returns></returns>
-        public List<string>  CreatePasswordsList(string rawTextFromGithub)
-        {
-            if(!Guard.IsStringValid(rawTextFromGithub))
-            {
-                Log.Output("Password list from github was invalid");
-                return null;
-            }
-
-            List<string> passwords = new List<string>();
-
-            StringReader reader = new StringReader(rawTextFromGithub);
-            string line = string.Empty;
-            do
-            {
-                line = reader.ReadLine();
-                if (line != null)
-                {
-                    if (line.Contains("-"))
-                    {
-                        if(line.Contains("Password"))
-                        {
-                            passwords.Add("Q%_{6#Px]]");
-                        }
-                        else
-                        {
-                            string removeText = line.Remove(line.IndexOf('-') + 1, line.Length - (line.IndexOf('-') + 1));
-                            //string removeText = line.Remove(line.IndexOf('-'), line.Length - (line.IndexOf('-')));
-                            string password = line.Replace(removeText + " ", "");
-
-                            if (password.Length <= 16)
-                            {
-                                passwords.Add(password);
-                            }
-                        }
-                    }
-                }
-
-            } while (line != null);
-
-            return passwords;
-        }
+       
     }
 }

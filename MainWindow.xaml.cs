@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -299,16 +300,11 @@ namespace TD_Loader
         }
 
 
-        private async void Launch_Button_Clicked(object sender, RoutedEventArgs e)
+        private void Launch_Button_Clicked(object sender, RoutedEventArgs e)
         {
-            Game game = new Game();
-            string passwords = await game.GetPasswordsListAsync();
-            List<string> passList = game.CreatePasswordsList(passwords);
-
-
             Zip original = new Zip(Settings.settings.BTDBBackupDir + "\\Assets\\data.jet");
-            string password = original.DiscoverZipPassword(original.Archive, passList);
-            MessageBox.Show("The returned password is " + password);
+            Thread thread = new Thread(delegate () { original.GetPassword(); });
+            thread.Start();
         }
     }
 }

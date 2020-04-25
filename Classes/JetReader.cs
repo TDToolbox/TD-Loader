@@ -75,7 +75,7 @@ namespace TD_Loader.Classes
         /// Gets password list from raw github link. Uses methods from other classes
         /// </summary>
         /// <returns>A string list of passwords</returns>
-        public async System.Threading.Tasks.Task<List<string>> GetPasswordsList()
+        /*public async System.Threading.Tasks.Task<List<string>> GetPasswordsList()
         {
             if (game == null)
                 game = new Game();
@@ -84,6 +84,6 @@ namespace TD_Loader.Classes
 
             this.Passwords = passwords;
             return passwords;
-        }
+        }*/
     }
 }
