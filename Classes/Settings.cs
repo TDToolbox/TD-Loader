@@ -23,6 +23,7 @@ namespace TD_Loader.Classes
             public string MainSettingsDir { get; } = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\TD Loader";
             public string TDLoaderVersion { get; set; }
             public string GameName { get; set; }
+            public string StagingDir { get; } = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\TD Loader\\Mod Staging";
 
 
             public string BTD5Dir { get; set; }

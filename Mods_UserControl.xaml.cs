@@ -36,10 +36,6 @@ namespace TD_Loader
             LowerPriority.IsEnabled = false;
             SelectedMods_ListBox.SelectionChanged += SelectedMods_ListBox_SelectionChanged;
         }
-        public void PopulateSelectedMods(string game)
-        {
-
-        }
         public void PopulateMods(string game)
         {
             modPaths = new List<string>();
@@ -76,19 +72,32 @@ namespace TD_Loader
             }
             foreach(var selected in Settings.game.LoadedMods)
             {
-                string[] split = selected.Split('\\');
-                string modname = split[split.Length - 1];
+                AddToSelectedModLB(selected);
+            }
+            SelectedMods_ListBox.SelectedIndex = 0;
 
-                modPaths.Add(selected);
-                SelectedMods_ListBox.Items.Add(modname);
-                
-                foreach (var modItem in modItems)
-                {
-                    if (modItem.ToString() == selected)
-                        modItem.Enable_CheckBox.IsChecked = true;
-                }
+        }
+        private void AddToSelectedModLB(string modPath)
+        {
+            if(!File.Exists(modPath))
+            {
+                Log.Output("Attempted to load a selected mod that doesnt exist!");
+                return;
+            }
+
+            string[] split = modPath.Split('\\');
+            string modname = split[split.Length - 1];
+
+            modPaths.Add(modPath);
+            SelectedMods_ListBox.Items.Add(modname);
+
+            foreach (var modItem in modItems)
+            {
+                if (modItem.ToString() == modPath)
+                    modItem.Enable_CheckBox.IsChecked = true;
             }
         }
+
 
         private void ModsUserControl_SizeChanged(object sender, SizeChangedEventArgs e)
         {

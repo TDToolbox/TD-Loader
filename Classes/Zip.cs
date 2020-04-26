@@ -77,7 +77,23 @@ namespace TD_Loader.Classes
         }
 
 
+        public void CopyFilesBetweenZips(ZipFile source, ZipFile dest, string filepath)
+        {
+            string zipPath = filepath.Replace("\\", "/");
+            
+            if (dest.ContainsEntry(zipPath))
+                dest.RemoveEntry(zipPath);
 
+            foreach(var entry in source.Entries)
+            {
+                if (entry.FileName == filepath)
+                {
+                    entry.Extract(Settings.settings.StagingDir);
+                    break;
+                }
+            }
+            dest.AddFile(Settings.settings.StagingDir + "\\" + filepath);
+        }
 
         #region Read Files in Zip
         /// <summary>
@@ -102,7 +118,7 @@ namespace TD_Loader.Classes
             {
                 foreach (var entry in this.Archive.Entries)
                 {
-                    if (entry.FileName.Replace("/", "\\").Contains(filePathInZip))
+                    if (entry.FileName.Replace("\\", "/").Contains(filePathInZip))
                     {
                         Stream s;
                         if (Guard.IsStringValid(password))
@@ -120,7 +136,7 @@ namespace TD_Loader.Classes
             }
             else
             {
-                System.Windows.MessageBox.Show("Not found\n\n" + filePathInZip + "\n\nCount " + this.Archive.Count());
+                MessageBox.Show("Not found! Failed to read file in zip\n\nZip: " + this.ToString() + "\n\nFailed to read file at: " + filePathInZip + "\n\nArchive file count " + this.Archive.Count());
                 Log.Output("Unable to read " + filePathInZip.Replace(this.Archive.Name, "") + "  because it wasnt found");
             }
             return returnText;
@@ -185,7 +201,8 @@ namespace TD_Loader.Classes
             }
             
             string password = DiscoverZipPasswordThread(passList);
-            PasswordAquired.Invoke(this, EventArgs.Empty);
+            
+            //PasswordAquired.Invoke(this, EventArgs.Empty);
 
             return password;
         }
@@ -294,7 +311,6 @@ namespace TD_Loader.Classes
                         else
                         {
                             string removeText = line.Remove(line.IndexOf('-') + 1, line.Length - (line.IndexOf('-') + 1));
-                            //string removeText = line.Remove(line.IndexOf('-'), line.Length - (line.IndexOf('-')));
                             string password = line.Replace(removeText + " ", "");
 
                             if (password.Length <= 16)
@@ -307,10 +323,16 @@ namespace TD_Loader.Classes
 
             } while (line != null);
 
-            if(Settings.settings.GameName == "BTDB")
-            {
+            //Reverse the order so newest comes first
+            List<string> temp = new List<string>();
+            for(int i = passwords.Count - 1; i > 0; i--)
+                temp.Add(passwords[i]);
+
+            passwords.Clear();
+            passwords = temp;
+
+            if (Settings.settings.GameName == "BTDB")
                 CreatePasswordFile(passwords);
-            }
 
             return passwords;
         }

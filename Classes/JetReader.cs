@@ -1,6 +1,7 @@
 ﻿using Ionic.Zip;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -24,7 +25,7 @@ namespace TD_Loader.Classes
         #endregion
 
         #region Properties
-
+        public event EventHandler FinishedStagingMods;
         public List<string> Passwords { get; set; }
         public string GameName { get; set; } = Settings.settings.GameName;
 
@@ -33,17 +34,73 @@ namespace TD_Loader.Classes
 
         public void DoWork()
         {
+            string backupJet = "";
+            if (Settings.game.GameName == "BTD5")
+                backupJet = "BTD5.jet";
+            else
+                backupJet = "data.jet";
 
+            if (Directory.Exists(Settings.settings.StagingDir))
+                Directory.Delete(Settings.settings.StagingDir, true);
+            
+            Directory.CreateDirectory(Settings.settings.StagingDir);
+            File.Copy(Settings.game.GameBackupDir + "\\Assets\\" + backupJet, Settings.settings.StagingDir + "\\" + backupJet);
+
+            if (!File.Exists(Settings.game.GameBackupDir + "\\Assets\\" + backupJet))
+            {
+                Log.Output("Failed to located backup file.... Returning");
+                return;
+            }
+            
+
+            
+            List<string> reverseOrder = new List<string>();
+            for (int i = Settings.game.LoadedMods.Count; i > 0; i--)
+                reverseOrder.Add(Settings.game.LoadedMods[i - 1]);
+
+            string originalPass = "";
+            string moddedPass = "";
+            foreach (string mod in reverseOrder)
+            {
+                Zip original = new Zip(Settings.game.GameBackupDir + "\\Assets\\" + backupJet);
+                Zip modded = new Zip(mod);
+
+                if (Settings.game.GameName != "BTDB")
+                {
+                    originalPass = Settings.game.Password;
+                    moddedPass = Settings.game.Password;
+                }
+                else
+                {
+                    originalPass = original.GetPassword();
+                    moddedPass = modded.GetPassword();
+                }
+
+                original.CurrentPassword = originalPass;
+                original.Archive.Password = originalPass;
+                modded.CurrentPassword = moddedPass;
+                modded.Archive.Password = moddedPass;
+
+                List<string> moddedFiles = new List<string>();
+                moddedFiles = GetAllModdedFiles(original, modded);
+                Zip staging = new Zip(Settings.settings.StagingDir + "\\" + backupJet, original.CurrentPassword);
+                foreach(string file in moddedFiles)
+                {
+                    staging.CopyFilesBetweenZips(modded.Archive, staging.Archive, file);
+                }
+            }
+            
+            //FinishedStagingMods.Invoke(this, EventArgs.Empty);
         }
 
 
         /// <summary>
-        /// Reads the text from the file in both zip's and compares if they are the same or different. Different means its modded
+        /// Reads the text from the file in both zip's and compares if they are the same or different. Returns true if modded
         /// </summary>
         /// <param name="original">An object of the Zip class that is made from the original backup jet file</param>
         /// <param name="modded">An object of the Zip class that is made from the modded jet file</param>
         /// <param name="filepathInZip">the filepath to the file you want to compare. It will be the same for both jets</param>
-        /// <returns></returns>
+        /// <returns>Returns whether or not file is modded</returns>
         public bool CompareFiles(Zip original, Zip modded, string filepathInZip)
         {
             if(original == null || modded == null)
@@ -53,7 +110,10 @@ namespace TD_Loader.Classes
             }
 
             string originalText = Regex.Replace(original.ReadFileInZip(filepathInZip, original.CurrentPassword), @"^\s*$(\n|\r|\r\n)", "", RegexOptions.Multiline).ToLower().Trim().Replace(" ", "").Replace("\n", "").Replace("\r", "").Replace("\r\n", "");
-            string modText = Regex.Replace(modded.ReadFileInZip(filepathInZip, original.CurrentPassword), @"^\s*$(\n|\r|\r\n)", "", RegexOptions.Multiline).ToLower().Trim().Replace(" ", "").Replace("\n", "").Replace("\r", "").Replace("\r\n", "");
+            string modText = Regex.Replace(modded.ReadFileInZip(filepathInZip, modded.CurrentPassword), @"^\s*$(\n|\r|\r\n)", "", RegexOptions.Multiline).ToLower().Trim().Replace(" ", "").Replace("\n", "").Replace("\r", "").Replace("\r\n", "");
+
+            /*MessageBox.Show("Original file: " + originalText);
+            MessageBox.Show("Modded file: " + modText);*/
 
             bool isModded = false;
             if (modText != originalText)
@@ -69,8 +129,11 @@ namespace TD_Loader.Classes
             
             foreach(var file in modded.Archive.Entries)
             {
-                if (CompareFiles(original, modded, file.FileName))
-                    moddedFiles.Add(file.FileName);
+                if(!file.IsDirectory)
+                {
+                    if (CompareFiles(original, modded, file.FileName))
+                        moddedFiles.Add(file.FileName);
+                }
             }           
 
             return moddedFiles;
