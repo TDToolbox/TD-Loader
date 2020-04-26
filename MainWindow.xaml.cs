@@ -56,7 +56,7 @@ namespace TD_Loader
         private void FinishedLoading()
         {
             bool dirNotFound = false;
-            switch (Settings.settings.GameName)
+            switch (Settings.game.GameName)
             {
                 case "BTD5":
                     if (Settings.settings.BTD5Dir != "" && Settings.settings.BTD5Dir != null)
@@ -93,6 +93,7 @@ namespace TD_Loader
             else
             {
                 Settings.settings.GameName = "";
+                Settings.game = null;
                 Settings.SaveSettings();
             }
         }
@@ -104,18 +105,19 @@ namespace TD_Loader
             //
             //Check for Game Updated
             string version = Game.GetVersion(Settings.settings.GameName);
-            if (version != Settings.GetGameVersion(Settings.settings.GameName))
+            if (version != Settings.game.GameVersion)
             {
                 MessageBox.Show("Game has been updated... Reaquiring files...");
                 Log.Output("Game has been updated... Reaquiring files...");
-                string backupdir = Settings.GetBackupDir(Settings.settings.GameName);
+                string backupdir = Settings.game.GameBackupDir;
                 if (backupdir == "" || backupdir == null)
                     Game.CreateBackupDir(Settings.settings.GameName);
 
                 await Game.CreateBackupAsync(Settings.settings.GameName);
                 Log.Output("Done making backup");
 
-                Settings.SetGameVersion(Settings.settings.GameName, version);
+                Settings.game.GameVersion = version;
+                Settings.SaveGameFile();
 
                 if(Settings.settings.GameName == "BTDB")
                 {
@@ -132,7 +134,7 @@ namespace TD_Loader
             //
             //Check game dir
             bool error = false;
-            string gameD = Settings.GetGameDir(Settings.settings.GameName);
+            string gameD = Settings.game.GameDir;
             if (gameD != "" && gameD != null)
             {
                 if(Directory.Exists(gameD))
@@ -150,7 +152,10 @@ namespace TD_Loader
             {
                 string dir = Game.SetGameDir(Settings.settings.GameName);
                 if (dir != "" && dir != null)
-                    Settings.SetGameDir(Settings.settings.GameName, dir);
+                {
+                    Settings.game.GameDir = dir;
+                    Settings.SaveGameFile();
+                }
                 else
                 {
                     Log.Output("Something went wrong... Failed to aquire game directory...");
@@ -158,11 +163,11 @@ namespace TD_Loader
                     return;
                 }
             }
-            
+
 
             //
             //Check Mods Dir
-            string modsDir = Settings.GetModsDir(Settings.settings.GameName);
+            string modsDir = Settings.game.ModsDir;
             if((Settings.settings.GameName != "" && Settings.settings.GameName != null) && (modsDir == "" || modsDir == null))
                 Game.SetModsDir(Settings.settings.GameName);
 
@@ -172,7 +177,7 @@ namespace TD_Loader
             bool valid = Game.VerifyBackup(Settings.settings.GameName);
             if(!valid)
             {
-                string backupdir = Settings.GetBackupDir(Settings.settings.GameName);
+                string backupdir = Settings.game.GameBackupDir;
                 if (backupdir == "" || backupdir == null)
                     Game.CreateBackupDir(Settings.settings.GameName);
 
@@ -222,7 +227,7 @@ namespace TD_Loader
         }
         private void BMC_Image_IsMouseDirectlyOverChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            if(Settings.settings.GameName != "BMC")
+            if(Settings.game.GameName != "BMC")
             {
                 if (!BMC_Image.IsMouseOver)
                     BMC_Image.Source = new BitmapImage(new Uri("Resources/bmc_not loaded.png", UriKind.Relative));
@@ -232,7 +237,7 @@ namespace TD_Loader
         }
         private void BTDB_Image_IsMouseDirectlyOverChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            if (Settings.settings.GameName != "BTDB")
+            if (Settings.game.GameName != "BTDB")
             {
                 if (!BTDB_Image.IsMouseOver)
                     BTDB_Image.Source = new BitmapImage(new Uri("Resources/btdb 2_not loaded.png", UriKind.Relative));
@@ -242,7 +247,7 @@ namespace TD_Loader
         }
         private void BTD5_Image_IsMouseDirectlyOverChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            if (Settings.settings.GameName != "BTD5")
+            if (Settings.game.GameName != "BTD5")
             {
                 if (!BTD5_Image.IsMouseOver)
                     BTD5_Image.Source = new BitmapImage(new Uri("Resources/btd5_not loaded.png", UriKind.Relative));
@@ -254,9 +259,10 @@ namespace TD_Loader
         {
             if (!doingWork)
             {
-                if (Settings.settings.GameName != "BTD5")
+                if (Settings.game.GameName != "BTD5")
                 {
                     Settings.settings.GameName = "BTD5";
+                    Settings.SetGameFile();
                     Settings.SaveSettings();
                     ResetGamePictures();
                     BTD5_Image.Source = new BitmapImage(new Uri("Resources/btd5.png", UriKind.Relative));
@@ -274,6 +280,7 @@ namespace TD_Loader
                 if (Settings.settings.GameName != "BTDB")
                 {
                     Settings.settings.GameName = "BTDB";
+                    Settings.SetGameFile();
                     Settings.SaveSettings();
                     ResetGamePictures();
                     BTDB_Image.Source = new BitmapImage(new Uri("Resources/btdb 2.png", UriKind.Relative));
@@ -293,6 +300,7 @@ namespace TD_Loader
                 {
 
                     Settings.settings.GameName = "BMC";
+                    Settings.SetGameFile();
                     Settings.SaveSettings();
                     ResetGamePictures();
                     BMC_Image.Source = new BitmapImage(new Uri("Resources/bmc.png", UriKind.Relative));
@@ -312,9 +320,18 @@ namespace TD_Loader
 
         private void Launch_Button_Clicked(object sender, RoutedEventArgs e)
         {
-            Zip original = new Zip(Settings.settings.BTDBBackupDir + "\\Assets\\data.jet");
+            //Settings.settings = mods_User.SelectedMods_ListBox.Items;
+
+            /*Zip original = new Zip(Settings.settings.BTDBBackupDir + "\\Assets\\data.jet");
+            original.PasswordAquired += Original_PasswordAquired;
+
             Thread thread = new Thread(delegate () { original.GetPassword(); });
-            thread.Start();
+            thread.Start();*/
+        }
+
+        private void Original_PasswordAquired(object sender, EventArgs e)
+        {
+            MessageBox.Show("Password Aquired");
         }
     }
 }

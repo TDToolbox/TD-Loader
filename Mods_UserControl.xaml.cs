@@ -40,7 +40,7 @@ namespace TD_Loader
         {
             Mods_ListBox.Items.Clear();
             SelectedMods_ListBox.Items.Clear();
-            var mods = new DirectoryInfo(Settings.GetModsDir(game)).GetFiles("*.*");
+            var mods = new DirectoryInfo(Settings.game.ModsDir).GetFiles("*.*");
             foreach (var mod in mods)
             {
                 if (mod.Name.EndsWith(".jet") || mod.Name.EndsWith(".zip") || mod.Name.EndsWith(".rar") || mod.Name.EndsWith(".7z"))
@@ -84,7 +84,7 @@ namespace TD_Loader
                 if (Settings.settings.GameName != "" && Settings.settings.GameName != null)
                 {
                     List<string> mods = Mods.AddMods();
-                    string modD = Settings.GetModsDir(Settings.settings.GameName);
+                    string modD = Settings.game.ModsDir;
                     if (modD == "" || modD == null)
                     {
                         Log.Output("Your mods directory is invalid");

@@ -53,6 +53,7 @@ namespace TD_Loader.Classes
         #endregion
 
         #region Properties
+        public event EventHandler PasswordAquired;
         public ZipFile Archive { get; set; }
         public string CurrentPassword { get; set; }
 
@@ -139,7 +140,6 @@ namespace TD_Loader.Classes
             string passwordsFile = Settings.settings.MainSettingsDir + "\\passwords.txt";
             if (File.Exists(passwordsFile) && Settings.settings.DidBtdbUpdate == false)
             {
-                MessageBox.Show("Reading from file");
                 StringReader reader = new StringReader(File.ReadAllText(passwordsFile));
                 string line = string.Empty;
                 do
@@ -184,7 +184,10 @@ namespace TD_Loader.Classes
                 passList = CreatePasswordsList(gitText);
             }
             
-            return DiscoverZipPasswordThread(passList);
+            string password = DiscoverZipPasswordThread(passList);
+            PasswordAquired.Invoke(this, EventArgs.Empty);
+
+            return password;
         }
 
         /// <summary>
@@ -201,7 +204,8 @@ namespace TD_Loader.Classes
             thread.Start();
 
             thread.Join();
-            MessageBox.Show("Threaded password is: " + password);
+            if (!Guard.IsStringValid(password))
+                MessageBox.Show("Failed to get password for " + this.ToString());
             return password;
         }
 

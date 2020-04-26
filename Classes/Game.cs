@@ -56,7 +56,8 @@ namespace TD_Loader.Classes
             {
                 Log.Output("You chose " + path + " as your mods directory for " + game);
                 Directory.CreateDirectory(path);
-                Settings.SetModsDir(game, path);
+                Settings.game.ModsDir = path;
+                Settings.SaveGameFile();
             }
             else
             {
@@ -101,7 +102,8 @@ namespace TD_Loader.Classes
             {
                 Log.Output("You chose " + path + " as your backup directory for " + game);
                 Directory.CreateDirectory(path);
-                Settings.SetBackupDir(game, path);
+                Settings.game.GameBackupDir = path;
+                Settings.SaveGameFile();
             }
             else
             {
@@ -111,7 +113,7 @@ namespace TD_Loader.Classes
         public static bool VerifyBackup(string game)
         {
             bool valid = false;
-            string backupDir = Settings.GetBackupDir(game);
+            string backupDir = Settings.game.GameBackupDir;
             int numFiles = 0;
 
             switch (game)
@@ -162,8 +164,8 @@ namespace TD_Loader.Classes
                 {
                     Log.Output("Finished validating files. Creating backup");
 
-                    string backupDir = Settings.GetBackupDir(game);
-                    string gameDir = Settings.GetGameDir(game);
+                    string backupDir = Settings.game.GameBackupDir;
+                    string gameDir = Settings.game.GameDir;
 
                     bool error = false;
 
@@ -187,7 +189,8 @@ namespace TD_Loader.Classes
                         else
                         {
                             Log.Output("You selected " + path + " for your game directory");
-                            Settings.SetGameDir(game, path);
+                            Settings.game.GameDir = path;
+                            Settings.SaveGameFile();
                         }
                     }
                     if (!error)
@@ -211,7 +214,7 @@ namespace TD_Loader.Classes
         //
         public static string GetVersion(string game)
         {
-            string gameDir = Settings.GetGameDir(game);
+            string gameDir = Settings.game.GameDir;
             string exeName = GetEXEName(game);
             string exePath = gameDir + "\\" + exeName;
             string version = "";
@@ -226,10 +229,6 @@ namespace TD_Loader.Classes
                 Log.Output("Game EXE not found! unable to get version");
             }
             return version;
-        }
-
-
-
-       
+        }       
     }
 }
