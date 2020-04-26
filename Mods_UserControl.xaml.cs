@@ -24,6 +24,7 @@ namespace TD_Loader
     {
         public static Mods_UserControl instance;
         public List<string> modPaths = new List<string>();
+        public List<ModItem_UserControl> modItems = new List<ModItem_UserControl>();
         public Mods_UserControl()
         {
             InitializeComponent();
@@ -35,11 +36,17 @@ namespace TD_Loader
             LowerPriority.IsEnabled = false;
             SelectedMods_ListBox.SelectionChanged += SelectedMods_ListBox_SelectionChanged;
         }
+        public void PopulateSelectedMods(string game)
+        {
 
+        }
         public void PopulateMods(string game)
         {
+            modPaths = new List<string>();
             Mods_ListBox.Items.Clear();
             SelectedMods_ListBox.Items.Clear();
+            modItems = new List<ModItem_UserControl>();
+
             var mods = new DirectoryInfo(Settings.game.ModsDir).GetFiles("*.*");
             foreach (var mod in mods)
             {
@@ -59,11 +66,26 @@ namespace TD_Loader
                             margin.Top = 10;
                             item.Margin = margin;
                         }
-
                         item.modName = mod.Name;
                         item.modPath = mod.FullName;
+                        
+                        modItems.Add(item);
                         Mods_ListBox.Items.Add(item);
                     }
+                }
+            }
+            foreach(var selected in Settings.game.LoadedMods)
+            {
+                string[] split = selected.Split('\\');
+                string modname = split[split.Length - 1];
+
+                modPaths.Add(selected);
+                SelectedMods_ListBox.Items.Add(modname);
+                
+                foreach (var modItem in modItems)
+                {
+                    if (modItem.ToString() == selected)
+                        modItem.Enable_CheckBox.IsChecked = true;
                 }
             }
         }

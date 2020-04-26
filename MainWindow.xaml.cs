@@ -56,29 +56,21 @@ namespace TD_Loader
         private void FinishedLoading()
         {
             bool dirNotFound = false;
+            if (!Guard.IsStringValid(Settings.game.GameDir))
+            {
+                dirNotFound = true;
+            }
+
             switch (Settings.game.GameName)
             {
                 case "BTD5":
-                    if (Settings.settings.BTD5Dir != "" && Settings.settings.BTD5Dir != null)
                         BTD5_Image.Source = new BitmapImage(new Uri("Resources/btd5.png", UriKind.Relative));
-                    else
-                        dirNotFound = true;
                     break;
-
-
                 case "BTDB":
-                    if (Settings.settings.BTDBDir != "" && Settings.settings.BTDBDir != null)
                         BTDB_Image.Source = new BitmapImage(new Uri("Resources/btdb 2.png", UriKind.Relative));
-                    else
-                        dirNotFound = true;
                     break;
-
-
                 case "BMC":
-                    if (Settings.settings.BMCDir != "" && Settings.settings.BMCDir != null)
                         BMC_Image.Source = new BitmapImage(new Uri("Resources/bmc.png", UriKind.Relative));
-                    else
-                        dirNotFound = true;
                     break;
                 default:
                     dirNotFound = true;
@@ -100,7 +92,8 @@ namespace TD_Loader
         private async void GameHandling()
         {
             doingWork = true;
-
+            Settings.SetGameFile();
+            Settings.SaveSettings();
 
             //
             //Check for Game Updated
@@ -261,10 +254,8 @@ namespace TD_Loader
             {
                 if (Settings.game.GameName != "BTD5")
                 {
-                    Settings.settings.GameName = "BTD5";
-                    Settings.SetGameFile();
-                    Settings.SaveSettings();
                     ResetGamePictures();
+                    Settings.settings.GameName = "BTD5";
                     BTD5_Image.Source = new BitmapImage(new Uri("Resources/btd5.png", UriKind.Relative));
 
                     GameHandling();
@@ -279,10 +270,8 @@ namespace TD_Loader
             {
                 if (Settings.settings.GameName != "BTDB")
                 {
-                    Settings.settings.GameName = "BTDB";
-                    Settings.SetGameFile();
-                    Settings.SaveSettings();
                     ResetGamePictures();
+                    Settings.settings.GameName = "BTDB";
                     BTDB_Image.Source = new BitmapImage(new Uri("Resources/btdb 2.png", UriKind.Relative));
 
                     GameHandling();
@@ -298,11 +287,8 @@ namespace TD_Loader
             {
                 if (Settings.settings.GameName != "BMC")
                 {
-
-                    Settings.settings.GameName = "BMC";
-                    Settings.SetGameFile();
-                    Settings.SaveSettings();
                     ResetGamePictures();
+                    Settings.settings.GameName = "BMC";
                     BMC_Image.Source = new BitmapImage(new Uri("Resources/bmc.png", UriKind.Relative));
 
                     GameHandling();
@@ -320,6 +306,13 @@ namespace TD_Loader
 
         private void Launch_Button_Clicked(object sender, RoutedEventArgs e)
         {
+            Settings.game.LoadedMods = mods_User.modPaths;
+            Settings.SaveGameFile();
+            Settings.SaveSettings();
+
+            JetReader jet = new JetReader();
+            Thread thread = new Thread(delegate () { jet.DoWork(); });
+            thread.Start();
             //Settings.settings = mods_User.SelectedMods_ListBox.Items;
 
             /*Zip original = new Zip(Settings.settings.BTDBBackupDir + "\\Assets\\data.jet");

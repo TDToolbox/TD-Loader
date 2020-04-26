@@ -49,6 +49,9 @@ namespace TD_Loader.Classes
 
             public bool AdvancedConflictMenu { get; set; }
         }
+        /// <summary>
+        /// An object containing info on the current game, from the settings
+        /// </summary>
         public class GameFile
         {
             public string GameName { get; set; }
@@ -59,6 +62,10 @@ namespace TD_Loader.Classes
             public string ModsDir { get; set; }
             public List<string> LoadedMods { get; set; }
         }
+        
+        /// <summary>
+        /// Sets the properties of the game file based on the game
+        /// </summary>
         public static void SetGameFile()
         {
             game = new GameFile();
@@ -93,6 +100,11 @@ namespace TD_Loader.Classes
                 game.LoadedMods = settings.BMCLoadedMods;
             }
         }
+        
+        /// <summary>
+        /// Saves the game file values to the settings
+        /// </summary>
+        
         public static void SaveGameFile()
         {
             if (game == null)

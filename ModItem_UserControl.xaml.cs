@@ -62,5 +62,10 @@ namespace TD_Loader
 
             Mods_UserControl.instance.HandlePriorityButtons();
         }
+
+        public override string ToString()
+        {
+            return modPath;
+        }
     }
 }
