@@ -71,9 +71,13 @@ namespace TD_Loader
                 }
             }
             foreach(var selected in Settings.game.LoadedMods)
-            {
                 AddToSelectedModLB(selected);
-            }
+
+            Settings.game.LoadedMods.Clear();
+            Settings.game.LoadedMods = modPaths;
+            Settings.SaveGameFile();
+            Settings.SaveSettings();
+            
             SelectedMods_ListBox.SelectedIndex = 0;
 
         }
@@ -82,6 +86,8 @@ namespace TD_Loader
             if(!File.Exists(modPath))
             {
                 Log.Output("Attempted to load a selected mod that doesnt exist!");
+                if(modPaths.Contains(modPath))
+                    modPaths.Remove(modPath);
                 return;
             }
 
@@ -109,53 +115,57 @@ namespace TD_Loader
         }
         private void AddMods_Button_Click(object sender, RoutedEventArgs e)
         {
-            if (!MainWindow.doingWork)
+            if (MainWindow.doingWork)
             {
-                MainWindow.doingWork = true;
-                if (Settings.settings.GameName != "" && Settings.settings.GameName != null)
+                MessageBox.Show("Cant do that! Currently doing something else... Please wait");
+                Log.Output("Cant do that! Currently doing something else... Please wait");
+                return;
+            }
+
+            MainWindow.doingWork = true;
+            if (Settings.settings.GameName != "" && Settings.settings.GameName != null)
+            {
+                List<string> mods = Mods.AddMods();
+                string modD = Settings.game.ModsDir;
+                if (modD == "" || modD == null)
                 {
-                    List<string> mods = Mods.AddMods();
-                    string modD = Settings.game.ModsDir;
-                    if (modD == "" || modD == null)
-                    {
-                        Log.Output("Your mods directory is invalid");
-                        Game.SetModsDir(Settings.settings.GameName);
-                    }
+                    Log.Output("Your mods directory is invalid");
+                    Game.SetModsDir(Settings.settings.GameName);
+                }
 
-                    if (mods != null && (modD != "" && modD != null))
+                if (mods != null && (modD != "" && modD != null))
+                {
+                    foreach (string mod in mods)
                     {
-                        foreach (string mod in mods)
+                        string[] split = mod.Split('\\');
+                        string filename = split[split.Length - 1];
+                        string copiedMod = Mods.CopyMod(mod, modD + "\\" + filename);
+
+                        if (copiedMod != "")
                         {
-                            string[] split = mod.Split('\\');
-                            string filename = split[split.Length - 1];
-                            string copiedMod = Mods.CopyMod(mod, modD + "\\" + filename);
+                            FileInfo f = new FileInfo(copiedMod);
 
-                            if (copiedMod != "")
+                            ModItem_UserControl item = new ModItem_UserControl();
+                            item.MinWidth = Mods_ListBox.ActualWidth - 31;
+                            item.ModName.Text = f.Name;
+
+                            Thickness margin = item.Margin;
+                            if (Mods_ListBox.Items.Count == 0)
                             {
-                                FileInfo f = new FileInfo(copiedMod);
-
-                                ModItem_UserControl item = new ModItem_UserControl();
-                                item.MinWidth = Mods_ListBox.ActualWidth - 31;
-                                item.ModName.Text = f.Name;
-
-                                Thickness margin = item.Margin;
-                                if (Mods_ListBox.Items.Count == 0)
-                                {
-                                    margin.Top = 10;
-                                    item.Margin = margin;
-                                }
-                                Mods_ListBox.Items.Add(item);
+                                margin.Top = 10;
+                                item.Margin = margin;
                             }
+                            Mods_ListBox.Items.Add(item);
                         }
                     }
-                    else
-                        Log.Output("Mods directory not found... Please try again");
                 }
                 else
-                    Log.ForceOutput("You need to choose a game before you can add mods!");
-
-                MainWindow.doingWork = false;
+                    Log.Output("Mods directory not found... Please try again");
             }
+            else
+                Log.ForceOutput("You need to choose a game before you can add mods!");
+            
+            MainWindow.doingWork = false;
         }
 
         public void HandlePriorityButtons()
@@ -201,6 +211,13 @@ namespace TD_Loader
 
         private void RaisePriority_Click(object sender, RoutedEventArgs e)
         {
+            if (MainWindow.doingWork)
+            {
+                MessageBox.Show("Cant do that! Currently doing something else... Please wait");
+                Log.Output("Cant do that! Currently doing something else... Please wait");
+                return;
+            }
+
             int index = SelectedMods_ListBox.SelectedIndex;
             string temp = SelectedMods_ListBox.Items.GetItemAt(index - 1).ToString();
             string tempPath = modPaths[index - 1];
@@ -215,6 +232,13 @@ namespace TD_Loader
         }
         private void LowerPriority_Click(object sender, RoutedEventArgs e)
         {
+            if (MainWindow.doingWork)
+            {
+                MessageBox.Show("Cant do that! Currently doing something else... Please wait");
+                Log.Output("Cant do that! Currently doing something else... Please wait");
+                return;
+            }
+
             int index = SelectedMods_ListBox.SelectedIndex;
             string temp = SelectedMods_ListBox.Items.GetItemAt(index + 1).ToString();
             string tempPath = modPaths[index + 1];
@@ -230,6 +254,13 @@ namespace TD_Loader
 
         private void HighestPriority_Click(object sender, RoutedEventArgs e)
         {
+            if (MainWindow.doingWork)
+            {
+                MessageBox.Show("Cant do that! Currently doing something else... Please wait");
+                Log.Output("Cant do that! Currently doing something else... Please wait");
+                return;
+            }
+
             string temp = SelectedMods_ListBox.Items.GetItemAt(SelectedMods_ListBox.SelectedIndex).ToString();
             var newItems = new DataGrid().Items;
             string tempPath = modPaths[SelectedMods_ListBox.SelectedIndex];
@@ -251,6 +282,13 @@ namespace TD_Loader
 
         private void LowestPriority_Click(object sender, RoutedEventArgs e)
         {
+            if (MainWindow.doingWork)
+            {
+                MessageBox.Show("Cant do that! Currently doing something else... Please wait");
+                Log.Output("Cant do that! Currently doing something else... Please wait");
+                return;
+            }
+
             string temp = SelectedMods_ListBox.Items.GetItemAt(SelectedMods_ListBox.SelectedIndex).ToString();
             var newItems = new DataGrid().Items;
             string tempPath = modPaths[SelectedMods_ListBox.SelectedIndex];

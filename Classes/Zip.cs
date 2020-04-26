@@ -80,19 +80,55 @@ namespace TD_Loader.Classes
         public void CopyFilesBetweenZips(ZipFile source, ZipFile dest, string filepath)
         {
             string zipPath = filepath.Replace("\\", "/");
-            
-            if (dest.ContainsEntry(zipPath))
-                dest.RemoveEntry(zipPath);
+            filepath = filepath.Replace("/", "\\");
 
-            foreach(var entry in source.Entries)
+            GetEntry(source, zipPath).Extract(Settings.settings.StagingDir);
+            
+            string[] split = filepath.Split('\\');
+            string filename = split[split.Length - 1].Replace("\\","");
+
+            dest.UpdateFile(Settings.settings.StagingDir + "\\" + filepath, zipPath.Replace(filename,""));
+            dest.Save(Archive.Name);
+
+            if (File.Exists(Settings.settings.StagingDir + "\\" + filepath))
+                File.Delete(Settings.settings.StagingDir + "\\" + filepath);
+        }
+        
+        /// <summary>
+        /// Returns the zip entry at the specified path. Uses the ZipFile from the Zip object
+        /// </summary>
+        /// <param name="filePathInZip">path to the file in the zip</param>
+        /// <returns>Zip entry</returns>
+        public ZipEntry GetEntry(string filePathInZip) => GetEntry(this.Archive, filePathInZip);
+
+        /// <summary>
+        /// Returns the zip entry at the specified path. Gets the file from the ZipFile argument
+        /// </summary>
+        /// <param name="zip">The ZipFile you want to get the entry from</param>
+        /// <param name="filePathInZip">path to the file in the zip</param>
+        /// <returns>Zip entry</returns>
+        public ZipEntry GetEntry(ZipFile zip, string filePathInZip)
+        {
+            if(zip == null)
             {
-                if (entry.FileName == filepath)
+                Log.Output("Failed to get entry. Zip was null");
+                return null;
+            }
+
+            if(!Guard.IsStringValid(filePathInZip))
+            {
+                Log.Output("Failed to get entry. filePathInZip was invalid");
+                return null;
+            }
+
+            foreach (var entry in zip.Entries)
+            {
+                if (entry.FileName == filePathInZip)
                 {
-                    entry.Extract(Settings.settings.StagingDir);
-                    break;
+                    return entry;
                 }
             }
-            dest.AddFile(Settings.settings.StagingDir + "\\" + filepath);
+            return null;
         }
 
         #region Read Files in Zip
@@ -136,8 +172,7 @@ namespace TD_Loader.Classes
             }
             else
             {
-                MessageBox.Show("Not found! Failed to read file in zip\n\nZip: " + this.ToString() + "\n\nFailed to read file at: " + filePathInZip + "\n\nArchive file count " + this.Archive.Count());
-                Log.Output("Unable to read " + filePathInZip.Replace(this.Archive.Name, "") + "  because it wasnt found");
+                Log.Output("Not found! Failed to read file in zip\n\nZip: " + this.ToString() + "\n\nFailed to read file at: " + filePathInZip + "\n\nArchive file count " + this.Archive.Count());
             }
             return returnText;
         }

@@ -1,6 +1,7 @@
 ﻿using Ionic.Zip;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -42,8 +43,22 @@ namespace TD_Loader.Classes
 
             if (Directory.Exists(Settings.settings.StagingDir))
                 Directory.Delete(Settings.settings.StagingDir, true);
-            
             Directory.CreateDirectory(Settings.settings.StagingDir);
+
+            if (!File.Exists(Settings.game.GameBackupDir + "\\Assets\\" + backupJet))
+            {
+                Log.Output("Failed to locate backup...");
+                return;
+            }
+            if (!Directory.Exists(Settings.settings.StagingDir)) //Checking again incase of an error. Happens if user had this dir open when it was deleted
+                Directory.CreateDirectory(Settings.settings.StagingDir);
+
+            if (!Directory.Exists(Settings.settings.StagingDir)) //If it still doesnt exist, return.
+            {
+                Log.Output("Failed to find staging directory....");
+                return;
+            }
+
             File.Copy(Settings.game.GameBackupDir + "\\Assets\\" + backupJet, Settings.settings.StagingDir + "\\" + backupJet);
 
             if (!File.Exists(Settings.game.GameBackupDir + "\\Assets\\" + backupJet))
@@ -85,11 +100,13 @@ namespace TD_Loader.Classes
                 moddedFiles = GetAllModdedFiles(original, modded);
                 Zip staging = new Zip(Settings.settings.StagingDir + "\\" + backupJet, original.CurrentPassword);
                 foreach(string file in moddedFiles)
-                {
                     staging.CopyFilesBetweenZips(modded.Archive, staging.Archive, file);
-                }
             }
-            
+            MessageBox.Show("Done staging");
+            if (Directory.Exists(Settings.settings.StagingDir))
+                Directory.Delete(Settings.settings.StagingDir, true);
+
+            MainWindow.doingWork = false;
             //FinishedStagingMods.Invoke(this, EventArgs.Empty);
         }
 

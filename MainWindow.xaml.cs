@@ -206,6 +206,7 @@ namespace TD_Loader
         private void Main_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             Settings.SaveSettings();
+            Environment.Exit(1);
         }
 
 
@@ -250,52 +251,58 @@ namespace TD_Loader
         }
         private void BTD5_Image_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (!doingWork)
+            if (doingWork)
             {
-                if (Settings.game.GameName != "BTD5")
-                {
-                    ResetGamePictures();
-                    Settings.settings.GameName = "BTD5";
-                    BTD5_Image.Source = new BitmapImage(new Uri("Resources/btd5.png", UriKind.Relative));
-
-                    GameHandling();
-                }
-            }
-            else
+                MessageBox.Show("Currently doing something else. Please wait...");
                 Log.Output("TD Loader is currently doing something else. Please wait...");
+                return;
+            }
+
+            if (Settings.game.GameName != "BTD5")
+            {
+                ResetGamePictures();
+                Settings.settings.GameName = "BTD5";
+                BTD5_Image.Source = new BitmapImage(new Uri("Resources/btd5.png", UriKind.Relative));
+
+                GameHandling();
+            }
         }
         private void BTDB_Image_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (!doingWork)
+            if(doingWork)
             {
-                if (Settings.settings.GameName != "BTDB")
-                {
-                    ResetGamePictures();
-                    Settings.settings.GameName = "BTDB";
-                    BTDB_Image.Source = new BitmapImage(new Uri("Resources/btdb 2.png", UriKind.Relative));
-
-                    GameHandling();
-                }
-            }
-            else
+                MessageBox.Show("Currently doing something else. Please wait...");
                 Log.Output("TD Loader is currently doing something else. Please wait...");
-            
+                return;
+            }
+
+            if (Settings.settings.GameName != "BTDB")
+            {
+                ResetGamePictures();
+                Settings.settings.GameName = "BTDB";
+                BTDB_Image.Source = new BitmapImage(new Uri("Resources/btdb 2.png", UriKind.Relative));
+
+                GameHandling();
+            }
+
         }
         private void BMC_Image_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (!doingWork)
+            if (doingWork)
             {
-                if (Settings.settings.GameName != "BMC")
-                {
-                    ResetGamePictures();
-                    Settings.settings.GameName = "BMC";
-                    BMC_Image.Source = new BitmapImage(new Uri("Resources/bmc.png", UriKind.Relative));
-
-                    GameHandling();
-                }
-            }
-            else
+                MessageBox.Show("Currently doing something else. Please wait...");
                 Log.Output("TD Loader is currently doing something else. Please wait...");
+                return;
+            }
+
+            if (Settings.settings.GameName != "BMC")
+            {
+                ResetGamePictures();
+                Settings.settings.GameName = "BMC";
+                BMC_Image.Source = new BitmapImage(new Uri("Resources/bmc.png", UriKind.Relative));
+
+                GameHandling();
+            }
         }
         private void Mods_Tab_MouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -306,6 +313,15 @@ namespace TD_Loader
 
         private void Launch_Button_Clicked(object sender, RoutedEventArgs e)
         {
+            if (doingWork == true)
+            {
+                MessageBox.Show("Cant do that! Currently doing something else");
+                return;
+            }
+
+            MessageBox.Show("Beginning to merge mods. This will take up to a minute per mod.");
+            doingWork = true;
+
             Settings.game.LoadedMods = mods_User.modPaths;
             Settings.SaveGameFile();
             Settings.SaveSettings();
@@ -313,13 +329,6 @@ namespace TD_Loader
             JetReader jet = new JetReader();
             Thread thread = new Thread(delegate () { jet.DoWork(); });
             thread.Start();
-            //Settings.settings = mods_User.SelectedMods_ListBox.Items;
-
-            /*Zip original = new Zip(Settings.settings.BTDBBackupDir + "\\Assets\\data.jet");
-            original.PasswordAquired += Original_PasswordAquired;
-
-            Thread thread = new Thread(delegate () { original.GetPassword(); });
-            thread.Start();*/
         }
 
         private void Original_PasswordAquired(object sender, EventArgs e)
