@@ -36,7 +36,7 @@
 
         
         <Viewbox Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" Margin="35,0">
-            <TextBlock Text="Mods" Style="{StaticResource VBTexbox}"/>
+            <TextBlock x:Name="Mods_TextBlock" Text="Mods" Style="{StaticResource VBTexbox}"/>
         </Viewbox>
 
         <Canvas x:Name="SelectedMods_Canvas" Grid.Row="3" Grid.Column="1" MaxHeight="50"/>

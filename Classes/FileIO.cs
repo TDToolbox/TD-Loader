@@ -15,6 +15,7 @@ namespace TD_Loader.Classes
         public static string BrowseForGame()
         {
             Log.Output("Failed to automatically find " + Settings.settings.GameName);
+            
             if(MessageBox.Show("Failed to automatically find " + Settings.settings.GameName + " . Please browse for the game's .exe file to set the game directory", "Couldn't find game .exe", MessageBoxButtons.OKCancel) == DialogResult.OK)
             {
                 return FileIO.BrowseForFile("Browse for .exe", "exe", "Exe files (*.exe)|*.exe|All files (*.*)|*.*", "");

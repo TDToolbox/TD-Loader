@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -38,46 +39,38 @@ namespace TD_Loader
 
             Main.Closing += Main_Closing;
         }
+       
         private void Startup()
         {
             Settings.LoadSettings();
 
+            mods_User = new Mods_UserControl();
             var tab = new TabItem();
             tab.Header = "     Mods     ";
             tab.Padding = new Thickness(5);
             tab.FontSize = 25;
-            tab.Content = new Mods_UserControl();
+            tab.Content = mods_User;//new Mods_UserControl();
             Main_TabController.Items[1] = tab;
             
-            //Mods_Tab.Content = new Mods_UserControl();
-
         }
         private void FinishedLoading()
         {
             bool dirNotFound = false;
-            switch (Settings.settings.GameName)
+            if (!Guard.IsStringValid(Settings.game.GameDir))
+            {
+                dirNotFound = true;
+            }
+
+            switch (Settings.game.GameName)
             {
                 case "BTD5":
-                    if (Settings.settings.BTD5Dir != "" && Settings.settings.BTD5Dir != null)
                         BTD5_Image.Source = new BitmapImage(new Uri("Resources/btd5.png", UriKind.Relative));
-                    else
-                        dirNotFound = true;
                     break;
-
-
                 case "BTDB":
-                    if (Settings.settings.BTDBDir != "" && Settings.settings.BTDBDir != null)
                         BTDB_Image.Source = new BitmapImage(new Uri("Resources/btdb 2.png", UriKind.Relative));
-                    else
-                        dirNotFound = true;
                     break;
-
-
                 case "BMC":
-                    if (Settings.settings.BMCDir != "" && Settings.settings.BMCDir != null)
                         BMC_Image.Source = new BitmapImage(new Uri("Resources/bmc.png", UriKind.Relative));
-                    else
-                        dirNotFound = true;
                     break;
                 default:
                     dirNotFound = true;
@@ -92,36 +85,49 @@ namespace TD_Loader
             else
             {
                 Settings.settings.GameName = "";
+                Settings.game = null;
                 Settings.SaveSettings();
             }
         }
         private async void GameHandling()
         {
             doingWork = true;
-
+            Settings.SetGameFile();
+            Settings.SaveSettings();
 
             //
             //Check for Game Updated
             string version = Game.GetVersion(Settings.settings.GameName);
-            if (version != Settings.GetGameVersion(Settings.settings.GameName))
+            if (version != Settings.game.GameVersion)
             {
                 MessageBox.Show("Game has been updated... Reaquiring files...");
                 Log.Output("Game has been updated... Reaquiring files...");
-                string backupdir = Settings.GetBackupDir(Settings.settings.GameName);
+                string backupdir = Settings.game.GameBackupDir;
                 if (backupdir == "" || backupdir == null)
                     Game.CreateBackupDir(Settings.settings.GameName);
 
                 await Game.CreateBackupAsync(Settings.settings.GameName);
                 Log.Output("Done making backup");
 
-                Settings.SetGameVersion(Settings.settings.GameName, version);
+                Settings.game.GameVersion = version;
+                Settings.SaveGameFile();
+
+                if(Settings.settings.GameName == "BTDB")
+                {
+                    Settings.settings.DidBtdbUpdate = true;
+                    Settings.SaveSettings();
+
+                    Zip original = new Zip(Settings.settings.BTDBBackupDir + "\\Assets\\data.jet");
+                    Thread thread = new Thread(delegate () { original.GetPassword(); });
+                    thread.Start();
+                }
             }
 
 
             //
             //Check game dir
             bool error = false;
-            string gameD = Settings.GetGameDir(Settings.settings.GameName);
+            string gameD = Settings.game.GameDir;
             if (gameD != "" && gameD != null)
             {
                 if(Directory.Exists(gameD))
@@ -139,7 +145,10 @@ namespace TD_Loader
             {
                 string dir = Game.SetGameDir(Settings.settings.GameName);
                 if (dir != "" && dir != null)
-                    Settings.SetGameDir(Settings.settings.GameName, dir);
+                {
+                    Settings.game.GameDir = dir;
+                    Settings.SaveGameFile();
+                }
                 else
                 {
                     Log.Output("Something went wrong... Failed to aquire game directory...");
@@ -147,11 +156,11 @@ namespace TD_Loader
                     return;
                 }
             }
-            
+
 
             //
             //Check Mods Dir
-            string modsDir = Settings.GetModsDir(Settings.settings.GameName);
+            string modsDir = Settings.game.ModsDir;
             if((Settings.settings.GameName != "" && Settings.settings.GameName != null) && (modsDir == "" || modsDir == null))
                 Game.SetModsDir(Settings.settings.GameName);
 
@@ -161,7 +170,7 @@ namespace TD_Loader
             bool valid = Game.VerifyBackup(Settings.settings.GameName);
             if(!valid)
             {
-                string backupdir = Settings.GetBackupDir(Settings.settings.GameName);
+                string backupdir = Settings.game.GameBackupDir;
                 if (backupdir == "" || backupdir == null)
                     Game.CreateBackupDir(Settings.settings.GameName);
 
@@ -173,7 +182,7 @@ namespace TD_Loader
             //
             //Clear mods list
             Mods_UserControl.instance.PopulateMods(Settings.settings.GameName);
-
+            Mods_UserControl.instance.Mods_TextBlock.Text = Settings.settings.GameName + " Mods";
             //
             //Done
             doingWork = false;
@@ -197,6 +206,7 @@ namespace TD_Loader
         private void Main_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             Settings.SaveSettings();
+            Environment.Exit(1);
         }
 
 
@@ -211,7 +221,7 @@ namespace TD_Loader
         }
         private void BMC_Image_IsMouseDirectlyOverChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            if(Settings.settings.GameName != "BMC")
+            if(Settings.game.GameName != "BMC")
             {
                 if (!BMC_Image.IsMouseOver)
                     BMC_Image.Source = new BitmapImage(new Uri("Resources/bmc_not loaded.png", UriKind.Relative));
@@ -221,7 +231,7 @@ namespace TD_Loader
         }
         private void BTDB_Image_IsMouseDirectlyOverChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            if (Settings.settings.GameName != "BTDB")
+            if (Settings.game.GameName != "BTDB")
             {
                 if (!BTDB_Image.IsMouseOver)
                     BTDB_Image.Source = new BitmapImage(new Uri("Resources/btdb 2_not loaded.png", UriKind.Relative));
@@ -231,7 +241,7 @@ namespace TD_Loader
         }
         private void BTD5_Image_IsMouseDirectlyOverChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            if (Settings.settings.GameName != "BTD5")
+            if (Settings.game.GameName != "BTD5")
             {
                 if (!BTD5_Image.IsMouseOver)
                     BTD5_Image.Source = new BitmapImage(new Uri("Resources/btd5_not loaded.png", UriKind.Relative));
@@ -241,61 +251,89 @@ namespace TD_Loader
         }
         private void BTD5_Image_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (!doingWork)
+            if (doingWork)
             {
-                if (Settings.settings.GameName != "BTD5")
-                {
-                    Settings.settings.GameName = "BTD5";
-                    Settings.SaveSettings();
-                    ResetGamePictures();
-                    BTD5_Image.Source = new BitmapImage(new Uri("Resources/btd5.png", UriKind.Relative));
-
-                    GameHandling();
-                }
-            }
-            else
+                MessageBox.Show("Currently doing something else. Please wait...");
                 Log.Output("TD Loader is currently doing something else. Please wait...");
+                return;
+            }
+
+            if (Settings.game.GameName != "BTD5")
+            {
+                ResetGamePictures();
+                Settings.settings.GameName = "BTD5";
+                BTD5_Image.Source = new BitmapImage(new Uri("Resources/btd5.png", UriKind.Relative));
+
+                GameHandling();
+            }
         }
         private void BTDB_Image_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (!doingWork)
+            if(doingWork)
             {
-                if (Settings.settings.GameName != "BTDB")
-                {
-                    Settings.settings.GameName = "BTDB";
-                    Settings.SaveSettings();
-                    ResetGamePictures();
-                    BTDB_Image.Source = new BitmapImage(new Uri("Resources/btdb 2.png", UriKind.Relative));
-
-                    GameHandling();
-                }
-            }
-            else
+                MessageBox.Show("Currently doing something else. Please wait...");
                 Log.Output("TD Loader is currently doing something else. Please wait...");
-            
+                return;
+            }
+
+            if (Settings.settings.GameName != "BTDB")
+            {
+                ResetGamePictures();
+                Settings.settings.GameName = "BTDB";
+                BTDB_Image.Source = new BitmapImage(new Uri("Resources/btdb 2.png", UriKind.Relative));
+
+                GameHandling();
+            }
+
         }
         private void BMC_Image_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (!doingWork)
+            if (doingWork)
             {
-                if (Settings.settings.GameName != "BMC")
-                {
-
-                    Settings.settings.GameName = "BMC";
-                    Settings.SaveSettings();
-                    ResetGamePictures();
-                    BMC_Image.Source = new BitmapImage(new Uri("Resources/bmc.png", UriKind.Relative));
-
-                    GameHandling();
-                }
-            }
-            else
+                MessageBox.Show("Currently doing something else. Please wait...");
                 Log.Output("TD Loader is currently doing something else. Please wait...");
+                return;
+            }
+
+            if (Settings.settings.GameName != "BMC")
+            {
+                ResetGamePictures();
+                Settings.settings.GameName = "BMC";
+                BMC_Image.Source = new BitmapImage(new Uri("Resources/bmc.png", UriKind.Relative));
+
+                GameHandling();
+            }
         }
         private void Mods_Tab_MouseDown(object sender, MouseButtonEventArgs e)
         {
             
             //Main_TabController.Items.Add()
+        }
+
+
+        private void Launch_Button_Clicked(object sender, RoutedEventArgs e)
+        {
+            if (doingWork == true)
+            {
+                MessageBox.Show("Cant do that! Currently doing something else");
+                return;
+            }
+
+            MessageBox.Show("Beginning to merge mods. This will take up to a minute per mod.");
+            doingWork = true;
+
+            Settings.game.LoadedMods = mods_User.modPaths;
+            Settings.SaveGameFile();
+            Settings.SaveSettings();
+
+            JetReader jet = new JetReader();
+            Thread thread = new Thread(delegate () { jet.DoWork(); });
+            thread.Start();
+        }
+
+        private void Original_PasswordAquired(object sender, EventArgs e)
+        {
+            MessageBox.Show("Password Aquired");
         }
     }
 }

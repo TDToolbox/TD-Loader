@@ -28,7 +28,7 @@
             <ColumnDefinition Width="10"/>
         </Grid.ColumnDefinitions>
 
-        <CheckBox IsChecked="False" Style="{StaticResource ToggleButton}" Grid.Column="1" MinWidth="120" MinHeight="20" Click="CheckBox_Clicked"/>
+        <CheckBox x:Name="Enable_CheckBox" IsChecked="False" Style="{StaticResource ToggleButton}" Grid.Column="1" MinWidth="120" MinHeight="20" Click="CheckBox_Clicked"/>
 
         <Canvas Background="#FF424242" Grid.Column="3">
             

@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using TD_Loader.Classes;
 
 namespace TD_Loader
 {
@@ -31,6 +32,13 @@ namespace TD_Loader
 
         private void CheckBox_Clicked(object sender, RoutedEventArgs e)
         {
+            if(MainWindow.doingWork)
+            {
+                MessageBox.Show("Cant do that! Currently doing something else... Please wait");
+                Log.Output("Cant do that! Currently doing something else... Please wait");
+                return;
+            }
+
             CheckBox cb = (CheckBox)(sender);
 
             if (cb.IsChecked == true)
@@ -61,6 +69,11 @@ namespace TD_Loader
             }
 
             Mods_UserControl.instance.HandlePriorityButtons();
+        }
+
+        public override string ToString()
+        {
+            return modPath;
         }
     }
 }
