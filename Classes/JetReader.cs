@@ -26,7 +26,8 @@ namespace TD_Loader.Classes
         #endregion
 
         #region Properties
-        public event EventHandler FinishedStagingMods;
+        public static event EventHandler FinishedStagingMods;
+
         public List<string> Passwords { get; set; }
         public string GameName { get; set; } = Settings.settings.GameName;
 
@@ -67,7 +68,6 @@ namespace TD_Loader.Classes
                 return;
             }
             
-
             
             List<string> reverseOrder = new List<string>();
             for (int i = Settings.game.LoadedMods.Count; i > 0; i--)
@@ -102,12 +102,31 @@ namespace TD_Loader.Classes
                 foreach(string file in moddedFiles)
                     staging.CopyFilesBetweenZips(modded.Archive, staging.Archive, file);
             }
-            MessageBox.Show("Done staging");
-            if (Directory.Exists(Settings.settings.StagingDir))
-                Directory.Delete(Settings.settings.StagingDir, true);
 
+
+            var files = new DirectoryInfo(Settings.settings.StagingDir).GetFiles("*", SearchOption.AllDirectories);
+            foreach(var file in files)
+            {
+                if(file.Name == backupJet)
+                {
+                    if (File.Exists(Settings.game.GameDir + "\\Assets\\" + backupJet))
+                        File.Delete(Settings.game.GameDir + "\\Assets\\" + backupJet);
+                    File.Copy(file.FullName, Settings.game.GameDir + "\\Assets\\" + backupJet);
+                }
+                else
+                {
+                    if (File.Exists(Settings.game.GameDir + "\\" + file.FullName.Replace(Settings.settings.StagingDir, "")))
+                        File.Delete(Settings.game.GameDir + "\\" + file.FullName.Replace(Settings.settings.StagingDir, ""));
+
+                    File.Copy(file.FullName, Settings.game.GameDir + "\\" + file.FullName.Replace(Settings.settings.StagingDir,""));
+                }
+            }
+
+            MessageBox.Show("Done staging");
             MainWindow.doingWork = false;
-            //FinishedStagingMods.Invoke(this, EventArgs.Empty);
+            
+            if(FinishedStagingMods != null)
+                FinishedStagingMods.Invoke(this, EventArgs.Empty);
         }
 
 

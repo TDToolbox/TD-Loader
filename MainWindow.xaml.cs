@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -38,8 +39,9 @@ namespace TD_Loader
             BMC_Image.IsMouseDirectlyOverChanged += BMC_Image_IsMouseDirectlyOverChanged;
 
             Main.Closing += Main_Closing;
+            JetReader.FinishedStagingMods += JetReader_FinishedStagingMods;
         }
-       
+
         private void Startup()
         {
             Settings.LoadSettings();
@@ -51,7 +53,7 @@ namespace TD_Loader
             tab.FontSize = 25;
             tab.Content = mods_User;//new Mods_UserControl();
             Main_TabController.Items[1] = tab;
-            
+
         }
         private void FinishedLoading()
         {
@@ -221,7 +223,10 @@ namespace TD_Loader
         }
         private void BMC_Image_IsMouseDirectlyOverChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            if(Settings.game.GameName != "BMC")
+            if (Settings.game == null)
+                Settings.SetGameFile();
+
+            if (Settings.game.GameName != "BMC")
             {
                 if (!BMC_Image.IsMouseOver)
                     BMC_Image.Source = new BitmapImage(new Uri("Resources/bmc_not loaded.png", UriKind.Relative));
@@ -231,6 +236,9 @@ namespace TD_Loader
         }
         private void BTDB_Image_IsMouseDirectlyOverChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
+            if (Settings.game == null)
+                Settings.SetGameFile();
+
             if (Settings.game.GameName != "BTDB")
             {
                 if (!BTDB_Image.IsMouseOver)
@@ -241,6 +249,9 @@ namespace TD_Loader
         }
         private void BTD5_Image_IsMouseDirectlyOverChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
+            if (Settings.game == null)
+                Settings.SetGameFile();
+
             if (Settings.game.GameName != "BTD5")
             {
                 if (!BTD5_Image.IsMouseOver)
@@ -319,7 +330,7 @@ namespace TD_Loader
                 return;
             }
 
-            MessageBox.Show("Beginning to merge mods. This will take up to a minute per mod.");
+            MessageBox.Show("Beginning to merge mods. This will take up to 20 seconds per mod.");
             doingWork = true;
 
             Settings.game.LoadedMods = mods_User.modPaths;
@@ -330,10 +341,40 @@ namespace TD_Loader
             Thread thread = new Thread(delegate () { jet.DoWork(); });
             thread.Start();
         }
-
-        private void Original_PasswordAquired(object sender, EventArgs e)
+        private void JetReader_FinishedStagingMods(object sender, EventArgs e)
         {
-            MessageBox.Show("Password Aquired");
+            LaunchGame();
+        }
+        private void LaunchGame()
+        {
+            ulong apiId = 0;
+            if (!Guard.IsStringValid(Settings.game.GameName))
+            {
+                MessageBox.Show("Failed to get game name for game. Unable to launch");
+                return;
+            }
+
+            switch (Settings.game.GameName)
+            {
+                
+                case "BTD5":
+                    apiId = Steam.BTD5AppID;
+                    break;
+                case "BTDB":
+                    apiId = Steam.BTDBAppID;
+                    break;
+                case "BMC":
+                    apiId = Steam.BMCAppID;
+                    break;
+            }
+
+            if(!Guard.IsStringValid(apiId.ToString()))
+            {
+                MessageBox.Show("Failed to get API ID for game. Unable to launch");
+                return;
+            }
+
+            Process.Start("steam://Launch/" + apiId);
         }
     }
 }

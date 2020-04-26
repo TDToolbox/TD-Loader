@@ -162,6 +162,7 @@ namespace TD_Loader.Classes
 
                 if (finished)
                 {
+                    MessageBox.Show("Finished validating files. Creating backup...");
                     Log.Output("Finished validating files. Creating backup");
 
                     string backupDir = Settings.game.GameBackupDir;
@@ -202,8 +203,8 @@ namespace TD_Loader.Classes
                         {
                             await MainWindow.Wait(250);
                         }
-                        thread.Abort();
                         FileIO.done = false;
+                        MessageBox.Show("Done creating backup...");
                     }
                 }
             }

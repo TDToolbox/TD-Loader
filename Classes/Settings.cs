@@ -110,7 +110,7 @@ namespace TD_Loader.Classes
         {
             if (game == null)
             {
-                MessageBox.Show("Failed to save game object");
+                //MessageBox.Show("Failed to save game object");
                 return;
             }
 
@@ -145,6 +145,7 @@ namespace TD_Loader.Classes
         public static void CreateSettings()
         {
             settings = new SettingsFile();
+
             settings.TDLoaderVersion = System.Diagnostics.FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).FileVersion;
             settings.GameName = "";
 
@@ -179,17 +180,19 @@ namespace TD_Loader.Classes
         {
             if (!File.Exists(settingsPath))
                 CreateSettings();
+
             string json = File.ReadAllText(settingsPath);
             if (JSON.IsJsonValid(json))
             {
                 settings = JsonConvert.DeserializeObject<SettingsFile>(json);
-                SetGameFile();
             }
             else
             {
                 Log.Output("Settings file has invalid json, generating a new settings file.");
                 CreateSettings();
             }
+
+            SetGameFile();
             return settings;
         }
         public static void SaveSettings()

@@ -90,10 +90,14 @@ namespace TD_Loader.Classes
             dest.UpdateFile(Settings.settings.StagingDir + "\\" + filepath, zipPath.Replace(filename,""));
             dest.Save(Archive.Name);
 
-            if (File.Exists(Settings.settings.StagingDir + "\\" + filepath))
-                File.Delete(Settings.settings.StagingDir + "\\" + filepath);
+            if (Directory.Exists(Settings.settings.StagingDir + "\\Assets\\JSON"))
+                Directory.Delete(Settings.settings.StagingDir + "\\Assets\\JSON", true);
+
+            /*if (File.Exists(Settings.settings.StagingDir + "\\" + filepath))
+                File.Delete(Settings.settings.StagingDir + "\\" + filepath);*/
+
         }
-        
+
         /// <summary>
         /// Returns the zip entry at the specified path. Uses the ZipFile from the Zip object
         /// </summary>
