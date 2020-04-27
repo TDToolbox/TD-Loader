@@ -144,15 +144,25 @@ namespace TD_Loader.Classes
                 Log.Output("One of the zip files you are trying to compare is invalid");
                 return false;
             }
-
-            string originalText = Regex.Replace(original.ReadFileInZip(filepathInZip, original.CurrentPassword), @"^\s*$(\n|\r|\r\n)", "", RegexOptions.Multiline).ToLower().Trim().Replace(" ", "").Replace("\n", "").Replace("\r", "").Replace("\r\n", "");
-            string modText = Regex.Replace(modded.ReadFileInZip(filepathInZip, modded.CurrentPassword), @"^\s*$(\n|\r|\r\n)", "", RegexOptions.Multiline).ToLower().Trim().Replace(" ", "").Replace("\n", "").Replace("\r", "").Replace("\r\n", "");
-
-            /*MessageBox.Show("Original file: " + originalText);
-            MessageBox.Show("Modded file: " + modText);*/
+            
+            var a = original.GetEntry(filepathInZip);
+            var b = modded.GetEntry(filepathInZip);
+            if (a == null)
+            {
+                return true;
+            }
+            if (b == null)
+            {
+                return false;
+            }
+            var originalSize = original.GetEntry(filepathInZip).Crc;
+            var moddedSize = modded.GetEntry(filepathInZip).Crc;
+            
+            /*var originalSize = original.GetEntry(filepathInZip).UncompressedSize;
+            var moddedSize = modded.GetEntry(filepathInZip).UncompressedSize;*/
 
             bool isModded = false;
-            if (modText != originalText)
+            if (moddedSize != originalSize)
                 isModded = true;
             
             return isModded;
@@ -170,8 +180,7 @@ namespace TD_Loader.Classes
                     if (CompareFiles(original, modded, file.FileName))
                         moddedFiles.Add(file.FileName);
                 }
-            }           
-
+            }
             return moddedFiles;
         }
 

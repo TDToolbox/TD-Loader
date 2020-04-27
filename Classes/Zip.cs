@@ -92,7 +92,8 @@ namespace TD_Loader.Classes
 
             if (Directory.Exists(Settings.settings.StagingDir + "\\Assets\\JSON"))
                 Directory.Delete(Settings.settings.StagingDir + "\\Assets\\JSON", true);
-
+            
+            
             /*if (File.Exists(Settings.settings.StagingDir + "\\" + filepath))
                 File.Delete(Settings.settings.StagingDir + "\\" + filepath);*/
 
@@ -116,12 +117,14 @@ namespace TD_Loader.Classes
             if(zip == null)
             {
                 Log.Output("Failed to get entry. Zip was null");
+                MessageBox.Show("Failed to get entry. Zip was null");
                 return null;
             }
 
             if(!Guard.IsStringValid(filePathInZip))
             {
                 Log.Output("Failed to get entry. filePathInZip was invalid");
+                MessageBox.Show("Failed to get entry. filePathInZip was invalid");
                 return null;
             }
 
