@@ -83,7 +83,7 @@ namespace TD_Loader
         }
         private void AddToSelectedModLB(string modPath)
         {
-            if(!File.Exists(modPath))
+            if(!File.Exists(modPath) || !Guard.IsStringValid(modPath))
             {
                 Log.Output("Attempted to load a selected mod that doesnt exist!");
                 if(modPaths.Contains(modPath))
