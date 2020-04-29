@@ -76,6 +76,13 @@ namespace TD_Loader.Classes
 
         }
 
+        /*public List<string> GetModdedFolders() => Zip.GetModdedFolders(ZipFile original, this.Archive);
+
+        public static List<string> GetModdedFolders(ZipFile original, ZipFile modded)
+        {
+
+        }*/
+
 
         public void CopyFilesBetweenZips(ZipFile source, ZipFile dest, string filepath)
         {
@@ -92,11 +99,6 @@ namespace TD_Loader.Classes
 
             if (Directory.Exists(Settings.settings.StagingDir + "\\Assets\\JSON"))
                 Directory.Delete(Settings.settings.StagingDir + "\\Assets\\JSON", true);
-            
-            
-            /*if (File.Exists(Settings.settings.StagingDir + "\\" + filepath))
-                File.Delete(Settings.settings.StagingDir + "\\" + filepath);*/
-
         }
 
         /// <summary>
@@ -104,7 +106,7 @@ namespace TD_Loader.Classes
         /// </summary>
         /// <param name="filePathInZip">path to the file in the zip</param>
         /// <returns>Zip entry</returns>
-        public ZipEntry GetEntry(string filePathInZip) => GetEntry(this.Archive, filePathInZip);
+        public ZipEntry GetEntry(string filePathInZip) => Zip.GetEntry(this.Archive, filePathInZip);
 
         /// <summary>
         /// Returns the zip entry at the specified path. Gets the file from the ZipFile argument
@@ -112,7 +114,7 @@ namespace TD_Loader.Classes
         /// <param name="zip">The ZipFile you want to get the entry from</param>
         /// <param name="filePathInZip">path to the file in the zip</param>
         /// <returns>Zip entry</returns>
-        public ZipEntry GetEntry(ZipFile zip, string filePathInZip)
+        public static ZipEntry GetEntry(ZipFile zip, string filePathInZip)
         {
             if(zip == null)
             {

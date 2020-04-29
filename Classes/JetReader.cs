@@ -73,41 +73,20 @@ namespace TD_Loader.Classes
             for (int i = Settings.game.LoadedMods.Count; i > 0; i--)
                 reverseOrder.Add(Settings.game.LoadedMods[i - 1]);
 
-            string originalPass = "";
-            string moddedPass = "";
+            
             foreach (string mod in reverseOrder)
             {
-                Zip original = new Zip(Settings.game.GameBackupDir + "\\Assets\\" + backupJet);
-                Zip modded = new Zip(mod);
-
-                if (Settings.game.GameName != "BTDB")
-                {
-                    originalPass = Settings.game.Password;
-                    moddedPass = Settings.game.Password;
-                }
+                if (mod.EndsWith(".jet"))
+                    HandleJetFiles(mod);
                 else
-                {
-                    originalPass = original.GetPassword();
-                    moddedPass = modded.GetPassword();
-                }
-
-                original.CurrentPassword = originalPass;
-                original.Archive.Password = originalPass;
-                modded.CurrentPassword = moddedPass;
-                modded.Archive.Password = moddedPass;
-
-                List<string> moddedFiles = new List<string>();
-                moddedFiles = GetAllModdedFiles(original, modded);
-                Zip staging = new Zip(Settings.settings.StagingDir + "\\" + backupJet, original.CurrentPassword);
-                foreach(string file in moddedFiles)
-                    staging.CopyFilesBetweenZips(modded.Archive, staging.Archive, file);
+                    HandleZipFiles(mod);
             }
 
 
             var files = new DirectoryInfo(Settings.settings.StagingDir).GetFiles("*", SearchOption.AllDirectories);
-            foreach(var file in files)
+            foreach (var file in files)
             {
-                if(file.Name == backupJet)
+                if (file.Name == backupJet)
                 {
                     if (File.Exists(Settings.game.GameDir + "\\Assets\\" + backupJet))
                         File.Delete(Settings.game.GameDir + "\\Assets\\" + backupJet);
@@ -115,10 +94,13 @@ namespace TD_Loader.Classes
                 }
                 else
                 {
-                    if (File.Exists(Settings.game.GameDir + "\\" + file.FullName.Replace(Settings.settings.StagingDir, "")))
-                        File.Delete(Settings.game.GameDir + "\\" + file.FullName.Replace(Settings.settings.StagingDir, ""));
+                    string newpath = Settings.game.GameDir + "\\" + file.FullName.Replace("Temp", "").Replace(Settings.settings.StagingDir, "").Replace("\\\\","\\");
+                    if (File.Exists(newpath))
+                        File.Delete(newpath);
 
-                    File.Copy(file.FullName, Settings.game.GameDir + "\\" + file.FullName.Replace(Settings.settings.StagingDir,""));
+                    if (!Directory.Exists(newpath.Replace(file.Name, "")))
+                        Directory.CreateDirectory(newpath.Replace(file.Name, ""));
+                    File.Copy(file.FullName, newpath);
                 }
             }
 
@@ -127,6 +109,66 @@ namespace TD_Loader.Classes
             
             if(FinishedStagingMods != null)
                 FinishedStagingMods.Invoke(this, EventArgs.Empty);
+        }
+
+        public void HandleZipFiles(string mod)
+        {
+            Zip modFile = new Zip(mod);
+            foreach(ZipEntry entry in modFile.Archive.Entries)
+            {
+                if(entry.FileName.EndsWith(".jet"))
+                {
+                    entry.Extract(Settings.settings.StagingDir + "\\Temp");
+                    HandleJetFiles(Settings.settings.StagingDir + "\\Temp\\" + entry.FileName);
+                }
+                else
+                {
+                    entry.Extract(Settings.settings.StagingDir);
+                }
+            }
+            modFile.Archive.Dispose();
+        }
+
+
+        public void HandleJetFiles(string mod)
+        {
+            string backupJet = "";
+            if (Settings.game.GameName == "BTD5")
+                backupJet = "BTD5.jet";
+            else
+                backupJet = "data.jet";
+
+            string originalPass = "";
+            string moddedPass = "";
+
+            Zip original = new Zip(Settings.game.GameBackupDir + "\\Assets\\" + backupJet);
+            Zip modded = new Zip(mod);
+
+            if (Settings.game.GameName != "BTDB")
+            {
+                originalPass = Settings.game.Password;
+                moddedPass = Settings.game.Password;
+            }
+            else
+            {
+                originalPass = original.GetPassword();
+                moddedPass = modded.GetPassword();
+            }
+
+            original.CurrentPassword = originalPass;
+            original.Archive.Password = originalPass;
+            modded.CurrentPassword = moddedPass;
+            modded.Archive.Password = moddedPass;
+
+            List<string> moddedFiles = new List<string>();
+            moddedFiles = GetAllModdedFiles(original, modded);
+            Zip staging = new Zip(Settings.settings.StagingDir + "\\" + backupJet, original.CurrentPassword);
+            foreach (string file in moddedFiles)
+                staging.CopyFilesBetweenZips(modded.Archive, staging.Archive, file);
+
+            staging.Archive.Dispose();
+            modded.Archive.Dispose();
+            original.Archive.Dispose();
         }
 
 

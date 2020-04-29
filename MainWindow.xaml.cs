@@ -330,7 +330,7 @@ namespace TD_Loader
                 return;
             }
 
-            MessageBox.Show("Beginning to merge mods. This will take up to 20 seconds per mod.");
+            MessageBox.Show("Beginning to merge mods. Please wait, this will take up to 5 seconds per mod. The program is not frozen...");
             doingWork = true;
 
             Settings.game.LoadedMods = mods_User.modPaths;
