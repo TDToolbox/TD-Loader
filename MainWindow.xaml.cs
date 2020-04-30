@@ -85,7 +85,7 @@ namespace TD_Loader
             else
             {
                 Settings.settings.GameName = "";
-                Settings.game = null;
+                //Settings.game = null;
                 Settings.SaveSettings();
             }
         }
