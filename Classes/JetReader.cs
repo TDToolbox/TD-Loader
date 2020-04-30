@@ -200,9 +200,6 @@ namespace TD_Loader.Classes
             var originalSize = original.GetEntry(filepathInZip).Crc;
             var moddedSize = modded.GetEntry(filepathInZip).Crc;
             
-            /*var originalSize = original.GetEntry(filepathInZip).UncompressedSize;
-            var moddedSize = modded.GetEntry(filepathInZip).UncompressedSize;*/
-
             bool isModded = false;
             if (moddedSize != originalSize)
                 isModded = true;

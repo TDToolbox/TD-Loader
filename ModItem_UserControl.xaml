@@ -38,9 +38,9 @@
         </Viewbox>
         
         <!-- Idk what this plans to have so idk what to theme it to... -->
-        <xctk:SplitButton Grid.Column="5" FontSize="17" Content="  More  " Background="#FF00B7E0" Foreground="White">
+        <xctk:SplitButton Grid.Column="5" FontSize="17" Content="  More  " Background="#FF00B7E0" Foreground="White" Click="SplitButton_Click">
             <xctk:SplitButton.DropDownContent>
-                <xctk:ButtonChrome></xctk:ButtonChrome>
+                <xctk:ButtonChrome MouseDown="ButtonChrome_MouseDown"></xctk:ButtonChrome>
             </xctk:SplitButton.DropDownContent>
         </xctk:SplitButton>
         

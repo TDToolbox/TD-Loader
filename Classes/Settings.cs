@@ -18,6 +18,11 @@ namespace TD_Loader.Classes
         public static string settingsFileName = "settings.json";
         public static string settingsPath = Environment.CurrentDirectory + "\\" + settingsFileName;
 
+        public Settings()
+        {
+            game = new GameFile();
+        }
+
         public class SettingsFile
         {
             public string MainSettingsDir { get; } = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\TD Loader";
@@ -151,14 +156,14 @@ namespace TD_Loader.Classes
 
 
             settings.BTD5Dir = "";
-            settings.BTD5Version = "";
+            settings.BTD5Version = Game.GetVersion("BTD5");
             settings.BTD5BackupDir = "";
             settings.BTD5ModsDir = "";
             settings.BTD5LoadedMods = new List<string>();
 
 
             settings.BTDBDir = "";
-            settings.BTDBVersion = "";
+            settings.BTDBVersion = Game.GetVersion("BTDB");
             settings.BTDBBackupDir = "";
             settings.BTDBModsDir = "";
             settings.DidBtdbUpdate = false;
@@ -166,7 +171,7 @@ namespace TD_Loader.Classes
 
 
             settings.BMCDir = "";
-            settings.BMCVersion = "";
+            settings.BMCVersion = Game.GetVersion("BMC");
             settings.BMCBackupDir = "";
             settings.BMCModsDir = "";
             settings.BMCLoadedMods = new List<string>();

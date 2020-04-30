@@ -76,13 +76,37 @@ namespace TD_Loader.Classes
 
         }
 
-        /*public List<string> GetModdedFolders() => Zip.GetModdedFolders(ZipFile original, this.Archive);
-
-        public static List<string> GetModdedFolders(ZipFile original, ZipFile modded)
+        /*public static List<string> GetModdedFolders(Zip original, Zip modded)
         {
+            List<string> moddedFolders = new List<string>();
 
-        }*/
+            foreach(ZipEntry entry in modded.Archive.Entries)
+            {
+                if(entry.IsDirectory)
+                {
+                    string[] split = entry.FileName.Split('/');
+                    if (split.Length == 4)
+                    {
+                        string foldername = entry.FileName;
 
+                        var originalSize = original.GetEntry(foldername).UncompressedSize;
+                        var moddedSize = modded.GetEntry(foldername).UncompressedSize;
+
+                        MessageBox.Show("One " + entry.IsDirectory.ToString());
+                        MessageBox.Show(moddedSize.ToString());
+
+                        *//*JetReader reader = new JetReader();
+                        bool result = reader.CompareFiles(original, modded, foldername);
+                        if (result == true)
+                            moddedFolders.Add(foldername);*//*
+                    }
+                }
+                
+            }
+            MessageBox.Show(moddedFolders.Count.ToString());
+            return moddedFolders;
+        }
+*/
 
         public void CopyFilesBetweenZips(ZipFile source, ZipFile dest, string filepath)
         {

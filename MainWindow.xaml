@@ -35,7 +35,7 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <ToolBar>
+        <ToolBar Visibility="Collapsed">
             <Button x:Name="File_Button">File</Button>
             <Button x:Name="View_Button">View</Button>
             <Button x:Name="Help_Button">Help</Button>

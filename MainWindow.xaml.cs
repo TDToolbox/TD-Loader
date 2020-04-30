@@ -93,44 +93,21 @@ namespace TD_Loader
         }
         private async void GameHandling()
         {
+            if(Settings.game == null)
+            {
+                return;
+            }
+
             doingWork = true;
             Settings.SetGameFile();
-            Settings.SaveSettings();
-
-            //
-            //Check for Game Updated
-            string version = Game.GetVersion(Settings.settings.GameName);
-            if (version != Settings.game.GameVersion)
-            {
-                MessageBox.Show("Game has been updated... Reaquiring files...");
-                Log.Output("Game has been updated... Reaquiring files...");
-                string backupdir = Settings.game.GameBackupDir;
-                if (backupdir == "" || backupdir == null)
-                    Game.CreateBackupDir(Settings.settings.GameName);
-
-                await Game.CreateBackupAsync(Settings.settings.GameName);
-                Log.Output("Done making backup");
-
-                Settings.game.GameVersion = version;
-                Settings.SaveGameFile();
-
-                if(Settings.settings.GameName == "BTDB")
-                {
-                    Settings.settings.DidBtdbUpdate = true;
-                    Settings.SaveSettings();
-
-                    Zip original = new Zip(Settings.settings.BTDBBackupDir + "\\Assets\\data.jet");
-                    Thread thread = new Thread(delegate () { original.GetPassword(); });
-                    thread.Start();
-                }
-            }
+            Settings.SaveSettings();         
 
 
             //
             //Check game dir
             bool error = false;
             string gameD = Settings.game.GameDir;
-            if (gameD != "" && gameD != null)
+            if (Guard.IsStringValid(gameD))
             {
                 if(Directory.Exists(gameD))
                     Log.Output("Game Directory Found!");
@@ -145,6 +122,8 @@ namespace TD_Loader
 
             if (error)
             {
+                MessageBox.Show("Some setup is required before you can use mods with this game. Please be patient and read the following messages to " +
+                    "make sure it sets up properly. This will take up to 2 minutes");
                 string dir = Game.SetGameDir(Settings.settings.GameName);
                 if (dir != "" && dir != null)
                 {
@@ -158,6 +137,47 @@ namespace TD_Loader
                     return;
                 }
             }
+
+
+
+            //
+            //Check for Game Updated
+            //Get Game Version if it wasnt 
+            if (!Guard.IsStringValid(Settings.game.GameVersion))
+            {
+                Settings.game.GameVersion = Game.GetVersion(Settings.settings.GameName);
+                Settings.SaveGameFile();
+                Settings.SaveSettings();
+            }
+            else
+            {
+                string version = Game.GetVersion(Settings.settings.GameName);
+                if (version != Settings.game.GameVersion)
+                {
+                    MessageBox.Show("Game has been updated... Reaquiring files...");
+                    Log.Output("Game has been updated... Reaquiring files...");
+                    string backupdir = Settings.game.GameBackupDir;
+                    if (backupdir == "" || backupdir == null)
+                        Game.CreateBackupDir(Settings.settings.GameName);
+
+                    await Game.CreateBackupAsync(Settings.settings.GameName);
+                    Log.Output("Done making backup");
+
+                    Settings.game.GameVersion = version;
+                    Settings.SaveGameFile();
+
+                    if (Settings.settings.GameName == "BTDB")
+                    {
+                        Settings.settings.DidBtdbUpdate = true;
+                        Settings.SaveSettings();
+
+                        Zip original = new Zip(Settings.settings.BTDBBackupDir + "\\Assets\\data.jet");
+                        Thread thread = new Thread(delegate () { original.GetPassword(); });
+                        thread.Start();
+                    }
+                }
+            }
+
 
 
             //
@@ -179,7 +199,6 @@ namespace TD_Loader
                 await Game.CreateBackupAsync(Settings.settings.GameName);
                 Log.Output("Done making backup");
             }
-
 
             //
             //Clear mods list
@@ -330,16 +349,24 @@ namespace TD_Loader
                 return;
             }
 
-            MessageBox.Show("Beginning to merge mods. Please wait, this will take up to 5 seconds per mod. The program is not frozen...");
-            doingWork = true;
+            if(mods_User.SelectedMods_ListBox.Items.Count > 0)
+            {
+                MessageBox.Show("Beginning to merge mods. Please wait, this will take up to 5 seconds per mod. The program is not frozen...");
+                doingWork = true;
 
-            Settings.game.LoadedMods = mods_User.modPaths;
-            Settings.SaveGameFile();
-            Settings.SaveSettings();
+                Settings.game.LoadedMods = mods_User.modPaths;
+                Settings.SaveGameFile();
+                Settings.SaveSettings();
 
-            JetReader jet = new JetReader();
-            Thread thread = new Thread(delegate () { jet.DoWork(); });
-            thread.Start();
+                JetReader jet = new JetReader();
+                Thread thread = new Thread(delegate () { jet.DoWork(); });
+                thread.Start();
+            }
+            else
+            {
+                Log.Output("You chose to play with no mods... Launching game");
+                LaunchGame();
+            }
         }
         private void JetReader_FinishedStagingMods(object sender, EventArgs e)
         {

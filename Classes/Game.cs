@@ -221,6 +221,11 @@ namespace TD_Loader.Classes
         //
         public static string GetVersion(string game)
         {
+            if(Settings.game == null)
+            {
+                return "";
+            }
+
             string gameDir = Settings.game.GameDir;
             string exeName = GetEXEName(game);
             string exePath = gameDir + "\\" + exeName;
