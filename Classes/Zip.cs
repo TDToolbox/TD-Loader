@@ -113,7 +113,7 @@ namespace TD_Loader.Classes
             string zipPath = filepath.Replace("\\", "/");
             filepath = filepath.Replace("/", "\\");
 
-            GetEntry(source, zipPath).Extract(Settings.settings.StagingDir);
+            GetEntry(source, zipPath).Extract(Settings.settings.StagingDir, ExtractExistingFileAction.OverwriteSilently);
             
             string[] split = filepath.Split('\\');
             string filename = split[split.Length - 1].Replace("\\","");

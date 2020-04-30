@@ -62,7 +62,7 @@
             </Grid.ColumnDefinitions>
 
             <ListBox x:Name="SelectedMods_ListBox" Grid.Row="0" Grid.Column="0" ScrollViewer.VerticalScrollBarVisibility="Auto" 
-                     Background="{StaticResource BrushBackground}" Foreground="{StaticResource BrushFont}"/>
+                     Background="{StaticResource BrushBackground}" Foreground="{StaticResource BrushFont}" SelectionChanged="SelectedMods_ListBox_SelectionChanged_1"/>
             <Grid Grid.Column="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="20"/>

@@ -141,7 +141,7 @@ namespace TD_Loader
                         string filename = split[split.Length - 1];
                         string copiedMod = Mods.CopyMod(mod, modD + "\\" + filename);
 
-                        if (copiedMod != "")
+                        if (copiedMod != "" && copiedMod != " ")
                         {
                             FileInfo f = new FileInfo(copiedMod);
 
@@ -155,6 +155,9 @@ namespace TD_Loader
                                 margin.Top = 10;
                                 item.Margin = margin;
                             }
+                            item.modName = f.Name;
+                            item.modPath = f.FullName;
+
                             Mods_ListBox.Items.Add(item);
                         }
                     }
@@ -308,6 +311,17 @@ namespace TD_Loader
 
 
             SelectedMods_ListBox.SelectedIndex = SelectedMods_ListBox.Items.Count-1;
+        }
+
+        private void SelectedMods_ListBox_SelectionChanged_1(object sender, SelectionChangedEventArgs e)
+        {
+            if(SelectedMods_ListBox.Items.Contains("") || SelectedMods_ListBox.Items.Contains(" "))
+            {
+                modPaths.Remove("");
+                modPaths.Remove(" ");
+                SelectedMods_ListBox.Items.Remove("");
+                SelectedMods_ListBox.Items.Remove(" ");
+            }
         }
     }
 }
