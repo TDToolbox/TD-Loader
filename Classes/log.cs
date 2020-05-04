@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows;
 
 namespace TD_Loader.Classes
 {
@@ -25,7 +26,7 @@ namespace TD_Loader.Classes
         }
         public static void OutputMgbBox(string output)
         {
-
+            MessageBox.Show(">> " + output);
         }
     }
 }

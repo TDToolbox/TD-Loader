@@ -174,7 +174,7 @@ namespace TD_Loader.Classes
             done = false;
             Log.Output("Validation finished.");
             //validationProc.Kill();
-            Windows.CloseWindow(" - 100% ");    //For all the Mallis's out there whose PC is in Italian
+            Windows.CloseWindow("100%");    //For all the Mallis's out there whose PC is in Italian
 
             return true;
         }

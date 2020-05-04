@@ -83,6 +83,7 @@ namespace TD_Loader.Classes
             }
 
 
+            MainWindow.workType = "Almost done staging";
             var files = new DirectoryInfo(Settings.settings.StagingDir).GetFiles("*", SearchOption.AllDirectories);
             foreach (var file in files)
             {
@@ -106,15 +107,19 @@ namespace TD_Loader.Classes
 
             MessageBox.Show("Done staging");
             MainWindow.doingWork = false;
-            
-            if(FinishedStagingMods != null)
+            MainWindow.workType = "";
+
+            if (FinishedStagingMods != null)
                 FinishedStagingMods.Invoke(this, EventArgs.Empty);
         }
 
         public void HandleZipFiles(string mod)
         {
             Zip modFile = new Zip(mod);
-            foreach(ZipEntry entry in modFile.Archive.Entries)
+            FileInfo file = new FileInfo(mod);
+            MainWindow.workType = "Processing " + file.Name;
+
+            foreach (ZipEntry entry in modFile.Archive.Entries)
             {
                 if(entry.FileName.EndsWith(".jet"))
                 {
@@ -132,6 +137,9 @@ namespace TD_Loader.Classes
 
         public void HandleJetFiles(string mod)
         {
+            FileInfo f = new FileInfo(mod);
+            MainWindow.workType = "Processing " + f.Name;
+
             string backupJet = "";
             if (Settings.game.GameName == "BTD5")
                 backupJet = "BTD5.jet";
@@ -151,6 +159,7 @@ namespace TD_Loader.Classes
             }
             else
             {
+                MainWindow.workType = "Attempting to get the BTD Battles password for " + f.Name;
                 originalPass = original.GetPassword();
                 moddedPass = modded.GetPassword();
             }
@@ -160,12 +169,14 @@ namespace TD_Loader.Classes
             modded.CurrentPassword = moddedPass;
             modded.Archive.Password = moddedPass;
 
+            MainWindow.workType = "Finding all the modded files in " + f.Name;
             List<string> moddedFiles = new List<string>();
             moddedFiles = GetAllModdedFiles(original, modded);
             Zip staging = new Zip(Settings.settings.StagingDir + "\\" + backupJet, original.CurrentPassword);
             foreach (string file in moddedFiles)
                 staging.CopyFilesBetweenZips(modded.Archive, staging.Archive, file);
 
+            MainWindow.workType = "Finished getting modded files in " + f.Name;
             staging.Archive.Dispose();
             modded.Archive.Dispose();
             original.Archive.Dispose();

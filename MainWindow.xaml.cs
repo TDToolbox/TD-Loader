@@ -26,6 +26,7 @@ namespace TD_Loader
     {
         bool finishedLoading = false;
         public static bool doingWork = false;
+        public static string workType = "";
         public static MainWindow instance;
         public static Mods_UserControl mods_User;
         public MainWindow()
@@ -99,6 +100,7 @@ namespace TD_Loader
             }
 
             doingWork = true;
+            workType = "Initializing mod loader for game";
             Settings.SetGameFile();
             Settings.SaveSettings();         
 
@@ -154,6 +156,7 @@ namespace TD_Loader
                 string version = Game.GetVersion(Settings.settings.GameName);
                 if (version != Settings.game.GameVersion)
                 {
+                    workType = "Aquiring backup files";
                     MessageBox.Show("Game has been updated... Reaquiring files...");
                     Log.Output("Game has been updated... Reaquiring files...");
                     string backupdir = Settings.game.GameBackupDir;
@@ -192,6 +195,7 @@ namespace TD_Loader
             bool valid = Game.VerifyBackup(Settings.settings.GameName);
             if(!valid)
             {
+                workType = "Creating backup";
                 string backupdir = Settings.game.GameBackupDir;
                 if (backupdir == "" || backupdir == null)
                     Game.CreateBackupDir(Settings.settings.GameName);
@@ -207,6 +211,7 @@ namespace TD_Loader
             //
             //Done
             doingWork = false;
+            workType = "";
         }
         public static async Task Wait(int time)
         {
@@ -236,9 +241,10 @@ namespace TD_Loader
         //
         private void ResetGamePictures()
         {
-                BTD5_Image.Source = new BitmapImage(new Uri("Resources/btd5_not loaded.png", UriKind.Relative));
-                BTDB_Image.Source = new BitmapImage(new Uri("Resources/btdb 2_not loaded.png", UriKind.Relative));
-                BMC_Image.Source = new BitmapImage(new Uri("Resources/bmc_not loaded.png", UriKind.Relative));
+            workType = "";  //We're doing this to clear the last opperation, if it wasnt cleared
+            BTD5_Image.Source = new BitmapImage(new Uri("Resources/btd5_not loaded.png", UriKind.Relative));
+            BTDB_Image.Source = new BitmapImage(new Uri("Resources/btdb 2_not loaded.png", UriKind.Relative));
+            BMC_Image.Source = new BitmapImage(new Uri("Resources/bmc_not loaded.png", UriKind.Relative));
         }
         private void BMC_Image_IsMouseDirectlyOverChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
@@ -281,12 +287,8 @@ namespace TD_Loader
         }
         private void BTD5_Image_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (doingWork)
-            {
-                MessageBox.Show("Currently doing something else. Please wait...");
-                Log.Output("TD Loader is currently doing something else. Please wait...");
+            if (Guard.IsDoingWork(workType))
                 return;
-            }
 
             if (Settings.game.GameName != "BTD5")
             {
@@ -299,12 +301,8 @@ namespace TD_Loader
         }
         private void BTDB_Image_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if(doingWork)
-            {
-                MessageBox.Show("Currently doing something else. Please wait...");
-                Log.Output("TD Loader is currently doing something else. Please wait...");
+            if (Guard.IsDoingWork(workType))
                 return;
-            }
 
             if (Settings.settings.GameName != "BTDB")
             {
@@ -318,12 +316,8 @@ namespace TD_Loader
         }
         private void BMC_Image_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (doingWork)
-            {
-                MessageBox.Show("Currently doing something else. Please wait...");
-                Log.Output("TD Loader is currently doing something else. Please wait...");
+            if (Guard.IsDoingWork(workType))
                 return;
-            }
 
             if (Settings.settings.GameName != "BMC")
             {
@@ -343,16 +337,18 @@ namespace TD_Loader
 
         private void Launch_Button_Clicked(object sender, RoutedEventArgs e)
         {
-            if (doingWork == true)
+            if(Guard.IsDoingWork(workType))
             {
-                MessageBox.Show("Cant do that! Currently doing something else");
                 return;
             }
 
-            if(mods_User.SelectedMods_ListBox.Items.Count > 0)
+            if (mods_User.SelectedMods_ListBox.Items.Count > 0)
             {
-                MessageBox.Show("Beginning to merge mods. Please wait, this will take up to 5 seconds per mod. The program is not frozen...");
+                MessageBox.Show("Beginning to merge mods. Please wait, this will take up to 5 seconds per mod. Bigger mods could take up to a minute or 2. The program is not frozen...");
+                MessageBox.Show("If you have issues with your mods, please try chaning the load order");
+
                 doingWork = true;
+                workType = "Beginning to merge mods";
 
                 Settings.game.LoadedMods = mods_User.modPaths;
                 Settings.SaveGameFile();

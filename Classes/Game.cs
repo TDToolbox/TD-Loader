@@ -132,13 +132,14 @@ namespace TD_Loader.Classes
             if (Directory.Exists(backupDir))
             {
                 var backupFiles = Directory.GetFiles(backupDir, "*", SearchOption.AllDirectories);
-                if (backupFiles.Length >= numFiles)
+                if (backupFiles.Count() >= numFiles)
                     valid = true;
             }
             return valid;
         }       
         public static async Task CreateBackupAsync(string game)
         {
+            MainWindow.workType = "Creating backup";
             Log.Output("Creating backup for " + game);
             DialogResult diag = MessageBox.Show("Creating a backup for " + game
                 + "\n\nYour game NEEDS to be unmodded, otherwise it could cause issues." +
@@ -156,12 +157,14 @@ namespace TD_Loader.Classes
             }
             else
             {
+                MainWindow.workType = "Using Steam Validator to verify game integrity (checking if the game is modded or not)";
                 Log.Output("User chose to automatically verify game files");
                 Steam steam = new Steam();
                 bool finished = await steam.ValidateGameAsync(game);
 
                 if (finished)
                 {
+                    MainWindow.workType = "Finished validating files";
                     MessageBox.Show("Finished validating files. Creating backup...");
                     Log.Output("Finished validating files. Creating backup");
 
@@ -200,6 +203,7 @@ namespace TD_Loader.Classes
                         }
                         if (!error)
                         {
+                            MainWindow.workType = "Copying game files to backup directory";
                             System.Threading.Thread thread = new System.Threading.Thread(() => FileIO.CopyDirsAndContents(gameDir, backupDir));
                             thread.Start();
 
@@ -209,6 +213,7 @@ namespace TD_Loader.Classes
                             }
                             FileIO.done = false;
                             MessageBox.Show("Done creating backup...");
+                            MainWindow.workType = "";
                         }
                     }
                     catch(Exception ex) { MessageBox.Show(ex.Message); }

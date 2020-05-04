@@ -115,14 +115,10 @@ namespace TD_Loader
         }
         private void AddMods_Button_Click(object sender, RoutedEventArgs e)
         {
-            if (MainWindow.doingWork)
-            {
-                MessageBox.Show("Cant do that! Currently doing something else... Please wait");
-                Log.Output("Cant do that! Currently doing something else... Please wait");
-                return;
-            }
+            if (Guard.IsDoingWork(MainWindow.workType)) return;
 
             MainWindow.doingWork = true;
+            MainWindow.workType = "Adding mods";
             if (Settings.settings.GameName != "" && Settings.settings.GameName != null)
             {
                 List<string> mods = Mods.AddMods();
@@ -135,6 +131,7 @@ namespace TD_Loader
 
                 if (mods != null && (modD != "" && modD != null))
                 {
+                    MainWindow.workType = "Copying mods";
                     foreach (string mod in mods)
                     {
                         string[] split = mod.Split('\\');
@@ -169,6 +166,7 @@ namespace TD_Loader
                 Log.ForceOutput("You need to choose a game before you can add mods!");
             
             MainWindow.doingWork = false;
+            MainWindow.workType = "";
         }
 
         public void HandlePriorityButtons()

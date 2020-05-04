@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace TD_Loader.Classes
 {
@@ -32,6 +33,19 @@ namespace TD_Loader.Classes
             }
 
             return true;
+        }
+
+
+        public static bool IsDoingWork(string errorMessage)
+        {
+            if (MainWindow.doingWork)
+            {
+                Log.Output("Cant do that! Doing something else.\nCurrent Process: " + errorMessage);
+                Log.OutputMgbBox("Cant do that! Doing something else.\nCurrent Process: " + errorMessage);
+                return true;
+            }
+            else
+                return false;
         }
     }
 }
