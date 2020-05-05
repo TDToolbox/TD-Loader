@@ -103,7 +103,7 @@
 
 
             </TabItem>
-            <TabItem Name="Plugins_Tab" Header="Plugins" Visibility="Collapsed">
+            <TabItem Name="Plugins_Tab" Header="Plugins">
                 <Grid x:Name="PluginsUserControl">
 
                 </Grid>
@@ -121,7 +121,7 @@
 
 
         <!--Change MinHeight to 220 when all tabs are enabled-->
-        <Grid Grid.Row="1" MinHeight="115" 
+        <Grid Grid.Row="1" MinHeight="155" 
        VerticalAlignment="Top" Margin="-5,0,0,0" Background="{x:Null}">
             <StackPanel Orientation="Vertical" HorizontalAlignment="Left" 
                 VerticalAlignment="Bottom" Margin="0,0">

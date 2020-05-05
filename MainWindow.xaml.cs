@@ -127,19 +127,19 @@ namespace TD_Loader
                 MessageBox.Show("Some setup is required before you can use mods with this game. Please be patient and read the following messages to " +
                     "make sure it sets up properly. This will take up to 2 minutes");
                 string dir = Game.SetGameDir(Settings.settings.GameName);
-                if (dir != "" && dir != null)
+                if (Guard.IsStringValid(dir))
                 {
                     Settings.game.GameDir = dir;
                     Settings.SaveGameFile();
                 }
-                else
-                {
-                    Log.Output("Something went wrong... Failed to aquire game directory...");
-                    ResetGamePictures();
-                    return;
-                }
             }
 
+            if (!Guard.IsStringValid(Settings.game.GameDir))
+            {
+                Log.Output("Something went wrong... Failed to aquire game directory...");
+                ResetGamePictures();
+                return;
+            }
 
 
             //

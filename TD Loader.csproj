@@ -106,7 +106,6 @@
     <Compile Include="Classes\JetReader.cs" />
     <Compile Include="Classes\JSON.cs" />
     <Compile Include="Classes\Log.cs" />
-    <Compile Include="Classes\Merger.cs" />
     <Compile Include="Classes\Mods.cs" />
     <Compile Include="Classes\Settings.cs" />
     <Compile Include="Classes\Steam.cs" />
