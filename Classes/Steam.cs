@@ -174,7 +174,7 @@ namespace TD_Loader.Classes
             done = false;
             Log.Output("Validation finished.");
             //validationProc.Kill();
-            Windows.CloseWindow("100%");    //For all the Mallis's out there whose PC is in Italian
+            Windows.CloseWindow(" - 100% ");    //For all the Mallis's out there whose PC is in Italian
 
             return true;
         }
@@ -196,7 +196,8 @@ namespace TD_Loader.Classes
         {
             bool result = false;
             if (op == "stop")
-                result = GetValidatorProc("Validating Steam files - ", "100% complete");
+                result = GetValidatorProc(" - 100% ", "");
+                //result = GetValidatorProc("Validating Steam files - ", "100% complete");
             else
                 result = GetValidatorProc("Validating Steam files - ", "");
 

@@ -58,6 +58,14 @@ namespace TD_Loader
         }
         private void FinishedLoading()
         {
+            if(Settings.settings.ShownAntiPirateMessage == false)
+            {
+                MessageBox.Show("Due to the way TD Loader is coded, you cannot use this program if you are using a " +
+                    "pirated version of the game. If you try anyways it WILL NOT work. Thank you for understanding");
+                Settings.settings.ShownAntiPirateMessage = true;
+                Settings.SaveSettings();
+            }
+
             bool dirNotFound = false;
             if (!Guard.IsStringValid(Settings.game.GameDir))
             {

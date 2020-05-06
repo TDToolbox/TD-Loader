@@ -54,6 +54,7 @@ namespace TD_Loader.Classes
 
 
             public bool AdvancedConflictMenu { get; set; }
+            public bool ShownAntiPirateMessage { get; set; }
         }
         /// <summary>
         /// An object containing info on the current game, from the settings
@@ -178,6 +179,7 @@ namespace TD_Loader.Classes
 
 
             settings.AdvancedConflictMenu = false;
+            settings.ShownAntiPirateMessage = false;
 
             SaveSettings();
         }
