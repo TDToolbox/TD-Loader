@@ -22,7 +22,7 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="60"/>
             <RowDefinition Height="*" MaxHeight="300"/>
-            <RowDefinition Height="20"/>
+            <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="20"/>
@@ -47,6 +47,11 @@
 
         <ListBox x:Name="Mods_ListBox" Grid.Row="2" Grid.Column="1" ScrollViewer.VerticalScrollBarVisibility="Auto" Background="#FF363636"/>
 
+        <Viewbox  Grid.Row="5" Grid.Column="1" HorizontalAlignment="Left" Margin="0,0">
+            <TextBlock Foreground="#FFFF00D1">^^^ Put highest proirity mods at the top of the list above ^^^</TextBlock>
+        </Viewbox>
+        
+        
         <Grid x:Name="SelectedMods" Grid.Row="4" Grid.Column="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
@@ -57,7 +62,7 @@
             </Grid.ColumnDefinitions>
 
             <ListBox x:Name="SelectedMods_ListBox" Grid.Row="0" Grid.Column="0" ScrollViewer.VerticalScrollBarVisibility="Auto" 
-                     Background="{StaticResource BrushBackground}" Foreground="{StaticResource BrushFont}"/>
+                     Background="{StaticResource BrushBackground}" Foreground="{StaticResource BrushFont}" SelectionChanged="SelectedMods_ListBox_SelectionChanged_1"/>
             <Grid Grid.Column="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="20"/>

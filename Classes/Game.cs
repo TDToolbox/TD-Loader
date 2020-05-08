@@ -162,6 +162,7 @@ namespace TD_Loader.Classes
 
                 if (finished)
                 {
+                    MessageBox.Show("Finished validating files. Creating backup...");
                     Log.Output("Finished validating files. Creating backup");
 
                     string backupDir = Settings.game.GameBackupDir;
@@ -171,40 +172,46 @@ namespace TD_Loader.Classes
 
                     try
                     {
-                        if (Directory.Exists(backupDir))
-                            Directory.Delete(backupDir, true);
-                    }
-                    catch { }
-                    Directory.CreateDirectory(backupDir);
+                        try
+                        {
+                            if (Directory.Exists(backupDir))
+                                Directory.Delete(backupDir, true);
+                        }
+                        catch { }
 
-                    if (gameDir == "" || gameDir == null)
-                    {
-                        string path = SetGameDir(game);
+                        if (!Directory.Exists(backupDir))
+                            Directory.CreateDirectory(backupDir);
 
-                        if (path == "" || path == null)
+                        if (!Guard.IsStringValid(gameDir))
                         {
-                            error = true;
-                            Log.Output("Something went wrong... Failed to aquire game directory...");
+                            string path = SetGameDir(game);
+
+                            if (!Guard.IsStringValid(path))
+                            {
+                                error = true;
+                                Log.Output("Something went wrong... Failed to aquire game directory...");
+                            }
+                            else
+                            {
+                                Log.Output("You selected " + path + " for your game directory");
+                                Settings.game.GameDir = path;
+                                Settings.SaveGameFile();
+                            }
                         }
-                        else
+                        if (!error)
                         {
-                            Log.Output("You selected " + path + " for your game directory");
-                            Settings.game.GameDir = path;
-                            Settings.SaveGameFile();
+                            System.Threading.Thread thread = new System.Threading.Thread(() => FileIO.CopyDirsAndContents(gameDir, backupDir));
+                            thread.Start();
+
+                            while (FileIO.done != true)
+                            {
+                                await MainWindow.Wait(250);
+                            }
+                            FileIO.done = false;
+                            MessageBox.Show("Done creating backup...");
                         }
                     }
-                    if (!error)
-                    {
-                        System.Threading.Thread thread = new System.Threading.Thread(() => FileIO.CopyDirsAndContents(gameDir, backupDir));
-                        thread.Start();
-                        
-                        while (FileIO.done != true)
-                        {
-                            await MainWindow.Wait(250);
-                        }
-                        thread.Abort();
-                        FileIO.done = false;
-                    }
+                    catch(Exception ex) { MessageBox.Show(ex.Message); }
                 }
             }
         }
@@ -214,6 +221,11 @@ namespace TD_Loader.Classes
         //
         public static string GetVersion(string game)
         {
+            if(Settings.game == null)
+            {
+                return "";
+            }
+
             string gameDir = Settings.game.GameDir;
             string exeName = GetEXEName(game);
             string exePath = gameDir + "\\" + exeName;

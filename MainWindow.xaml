@@ -21,7 +21,7 @@
 
         </ResourceDictionary>
     </Window.Resources>
-    
+
     <!--<Window.Background>
         <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
             <GradientStop Color="Black" Offset="0"/>
@@ -35,7 +35,7 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <ToolBar>
+        <ToolBar Visibility="Collapsed">
             <Button x:Name="File_Button">File</Button>
             <Button x:Name="View_Button">View</Button>
             <Button x:Name="Help_Button">Help</Button>
@@ -97,7 +97,7 @@
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="20"/>
                     </Grid.RowDefinitions>
-                    
+
 
                 </Grid>
 
@@ -105,23 +105,23 @@
             </TabItem>
             <TabItem Name="Plugins_Tab" Header="Plugins">
                 <Grid x:Name="PluginsUserControl">
-                    
+
                 </Grid>
             </TabItem>
 
-            <TabItem Header="Saves" >
+            <TabItem Header="Saves" Visibility="Collapsed" >
                 <Grid/>
             </TabItem>
 
 
-            <TabItem Header="Help">
+            <TabItem Header="Help" Visibility="Collapsed">
                 <Grid/>
             </TabItem>
         </TabControl>
 
 
-
-        <Grid Grid.Row="1" MinHeight="220"
+        <!--Change MinHeight to 220 when all tabs are enabled-->
+        <Grid Grid.Row="1" MinHeight="155" 
        VerticalAlignment="Top" Margin="-5,0,0,0" Background="{x:Null}">
             <StackPanel Orientation="Vertical" HorizontalAlignment="Left" 
                 VerticalAlignment="Bottom" Margin="0,0">

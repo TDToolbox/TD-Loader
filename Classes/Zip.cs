@@ -76,13 +76,44 @@ namespace TD_Loader.Classes
 
         }
 
+        /*public static List<string> GetModdedFolders(Zip original, Zip modded)
+        {
+            List<string> moddedFolders = new List<string>();
+
+            foreach(ZipEntry entry in modded.Archive.Entries)
+            {
+                if(entry.IsDirectory)
+                {
+                    string[] split = entry.FileName.Split('/');
+                    if (split.Length == 4)
+                    {
+                        string foldername = entry.FileName;
+
+                        var originalSize = original.GetEntry(foldername).UncompressedSize;
+                        var moddedSize = modded.GetEntry(foldername).UncompressedSize;
+
+                        MessageBox.Show("One " + entry.IsDirectory.ToString());
+                        MessageBox.Show(moddedSize.ToString());
+
+                        *//*JetReader reader = new JetReader();
+                        bool result = reader.CompareFiles(original, modded, foldername);
+                        if (result == true)
+                            moddedFolders.Add(foldername);*//*
+                    }
+                }
+                
+            }
+            MessageBox.Show(moddedFolders.Count.ToString());
+            return moddedFolders;
+        }
+*/
 
         public void CopyFilesBetweenZips(ZipFile source, ZipFile dest, string filepath)
         {
             string zipPath = filepath.Replace("\\", "/");
             filepath = filepath.Replace("/", "\\");
 
-            GetEntry(source, zipPath).Extract(Settings.settings.StagingDir);
+            GetEntry(source, zipPath).Extract(Settings.settings.StagingDir, ExtractExistingFileAction.OverwriteSilently);
             
             string[] split = filepath.Split('\\');
             string filename = split[split.Length - 1].Replace("\\","");
@@ -90,16 +121,16 @@ namespace TD_Loader.Classes
             dest.UpdateFile(Settings.settings.StagingDir + "\\" + filepath, zipPath.Replace(filename,""));
             dest.Save(Archive.Name);
 
-            if (File.Exists(Settings.settings.StagingDir + "\\" + filepath))
-                File.Delete(Settings.settings.StagingDir + "\\" + filepath);
+            if (Directory.Exists(Settings.settings.StagingDir + "\\Assets\\JSON"))
+                Directory.Delete(Settings.settings.StagingDir + "\\Assets\\JSON", true);
         }
-        
+
         /// <summary>
         /// Returns the zip entry at the specified path. Uses the ZipFile from the Zip object
         /// </summary>
         /// <param name="filePathInZip">path to the file in the zip</param>
         /// <returns>Zip entry</returns>
-        public ZipEntry GetEntry(string filePathInZip) => GetEntry(this.Archive, filePathInZip);
+        public ZipEntry GetEntry(string filePathInZip) => Zip.GetEntry(this.Archive, filePathInZip);
 
         /// <summary>
         /// Returns the zip entry at the specified path. Gets the file from the ZipFile argument
@@ -107,17 +138,19 @@ namespace TD_Loader.Classes
         /// <param name="zip">The ZipFile you want to get the entry from</param>
         /// <param name="filePathInZip">path to the file in the zip</param>
         /// <returns>Zip entry</returns>
-        public ZipEntry GetEntry(ZipFile zip, string filePathInZip)
+        public static ZipEntry GetEntry(ZipFile zip, string filePathInZip)
         {
             if(zip == null)
             {
                 Log.Output("Failed to get entry. Zip was null");
+                MessageBox.Show("Failed to get entry. Zip was null");
                 return null;
             }
 
             if(!Guard.IsStringValid(filePathInZip))
             {
                 Log.Output("Failed to get entry. filePathInZip was invalid");
+                MessageBox.Show("Failed to get entry. filePathInZip was invalid");
                 return null;
             }
 

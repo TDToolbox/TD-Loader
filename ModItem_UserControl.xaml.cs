@@ -75,5 +75,15 @@ namespace TD_Loader
         {
             return modPath;
         }
+
+        private void SplitButton_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("This button is currently disabled. Check back on the next release");
+        }
+
+        private void ButtonChrome_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            MessageBox.Show("This button is currently disabled. Check back on the next release");
+        }
     }
 }

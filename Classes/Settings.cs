@@ -18,6 +18,11 @@ namespace TD_Loader.Classes
         public static string settingsFileName = "settings.json";
         public static string settingsPath = Environment.CurrentDirectory + "\\" + settingsFileName;
 
+        public Settings()
+        {
+            game = new GameFile();
+        }
+
         public class SettingsFile
         {
             public string MainSettingsDir { get; } = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\TD Loader";
@@ -110,7 +115,7 @@ namespace TD_Loader.Classes
         {
             if (game == null)
             {
-                MessageBox.Show("Failed to save game object");
+                //MessageBox.Show("Failed to save game object");
                 return;
             }
 
@@ -145,19 +150,20 @@ namespace TD_Loader.Classes
         public static void CreateSettings()
         {
             settings = new SettingsFile();
+
             settings.TDLoaderVersion = System.Diagnostics.FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).FileVersion;
             settings.GameName = "";
 
 
             settings.BTD5Dir = "";
-            settings.BTD5Version = "";
+            settings.BTD5Version = Game.GetVersion("BTD5");
             settings.BTD5BackupDir = "";
             settings.BTD5ModsDir = "";
             settings.BTD5LoadedMods = new List<string>();
 
 
             settings.BTDBDir = "";
-            settings.BTDBVersion = "";
+            settings.BTDBVersion = Game.GetVersion("BTDB");
             settings.BTDBBackupDir = "";
             settings.BTDBModsDir = "";
             settings.DidBtdbUpdate = false;
@@ -165,7 +171,7 @@ namespace TD_Loader.Classes
 
 
             settings.BMCDir = "";
-            settings.BMCVersion = "";
+            settings.BMCVersion = Game.GetVersion("BMC");
             settings.BMCBackupDir = "";
             settings.BMCModsDir = "";
             settings.BMCLoadedMods = new List<string>();
@@ -179,17 +185,19 @@ namespace TD_Loader.Classes
         {
             if (!File.Exists(settingsPath))
                 CreateSettings();
+
             string json = File.ReadAllText(settingsPath);
             if (JSON.IsJsonValid(json))
             {
                 settings = JsonConvert.DeserializeObject<SettingsFile>(json);
-                SetGameFile();
             }
             else
             {
                 Log.Output("Settings file has invalid json, generating a new settings file.");
                 CreateSettings();
             }
+
+            SetGameFile();
             return settings;
         }
         public static void SaveSettings()

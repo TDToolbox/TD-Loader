@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -38,8 +39,9 @@ namespace TD_Loader
             BMC_Image.IsMouseDirectlyOverChanged += BMC_Image_IsMouseDirectlyOverChanged;
 
             Main.Closing += Main_Closing;
+            JetReader.FinishedStagingMods += JetReader_FinishedStagingMods;
         }
-       
+
         private void Startup()
         {
             Settings.LoadSettings();
@@ -51,7 +53,7 @@ namespace TD_Loader
             tab.FontSize = 25;
             tab.Content = mods_User;//new Mods_UserControl();
             Main_TabController.Items[1] = tab;
-            
+
         }
         private void FinishedLoading()
         {
@@ -91,44 +93,21 @@ namespace TD_Loader
         }
         private async void GameHandling()
         {
+            if(Settings.game == null)
+            {
+                return;
+            }
+
             doingWork = true;
             Settings.SetGameFile();
-            Settings.SaveSettings();
-
-            //
-            //Check for Game Updated
-            string version = Game.GetVersion(Settings.settings.GameName);
-            if (version != Settings.game.GameVersion)
-            {
-                MessageBox.Show("Game has been updated... Reaquiring files...");
-                Log.Output("Game has been updated... Reaquiring files...");
-                string backupdir = Settings.game.GameBackupDir;
-                if (backupdir == "" || backupdir == null)
-                    Game.CreateBackupDir(Settings.settings.GameName);
-
-                await Game.CreateBackupAsync(Settings.settings.GameName);
-                Log.Output("Done making backup");
-
-                Settings.game.GameVersion = version;
-                Settings.SaveGameFile();
-
-                if(Settings.settings.GameName == "BTDB")
-                {
-                    Settings.settings.DidBtdbUpdate = true;
-                    Settings.SaveSettings();
-
-                    Zip original = new Zip(Settings.settings.BTDBBackupDir + "\\Assets\\data.jet");
-                    Thread thread = new Thread(delegate () { original.GetPassword(); });
-                    thread.Start();
-                }
-            }
+            Settings.SaveSettings();         
 
 
             //
             //Check game dir
             bool error = false;
             string gameD = Settings.game.GameDir;
-            if (gameD != "" && gameD != null)
+            if (Guard.IsStringValid(gameD))
             {
                 if(Directory.Exists(gameD))
                     Log.Output("Game Directory Found!");
@@ -143,6 +122,8 @@ namespace TD_Loader
 
             if (error)
             {
+                MessageBox.Show("Some setup is required before you can use mods with this game. Please be patient and read the following messages to " +
+                    "make sure it sets up properly. This will take up to 2 minutes");
                 string dir = Game.SetGameDir(Settings.settings.GameName);
                 if (dir != "" && dir != null)
                 {
@@ -156,6 +137,47 @@ namespace TD_Loader
                     return;
                 }
             }
+
+
+
+            //
+            //Check for Game Updated
+            //Get Game Version if it wasnt 
+            if (!Guard.IsStringValid(Settings.game.GameVersion))
+            {
+                Settings.game.GameVersion = Game.GetVersion(Settings.settings.GameName);
+                Settings.SaveGameFile();
+                Settings.SaveSettings();
+            }
+            else
+            {
+                string version = Game.GetVersion(Settings.settings.GameName);
+                if (version != Settings.game.GameVersion)
+                {
+                    MessageBox.Show("Game has been updated... Reaquiring files...");
+                    Log.Output("Game has been updated... Reaquiring files...");
+                    string backupdir = Settings.game.GameBackupDir;
+                    if (backupdir == "" || backupdir == null)
+                        Game.CreateBackupDir(Settings.settings.GameName);
+
+                    await Game.CreateBackupAsync(Settings.settings.GameName);
+                    Log.Output("Done making backup");
+
+                    Settings.game.GameVersion = version;
+                    Settings.SaveGameFile();
+
+                    if (Settings.settings.GameName == "BTDB")
+                    {
+                        Settings.settings.DidBtdbUpdate = true;
+                        Settings.SaveSettings();
+
+                        Zip original = new Zip(Settings.settings.BTDBBackupDir + "\\Assets\\data.jet");
+                        Thread thread = new Thread(delegate () { original.GetPassword(); });
+                        thread.Start();
+                    }
+                }
+            }
+
 
 
             //
@@ -177,7 +199,6 @@ namespace TD_Loader
                 await Game.CreateBackupAsync(Settings.settings.GameName);
                 Log.Output("Done making backup");
             }
-
 
             //
             //Clear mods list
@@ -221,7 +242,10 @@ namespace TD_Loader
         }
         private void BMC_Image_IsMouseDirectlyOverChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            if(Settings.game.GameName != "BMC")
+            if (Settings.game == null)
+                Settings.SetGameFile();
+
+            if (Settings.game.GameName != "BMC")
             {
                 if (!BMC_Image.IsMouseOver)
                     BMC_Image.Source = new BitmapImage(new Uri("Resources/bmc_not loaded.png", UriKind.Relative));
@@ -231,6 +255,9 @@ namespace TD_Loader
         }
         private void BTDB_Image_IsMouseDirectlyOverChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
+            if (Settings.game == null)
+                Settings.SetGameFile();
+
             if (Settings.game.GameName != "BTDB")
             {
                 if (!BTDB_Image.IsMouseOver)
@@ -241,6 +268,9 @@ namespace TD_Loader
         }
         private void BTD5_Image_IsMouseDirectlyOverChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
+            if (Settings.game == null)
+                Settings.SetGameFile();
+
             if (Settings.game.GameName != "BTD5")
             {
                 if (!BTD5_Image.IsMouseOver)
@@ -319,21 +349,59 @@ namespace TD_Loader
                 return;
             }
 
-            MessageBox.Show("Beginning to merge mods. This will take up to a minute per mod.");
-            doingWork = true;
+            if(mods_User.SelectedMods_ListBox.Items.Count > 0)
+            {
+                MessageBox.Show("Beginning to merge mods. Please wait, this will take up to 5 seconds per mod. The program is not frozen...");
+                doingWork = true;
 
-            Settings.game.LoadedMods = mods_User.modPaths;
-            Settings.SaveGameFile();
-            Settings.SaveSettings();
+                Settings.game.LoadedMods = mods_User.modPaths;
+                Settings.SaveGameFile();
+                Settings.SaveSettings();
 
-            JetReader jet = new JetReader();
-            Thread thread = new Thread(delegate () { jet.DoWork(); });
-            thread.Start();
+                JetReader jet = new JetReader();
+                Thread thread = new Thread(delegate () { jet.DoWork(); });
+                thread.Start();
+            }
+            else
+            {
+                Log.Output("You chose to play with no mods... Launching game");
+                LaunchGame();
+            }
         }
-
-        private void Original_PasswordAquired(object sender, EventArgs e)
+        private void JetReader_FinishedStagingMods(object sender, EventArgs e)
         {
-            MessageBox.Show("Password Aquired");
+            LaunchGame();
+        }
+        private void LaunchGame()
+        {
+            ulong apiId = 0;
+            if (!Guard.IsStringValid(Settings.game.GameName))
+            {
+                MessageBox.Show("Failed to get game name for game. Unable to launch");
+                return;
+            }
+
+            switch (Settings.game.GameName)
+            {
+                
+                case "BTD5":
+                    apiId = Steam.BTD5AppID;
+                    break;
+                case "BTDB":
+                    apiId = Steam.BTDBAppID;
+                    break;
+                case "BMC":
+                    apiId = Steam.BMCAppID;
+                    break;
+            }
+
+            if(!Guard.IsStringValid(apiId.ToString()))
+            {
+                MessageBox.Show("Failed to get API ID for game. Unable to launch");
+                return;
+            }
+
+            Process.Start("steam://Launch/" + apiId);
         }
     }
 }
