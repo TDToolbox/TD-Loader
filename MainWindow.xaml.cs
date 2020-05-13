@@ -328,6 +328,11 @@ namespace TD_Loader
 
                 if(!checkedNKH)
                 {
+                    if(!File.Exists(Environment.CurrentDirectory + "\\NKHook5-Injector.exe"))
+                    {
+                        if(File.Exists(NKHook.nkhEXE))
+                            File.Copy(NKHook.nkhEXE, Environment.CurrentDirectory + "\\NKHook5-Injector.exe");
+                    }
                     NKHook nkh = new NKHook();
                     nkh.DoUpdateNKH();
                     nkh.DoUpdateTowerPlugin();

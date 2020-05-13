@@ -141,7 +141,7 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 
-                <RichTextBox x:Name="OutputLog" Grid.Column="1" Grid.Row="1" Background="#FF1E1E1E" Foreground="White" FontSize="16" FontFamily="Consolas">
+                <RichTextBox x:Name="OutputLog" Grid.Column="1" Grid.Row="1" Background="#FF1E1E1E" Foreground="White" FontSize="16" FontFamily="Consolas" VerticalScrollBarVisibility="Auto">
                     </RichTextBox>
             </Grid>
         </Grid>

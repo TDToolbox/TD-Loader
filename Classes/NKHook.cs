@@ -84,6 +84,9 @@ namespace TD_Loader.Classes
                 if (File.Exists(savePath))
                     File.Delete(savePath);
 
+                if (File.Exists(Environment.CurrentDirectory + "\\NKHook5-Injector.exe"))
+                    File.Delete(Environment.CurrentDirectory + "\\NKHook5-Injector.exe");
+
                 File.Copy(nkhEXE, Environment.CurrentDirectory + "\\NKHook5-Injector.exe");
                 Settings.settings.NKHookVersion = web.LatestVersionNumber;
                 Settings.SaveSettings();
