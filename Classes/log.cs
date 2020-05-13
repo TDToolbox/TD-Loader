@@ -27,7 +27,10 @@ namespace TD_Loader.Classes
             MainWindow.instance.OutputLog.Dispatcher.BeginInvoke((Action)(() =>
             {
                     MainWindow.instance.OutputLog.AppendText(">> " + output + "\n");
+                    MainWindow.instance.OutputLog.ScrollToEnd();                
             }));
+
+            log.lastMessage = output;
         }
 
         public static void OutputCanRepeat(string output) => Print(output, true, false);

@@ -46,30 +46,31 @@ namespace TD_Loader
             var mods = new DirectoryInfo(Settings.game.ModsDir).GetFiles("*.*");
             foreach (var mod in mods)
             {
-                if (mod.Name.EndsWith(".jet") || mod.Name.EndsWith(".zip") || mod.Name.EndsWith(".rar") || mod.Name.EndsWith(".7z"))
+                if (!mod.Name.EndsWith(".jet") && !mod.Name.EndsWith(".zip") && !mod.Name.EndsWith(".rar") && !mod.Name.EndsWith(".7z"))
+                    continue;
+
+                if (Mods_ListBox.Items.Contains(mod))
+                    continue;
+
+                ModItem_UserControl item = new ModItem_UserControl();
+
+                if ((Mods_ListBox.ActualWidth - 31) > 0)
+                    item.MinWidth = Mods_ListBox.ActualWidth - 31;
+                item.ModName.Text = mod.Name;
+
+                Thickness margin = item.Margin;
+                if (Mods_ListBox.Items.Count == 0)
                 {
-                    if (!Mods_ListBox.Items.Contains(mod))
-                    {
-                        ModItem_UserControl item = new ModItem_UserControl();
-
-                        if((Mods_ListBox.ActualWidth - 31) > 0)
-                            item.MinWidth = Mods_ListBox.ActualWidth - 31;
-                        item.ModName.Text = mod.Name;
-
-                        Thickness margin = item.Margin;
-                        if (Mods_ListBox.Items.Count == 0)
-                        {
-                            margin.Top = 10;
-                            item.Margin = margin;
-                        }
-                        item.modName = mod.Name;
-                        item.modPath = mod.FullName;
-                        
-                        modItems.Add(item);
-                        Mods_ListBox.Items.Add(item);
-                    }
+                    margin.Top = 10;
+                    item.Margin = margin;
                 }
+                item.modName = mod.Name;
+                item.modPath = mod.FullName;
+
+                modItems.Add(item);
+                Mods_ListBox.Items.Add(item);
             }
+
             foreach(var selected in Settings.game.LoadedMods)
                 AddToSelectedModLB(selected);
 
@@ -113,6 +114,7 @@ namespace TD_Loader
                     item.MinWidth = Mods_ListBox.ActualWidth - 31;
             }
         }
+
         private void AddMods_Button_Click(object sender, RoutedEventArgs e)
         {
             if (Guard.IsDoingWork(MainWindow.workType)) return;
@@ -156,15 +158,23 @@ namespace TD_Loader
                             item.modPath = f.FullName;
 
                             Mods_ListBox.Items.Add(item);
+                            Log.Output("Added " + item);
                         }
                     }
                 }
                 else
+                {
                     Log.Output("Mods directory not found... Please try again");
+                    MainWindow.doingWork = false;
+                }
+
             }
             else
+            {
                 Log.Output("You need to choose a game before you can add mods!");
-            
+                MainWindow.doingWork = false; ;
+            }
+
             MainWindow.doingWork = false;
             MainWindow.workType = "";
         }

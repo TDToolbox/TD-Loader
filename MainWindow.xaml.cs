@@ -31,6 +31,7 @@ namespace TD_Loader
         public static string workType = "";
         public static MainWindow instance;
         public static Mods_UserControl mods_User;
+        public static Plugins_UserControl plugin_User;
         public MainWindow()
         {
             InitializeComponent();
@@ -56,6 +57,11 @@ namespace TD_Loader
             tab.FontSize = 25;
             tab.Content = mods_User;//new Mods_UserControl();
             Main_TabController.Items[1] = tab;
+            
+            if(NKHook.CanUseNKH())
+                CreatePluginsTab();
+
+
 
             new Thread(() => {
                 UpdateHandler update = new UpdateHandler();
@@ -63,6 +69,21 @@ namespace TD_Loader
             }).Start();
             
         }
+        private void CreatePluginsTab()
+        {
+            plugin_User = new Plugins_UserControl()
+            {
+                isPlugins = true
+            };
+
+            var tab2 = new TabItem();
+            tab2.Header = "   Plugins   ";
+            tab2.Padding = new Thickness(5);
+            tab2.FontSize = 25;
+            tab2.Content = plugin_User;
+            Main_TabController.Items[2] = tab2;
+        }
+
         private void FinishedLoading()
         {
             bool dirNotFound = false;
@@ -115,7 +136,7 @@ namespace TD_Loader
                 LaunchGrid.MinHeight = 120;
             }
 
-
+            Log.Output("Game: " + Settings.settings.GameName);
             doingWork = true;
             workType = "Initializing mod loader for game";
             Settings.SetGameFile();
@@ -333,6 +354,7 @@ namespace TD_Loader
                         if(File.Exists(NKHook.nkhEXE))
                             File.Copy(NKHook.nkhEXE, Environment.CurrentDirectory + "\\NKHook5-Injector.exe");
                     }
+
                     NKHook nkh = new NKHook();
                     nkh.DoUpdateNKH();
                     nkh.DoUpdateTowerPlugin();
@@ -420,6 +442,16 @@ namespace TD_Loader
             {
                 MessageBox.Show("Failed to get game name for game. Unable to launch");
                 return;
+            }
+
+            if (NKHook.CanUseNKH())
+            {
+                if(plugin_User.SelectedPlugins_ListBox.Items.Count > 0)
+                {
+                    Log.Output("Plugins are enabled. Launching NKHook");
+                    Process.Start(NKHook.nkhEXE);
+                    return;
+                }
             }
             Process.Start(Settings.game.GameDir + "\\" + Settings.game.ExeName);
         }

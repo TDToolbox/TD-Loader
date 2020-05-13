@@ -23,19 +23,25 @@ namespace TD_Loader.Classes
 
             if (File.Exists(dest))
             {
-                FileInfo f = new FileInfo(dest);
-                string filename = f.Name;
-                string fileExt = f.Extension;
-                string destDir = dest.Replace(filename, "");
-
-                int i = 1;
-                while (File.Exists(dest))
-                {
-                    dest = destDir + filename.Replace(fileExt, "") + " - Copy " + i + fileExt;
-                    i++;
-                }
+                dest = IncrementName(dest);
             }
             File.Copy(source, dest);
+            return dest;
+        }
+
+        public static string IncrementName(string dest)
+        {
+            FileInfo f = new FileInfo(dest);
+            string filename = f.Name;
+            string fileExt = f.Extension;
+            string destDir = dest.Replace(filename, "");
+
+            int i = 1;
+            while (File.Exists(dest))
+            {
+                dest = destDir + filename.Replace(fileExt, "") + " - Copy " + i + fileExt;
+                i++;
+            }
             return dest;
         }
     }

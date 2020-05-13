@@ -118,9 +118,17 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="PluginItem_UserControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="ModItem_UserControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Plugins_UserControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Mods_UserControl.xaml">
       <SubType>Designer</SubType>
@@ -136,8 +144,14 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PluginItem_UserControl.xaml.cs">
+      <DependentUpon>PluginItem_UserControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ModItem_UserControl.xaml.cs">
       <DependentUpon>ModItem_UserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Plugins_UserControl.xaml.cs">
+      <DependentUpon>Plugins_UserControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Mods_UserControl.xaml.cs">
       <DependentUpon>Mods_UserControl.xaml</DependentUpon>
