@@ -15,31 +15,28 @@ namespace TD_Loader.Classes
         }
         public static string CopyMod(string source, string dest)
         {
-            if (File.Exists(source))
-            {
-                if(File.Exists(dest))
-                {
-                    FileInfo f = new FileInfo(dest);
-                    string filename = f.Name;
-                    string fileExt =  f.Extension;
-                    string destDir = dest.Replace(filename, "");
-
-                    int i = 1;
-                    while(File.Exists(dest))
-                    {
-                        dest = destDir + filename.Replace(fileExt, "") + " - Copy " + i + fileExt;
-                        i++;
-                    }
-                }
-                File.Copy(source, dest);
-                return dest;
-            }
-            else
+            if (!File.Exists(source))
             {
                 Log.Output("Unable to copy mod. Source file does not exist");
                 return "";
             }
 
+            if (File.Exists(dest))
+            {
+                FileInfo f = new FileInfo(dest);
+                string filename = f.Name;
+                string fileExt = f.Extension;
+                string destDir = dest.Replace(filename, "");
+
+                int i = 1;
+                while (File.Exists(dest))
+                {
+                    dest = destDir + filename.Replace(fileExt, "") + " - Copy " + i + fileExt;
+                    i++;
+                }
+            }
+            File.Copy(source, dest);
+            return dest;
         }
     }
 }

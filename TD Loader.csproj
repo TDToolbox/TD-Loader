@@ -110,6 +110,7 @@
     <Compile Include="Classes\Settings.cs" />
     <Compile Include="Classes\Steam.cs" />
     <Compile Include="Classes\UpdateHandler.cs" />
+    <Compile Include="Classes\WebHandler.cs" />
     <Compile Include="Classes\Windows.cs" />
     <Compile Include="Classes\Zip.cs" />
     <Compile Include="MainWindow.xaml.cs">

@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Windows;
 
 namespace TD_Loader.Classes
@@ -33,8 +34,7 @@ namespace TD_Loader.Classes
 
         #endregion
 
-
-        public void DoWork()
+        public void MakeMod()
         {
             string backupJet = "";
             if (Settings.game.GameName == "BTD5")
@@ -67,13 +67,13 @@ namespace TD_Loader.Classes
                 Log.Output("Failed to located backup file.... Returning");
                 return;
             }
-            
-            
+
+
             List<string> reverseOrder = new List<string>();
             for (int i = Settings.game.LoadedMods.Count; i > 0; i--)
                 reverseOrder.Add(Settings.game.LoadedMods[i - 1]);
 
-            
+
             foreach (string mod in reverseOrder)
             {
                 if (mod.EndsWith(".jet"))
@@ -81,9 +81,40 @@ namespace TD_Loader.Classes
                 else
                     HandleZipFiles(mod);
             }
+        }
+        
+        public void DoWork()
+        {
+            new Thread(() =>
+            {
+                Thread t1 = new Thread(Game.ResetGameFiles);
+                Thread t2 = new Thread(MakeMod);
+                t1.Start();
+                t2.Start();
+                t1.Join();
+                t2.Join();
 
+                MoveNewFiles();
 
+                MessageBox.Show("Done staging");
+                MainWindow.doingWork = false;
+                MainWindow.workType = "";
+
+                if (FinishedStagingMods != null)
+                    FinishedStagingMods.Invoke(this, EventArgs.Empty);
+            }).Start();
+        }
+
+        public void MoveNewFiles()
+        {
             MainWindow.workType = "Almost done staging";
+
+            string backupJet = "";
+            if (Settings.game.GameName == "BTD5")
+                backupJet = "BTD5.jet";
+            else
+                backupJet = "data.jet";
+
             var files = new DirectoryInfo(Settings.settings.StagingDir).GetFiles("*", SearchOption.AllDirectories);
             foreach (var file in files)
             {
@@ -95,7 +126,7 @@ namespace TD_Loader.Classes
                 }
                 else
                 {
-                    string newpath = Settings.game.GameDir + "\\" + file.FullName.Replace("Temp", "").Replace(Settings.settings.StagingDir, "").Replace("\\\\","\\");
+                    string newpath = Settings.game.GameDir + "\\" + file.FullName.Replace("Temp", "").Replace(Settings.settings.StagingDir, "").Replace("\\\\", "\\");
                     if (File.Exists(newpath))
                         File.Delete(newpath);
 
@@ -105,14 +136,7 @@ namespace TD_Loader.Classes
                 }
             }
 
-            MessageBox.Show("Done staging");
-            MainWindow.doingWork = false;
-            MainWindow.workType = "";
-
-            if (FinishedStagingMods != null)
-                FinishedStagingMods.Invoke(this, EventArgs.Empty);
         }
-
         public void HandleZipFiles(string mod)
         {
             Zip modFile = new Zip(mod);

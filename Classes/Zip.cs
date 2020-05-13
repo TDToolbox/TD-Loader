@@ -156,10 +156,10 @@ namespace TD_Loader.Classes
 
             foreach (var entry in zip.Entries)
             {
-                if (entry.FileName == filePathInZip)
-                {
-                    return entry;
-                }
+                if (entry.FileName != filePathInZip)
+                    continue;
+                
+                return entry;
             }
             return null;
         }
@@ -183,29 +183,26 @@ namespace TD_Loader.Classes
         {
             string returnText = "";
 
-            if (this.Archive.ContainsEntry(filePathInZip))
-            {
-                foreach (var entry in this.Archive.Entries)
-                {
-                    if (entry.FileName.Replace("\\", "/").Contains(filePathInZip))
-                    {
-                        Stream s;
-                        if (Guard.IsStringValid(password))
-                        {
-                            entry.Password = password;
-                            s = entry.OpenReader(password);
-                        }
-                        else
-                            s = entry.OpenReader();
-
-                        StreamReader sr = new StreamReader(s);
-                        returnText = sr.ReadToEnd();
-                    }
-                }
-            }
-            else
+            if (!this.Archive.ContainsEntry(filePathInZip))
             {
                 Log.Output("Not found! Failed to read file in zip\n\nZip: " + this.ToString() + "\n\nFailed to read file at: " + filePathInZip + "\n\nArchive file count " + this.Archive.Count());
+                return "";
+            }
+
+            foreach (var entry in this.Archive.Entries)
+            {
+                if (!entry.FileName.Replace("\\", "/").Contains(filePathInZip))
+                    continue;
+
+                Stream s;
+                if (!Guard.IsStringValid(password))
+                    s = entry.OpenReader();
+
+                entry.Password = password;
+                s = entry.OpenReader(password);
+
+                StreamReader sr = new StreamReader(s);
+                returnText = sr.ReadToEnd();
             }
             return returnText;
         }

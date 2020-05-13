@@ -26,6 +26,7 @@ namespace TD_Loader
     {
         bool finishedLoading = false;
         public static bool doingWork = false;
+        public static bool exit = false;
         public static string workType = "";
         public static MainWindow instance;
         public static Mods_UserControl mods_User;
@@ -55,17 +56,14 @@ namespace TD_Loader
             tab.Content = mods_User;//new Mods_UserControl();
             Main_TabController.Items[1] = tab;
 
+            new Thread(() => {
+                UpdateHandler update = new UpdateHandler();
+                update.HandleUpdates();
+            }).Start();
+            
         }
         private void FinishedLoading()
         {
-            if(Settings.settings.ShownAntiPirateMessage == false)
-            {
-                MessageBox.Show("Due to the way TD Loader is coded, you cannot use this program if you are using a " +
-                    "pirated version of the game. If you try anyways it WILL NOT work. Thank you for understanding");
-                Settings.settings.ShownAntiPirateMessage = true;
-                Settings.SaveSettings();
-            }
-
             bool dirNotFound = false;
             if (!Guard.IsStringValid(Settings.game.GameDir))
             {
@@ -119,12 +117,20 @@ namespace TD_Loader
             string gameD = Settings.game.GameDir;
             if (Guard.IsStringValid(gameD))
             {
-                if(Directory.Exists(gameD))
-                    Log.Output("Game Directory Found!");
-                else
+                if (!Directory.Exists(gameD))
                 {
+                    if(Directory.Exists(Settings.game.GameBackupDir))
+                    {
+                        Log.Output("The saved game directory couldnt be found! However, there was a backup of the" +
+                            " game files. Copying game files to saved game directory");
+                        FileIO.CopyDirsAndContents(Settings.game.GameBackupDir, Settings.game.GameDir);
+                        return;
+                    }
+
                     error = true;
                     Log.Output("The saved game directory couldnt be found!");
+                    MessageBox.Show("Game Directory Found!");
+                    Log.Output("Game Directory Found!");
                 }
             }
             else
@@ -135,11 +141,14 @@ namespace TD_Loader
                 MessageBox.Show("Some setup is required before you can use mods with this game. Please be patient and read the following messages to " +
                     "make sure it sets up properly. This will take up to 2 minutes");
                 string dir = Game.SetGameDir(Settings.settings.GameName);
-                if (Guard.IsStringValid(dir))
+                if (!Guard.IsStringValid(dir))
                 {
-                    Settings.game.GameDir = dir;
-                    Settings.SaveGameFile();
+                    Log.Output("Something went wrong... Failed to aquire game directory...");
+                    ResetGamePictures();
+                    return;
                 }
+                Settings.game.GameDir = dir;
+                Settings.SaveGameFile();
             }
 
             if (!Guard.IsStringValid(Settings.game.GameDir))
@@ -363,13 +372,19 @@ namespace TD_Loader
                 Settings.SaveSettings();
 
                 JetReader jet = new JetReader();
-                Thread thread = new Thread(delegate () { jet.DoWork(); });
-                thread.Start();
+                jet.DoWork();
             }
             else
             {
                 Log.Output("You chose to play with no mods... Launching game");
-                LaunchGame();
+
+                new Thread(() => 
+                {
+                    Thread t = new Thread(Game.ResetGameFiles);
+                    t.Start();
+                    t.Join();
+                    LaunchGame();
+                }).Start();
             }
         }
         private void JetReader_FinishedStagingMods(object sender, EventArgs e)
@@ -378,34 +393,12 @@ namespace TD_Loader
         }
         private void LaunchGame()
         {
-            ulong apiId = 0;
             if (!Guard.IsStringValid(Settings.game.GameName))
             {
                 MessageBox.Show("Failed to get game name for game. Unable to launch");
                 return;
             }
-
-            switch (Settings.game.GameName)
-            {
-                
-                case "BTD5":
-                    apiId = Steam.BTD5AppID;
-                    break;
-                case "BTDB":
-                    apiId = Steam.BTDBAppID;
-                    break;
-                case "BMC":
-                    apiId = Steam.BMCAppID;
-                    break;
-            }
-
-            if(!Guard.IsStringValid(apiId.ToString()))
-            {
-                MessageBox.Show("Failed to get API ID for game. Unable to launch");
-                return;
-            }
-
-            Process.Start("steam://Launch/" + apiId);
+            Process.Start(Settings.game.GameDir + "\\" + Settings.game.ExeName);
         }
     }
 }

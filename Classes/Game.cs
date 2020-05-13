@@ -151,9 +151,8 @@ namespace TD_Loader.Classes
                 " guarentee it is unmodded.", "Verify Game Files?", MessageBoxButtons.YesNo);
             if (diag == DialogResult.No)
             {
-                Log.Output("User chose to manually verify game. Closing TD Loader");
-                MessageBox.Show("You chose to do it manually. Closing TD Loader...");
-                MainWindow.instance.Close();
+                Log.Output("User chose to manually verify game. Make sure your game is un-modded or you will have issues later");
+                MessageBox.Show("User chose to manually verify game. Make sure your game is un-modded or you will have issues later");
             }
             else
             {
@@ -219,6 +218,14 @@ namespace TD_Loader.Classes
                     catch(Exception ex) { MessageBox.Show(ex.Message); }
                 }
             }
+        }
+
+        public static void ResetGameFiles()
+        {
+            Log.Output("Resetting game directory");
+            Directory.Delete(Settings.game.GameDir, true);
+            FileIO.CopyDirsAndContents(Settings.game.GameBackupDir, Settings.game.GameDir);
+            Log.Output("Finished cleaning game");
         }
 
         //

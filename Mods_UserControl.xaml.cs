@@ -163,7 +163,7 @@ namespace TD_Loader
                     Log.Output("Mods directory not found... Please try again");
             }
             else
-                Log.ForceOutput("You need to choose a game before you can add mods!");
+                Log.Output("You need to choose a game before you can add mods!");
             
             MainWindow.doingWork = false;
             MainWindow.workType = "";

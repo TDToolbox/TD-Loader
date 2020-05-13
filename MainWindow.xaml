@@ -33,6 +33,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="26" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="200" />
         </Grid.RowDefinitions>
 
         <ToolBar Visibility="Collapsed">
@@ -127,6 +128,22 @@
                 VerticalAlignment="Bottom" Margin="0,0">
                 <Button x:Name="Launch_Button" Margin="0,0" FontSize="25" Content="Launch" MinHeight="45" MinWidth="160" Background="#FF68C93A" Foreground="White" Click="Launch_Button_Clicked"/>
             </StackPanel>
+            
+        </Grid>
+        <Grid Grid.Row="2" >
+            <Grid Background="{StaticResource BrushBackgroundL}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="150"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                
+                <RichTextBox x:Name="OutputLog" Grid.Column="1" Grid.Row="1" Background="#FF1E1E1E" Foreground="White" FontSize="16" FontFamily="Consolas">
+                    </RichTextBox>
+            </Grid>
         </Grid>
 
     </Grid>

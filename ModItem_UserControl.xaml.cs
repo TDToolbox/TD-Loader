@@ -32,12 +32,8 @@ namespace TD_Loader
 
         private void CheckBox_Clicked(object sender, RoutedEventArgs e)
         {
-            if(MainWindow.doingWork)
-            {
-                MessageBox.Show("Cant do that! Currently doing something else... Please wait");
-                Log.Output("Cant do that! Currently doing something else... Please wait");
+            if (Guard.IsDoingWork(MainWindow.workType))
                 return;
-            }
 
             CheckBox cb = (CheckBox)(sender);
 

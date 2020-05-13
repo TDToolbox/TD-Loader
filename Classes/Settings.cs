@@ -27,6 +27,7 @@ namespace TD_Loader.Classes
         {
             public string MainSettingsDir { get; } = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\TD Loader";
             public string TDLoaderVersion { get; set; }
+            public bool RecentUpdate { get; set; }
             public string GameName { get; set; }
             public string StagingDir { get; } = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\TD Loader\\Mod Staging";
 
@@ -54,7 +55,6 @@ namespace TD_Loader.Classes
 
 
             public bool AdvancedConflictMenu { get; set; }
-            public bool ShownAntiPirateMessage { get; set; }
         }
         /// <summary>
         /// An object containing info on the current game, from the settings
@@ -62,6 +62,7 @@ namespace TD_Loader.Classes
         public class GameFile
         {
             public string GameName { get; set; }
+            public string ExeName { get; set; }
             public string Password { get; set; }
             public string GameVersion { get; set; }
             public string GameDir { get; set; }
@@ -80,6 +81,7 @@ namespace TD_Loader.Classes
             {
                 game.GameName = "BTD5";
                 game.Password = "Q%_{6#Px]]";
+                game.ExeName = "BTD5-Win.exe";
                 game.GameVersion = settings.BTD5Version;
                 game.GameDir = settings.BTD5Dir;
                 game.GameBackupDir = settings.BTD5BackupDir;
@@ -90,6 +92,7 @@ namespace TD_Loader.Classes
             {
                 game.GameName = "BTDB";
                 game.Password = "";
+                game.ExeName = "Battles-Win.exe";
                 game.GameVersion = settings.BTDBVersion;
                 game.GameDir = settings.BTDBDir;
                 game.GameBackupDir = settings.BTDBBackupDir;
@@ -100,6 +103,7 @@ namespace TD_Loader.Classes
             {
                 game.GameName = "BMC";
                 game.Password = "Q%_{6#Px]]";
+                game.ExeName = "MonkeyCity-Win.exe";
                 game.GameVersion = settings.BMCVersion;
                 game.GameDir = settings.BMCDir;
                 game.GameBackupDir = settings.BMCBackupDir;
@@ -154,7 +158,7 @@ namespace TD_Loader.Classes
 
             settings.TDLoaderVersion = System.Diagnostics.FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).FileVersion;
             settings.GameName = "";
-
+            settings.RecentUpdate = false;
 
             settings.BTD5Dir = "";
             settings.BTD5Version = Game.GetVersion("BTD5");
@@ -179,7 +183,6 @@ namespace TD_Loader.Classes
 
 
             settings.AdvancedConflictMenu = false;
-            settings.ShownAntiPirateMessage = false;
 
             SaveSettings();
         }
@@ -204,19 +207,15 @@ namespace TD_Loader.Classes
         }
         public static void SaveSettings()
         {
-            string output = JsonConvert.SerializeObject(settings, Formatting.Indented);
-            
-            if (settingsPath != "" && settingsPath != null)
-            {
-                SaveGameFile();
-                StreamWriter serialize = new StreamWriter(settingsPath, false);
-                serialize.Write(output);
-                serialize.Close();
-            }
-            else
-            {
+            if (!Guard.IsStringValid(settingsPath))
                 Log.OutputNotice("Unknown error occured... Path to settings is invalid...");
-            }
+
+            string output = JsonConvert.SerializeObject(settings, Formatting.Indented);
+
+            SaveGameFile();
+            StreamWriter serialize = new StreamWriter(settingsPath, false);
+            serialize.Write(output);
+            serialize.Close();
         }
     }
 }
