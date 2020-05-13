@@ -48,6 +48,12 @@ namespace TD_Loader.Classes
         }
         private bool CheckForUpdates()
         {
+            if (File.Exists(Environment.CurrentDirectory + "\\" + toolbox_updater_zipName))
+                File.Delete(Environment.CurrentDirectory + "\\" + toolbox_updater_zipName);
+
+            if (File.Exists(Environment.CurrentDirectory + "\\BTDToolbox_Updater.exe"))
+                File.Delete(Environment.CurrentDirectory + "\\BTDToolbox_Updater.exe");
+
             reader = new WebHandler();
             try
             {
