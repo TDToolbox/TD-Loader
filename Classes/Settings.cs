@@ -31,6 +31,8 @@ namespace TD_Loader.Classes
             public string GameName { get; set; }
             public string StagingDir { get; } = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\TD Loader\\Mod Staging";
 
+            public string NKHookVersion { get; set; }
+            public string TowerLoadNKPluginVersion { get; set; }
 
             public string BTD5Dir { get; set; }
             public string BTD5Version { get; set; }
@@ -159,6 +161,9 @@ namespace TD_Loader.Classes
             settings.TDLoaderVersion = System.Diagnostics.FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).FileVersion;
             settings.GameName = "";
             settings.RecentUpdate = false;
+
+            settings.NKHookVersion = "";
+            settings.TowerLoadNKPluginVersion = "";
 
             settings.BTD5Dir = "";
             settings.BTD5Version = Game.GetVersion("BTD5");

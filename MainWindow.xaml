@@ -122,7 +122,7 @@
 
 
         <!--Change MinHeight to 220 when all tabs are enabled-->
-        <Grid Grid.Row="1" MinHeight="155" 
+        <Grid Name="LaunchGrid" Grid.Row="1" MinHeight="155" 
        VerticalAlignment="Top" Margin="-5,0,0,0" Background="{x:Null}">
             <StackPanel Orientation="Vertical" HorizontalAlignment="Left" 
                 VerticalAlignment="Bottom" Margin="0,0">

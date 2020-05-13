@@ -24,6 +24,7 @@ namespace TD_Loader
     /// </summary>
     public partial class MainWindow : Window
     {
+        bool checkedNKH = false;
         bool finishedLoading = false;
         public static bool doingWork = false;
         public static bool exit = false;
@@ -101,9 +102,19 @@ namespace TD_Loader
         private async void GameHandling()
         {
             if(Settings.game == null)
-            {
                 return;
+
+            if(Settings.settings.GameName == "BTD5")
+            {
+                Plugins_Tab.Visibility = Visibility.Visible;
+                LaunchGrid.MinHeight = 155;
             }
+            else
+            {
+                Plugins_Tab.Visibility = Visibility.Collapsed;
+                LaunchGrid.MinHeight = 120;
+            }
+
 
             doingWork = true;
             workType = "Initializing mod loader for game";
@@ -314,6 +325,13 @@ namespace TD_Loader
                 BTD5_Image.Source = new BitmapImage(new Uri("Resources/btd5.png", UriKind.Relative));
 
                 GameHandling();
+
+                if(!checkedNKH)
+                {
+                    NKHook nkh = new NKHook();
+                    nkh.DoUpdateNKH();
+                    nkh.DoUpdateTowerPlugin();
+                }
             }
         }
         private void BTDB_Image_MouseDown(object sender, MouseButtonEventArgs e)

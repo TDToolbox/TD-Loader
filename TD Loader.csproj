@@ -107,6 +107,7 @@
     <Compile Include="Classes\JSON.cs" />
     <Compile Include="Classes\Log.cs" />
     <Compile Include="Classes\Mods.cs" />
+    <Compile Include="Classes\NKHook.cs" />
     <Compile Include="Classes\Settings.cs" />
     <Compile Include="Classes\Steam.cs" />
     <Compile Include="Classes\UpdateHandler.cs" />
