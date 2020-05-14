@@ -39,7 +39,7 @@ namespace TD_Loader.Classes
         }
         public static bool CanUseNKH()
         {
-            if (Settings.settings.GameName != "BTD5")
+            if (Settings.game.GameName != "BTD5" || Settings.game == null)
                 return false;
 
             if (!DoesNkhExist())
@@ -112,9 +112,10 @@ namespace TD_Loader.Classes
             {
                 WebHandler web = new WebHandler();
                 string pluginPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\NKHook5\\Plugins\\NewTowerLoader.dll";
+                string altPluginPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\NKHook5\\UnloadedPlugins\\NewTowerLoader.dll";
                 string nkhfolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\NKHook5";
 
-                if (!web.CheckForUpdate(versionsURL, "NKHookTowerLoader: ", 4, Settings.settings.TowerLoadNKPluginVersion) && File.Exists(pluginPath))
+                if (!web.CheckForUpdate(versionsURL, "NKHookTowerLoader: ", 4, Settings.settings.TowerLoadNKPluginVersion) && (File.Exists(pluginPath) || File.Exists(altPluginPath)))
                     return;
 
                 if (File.Exists(pluginPath))

@@ -96,9 +96,11 @@ namespace TD_Loader
             if (Settings.game == null)
                 return;
 
+            Settings.SaveGameFile();
             doingWork = true;
-            Log.Output("Game: " + Settings.settings.GameName);
-            workType = "Initializing mod loader for " + Settings.settings.GameName;
+
+            Log.Output("Game: " + Settings.game.GameName);
+            workType = "Initializing mod loader for " + Settings.game.GameName;
             ShowHidePlugins();
             new Thread(() =>
             {
@@ -129,10 +131,10 @@ namespace TD_Loader
         {
             Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() => {
                 ShowHidePlugins();
-                Mods_UserControl.instance.PopulateMods(Settings.settings.GameName);
-                Mods_UserControl.instance.Mods_TextBlock.Text = Settings.settings.GameName + " Mods";
+                Mods_UserControl.instance.PopulateMods(Settings.game.GameName);
+                Mods_UserControl.instance.Mods_TextBlock.Text = Settings.game.GameName + " Mods";
 
-                if (NKHook.CanUseNKH())
+                if (NKHook.CanUseNKH() && plugin_User == null)
                     CreatePluginsTab();
             }));
             
@@ -191,25 +193,19 @@ namespace TD_Loader
             {
                 isPlugins = true
             };
-
-            var tab2 = new TabItem();
-            tab2.Header = "   Plugins   ";
-            tab2.Padding = new Thickness(5);
-            tab2.FontSize = 25;
-            tab2.Content = plugin_User;
-            Main_TabController.Items[2] = tab2;
+            Plugins_Tab.Content = plugin_User;
         }
         private void ShowHidePlugins()
         {
-            if (Settings.game.GameName != "BTD5" || Settings.game == null)
+            if (Settings.game.GameName == "BTD5" && Settings.game != null)
             {
-                Plugins_Tab.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() => { Plugins_Tab.Visibility = Visibility.Collapsed; }));
-                LaunchGrid.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() => { LaunchGrid.MinHeight = 165; }));
+                Plugins_Tab.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() => { Plugins_Tab.Visibility = Visibility.Visible; }));
+                LaunchGrid.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() => { LaunchGrid.MinHeight = 195; }));
             }
             else
             {
-                Plugins_Tab.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() => { Plugins_Tab.Visibility = Visibility.Visible; }));
-                LaunchGrid.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() => { LaunchGrid.MinHeight = 215; }));
+                Plugins_Tab.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() => { Plugins_Tab.Visibility = Visibility.Collapsed; }));
+                LaunchGrid.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() => { LaunchGrid.MinHeight = 165; }));
             }
         }
         private void ResetGameFiles_CB_Click(object sender, RoutedEventArgs e)
