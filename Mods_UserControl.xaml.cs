@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using TD_Loader.Classes;
 
 namespace TD_Loader
@@ -38,9 +39,10 @@ namespace TD_Loader
         }
         public void PopulateMods(string game)
         {
+            if (!Guard.IsStringValid(Settings.game.ModsDir))
+                return;
+
             modPaths = new List<string>();
-            Mods_ListBox.Items.Clear();
-            SelectedMods_ListBox.Items.Clear();
             modItems = new List<ModItem_UserControl>();
 
             var mods = new DirectoryInfo(Settings.game.ModsDir).GetFiles("*.*");
@@ -71,7 +73,9 @@ namespace TD_Loader
                 Mods_ListBox.Items.Add(item);
             }
 
-            foreach(var selected in Settings.game.LoadedMods)
+            /*if (Settings.game.LoadedMods == null)
+                return;*/
+            foreach (var selected in Settings.game.LoadedMods)
                 AddToSelectedModLB(selected);
 
             Settings.game.LoadedMods.Clear();

@@ -16,6 +16,19 @@ namespace TD_Loader.Classes
         public static string nkhEXE = nkhDir + "\\NKHook5-Injector.exe";
         public static string pathTowerLoadPlugin = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\NKHook5\\Plugins\\NewTowerLoader.dll";
         public string versionsURL = "https://raw.githubusercontent.com/TDToolbox/BTDToolbox-2019_LiveFIles/master/Version";
+        
+        public void DoInitialNKH()
+        {
+            if (!File.Exists(Environment.CurrentDirectory + "\\NKHook5-Injector.exe"))
+            {
+                if (File.Exists(NKHook.nkhEXE))
+                    File.Copy(NKHook.nkhEXE, Environment.CurrentDirectory + "\\NKHook5-Injector.exe");
+            }
+
+            NKHook nkh = new NKHook();
+            nkh.DoUpdateNKH();
+            nkh.DoUpdateTowerPlugin();
+        }
         public static bool DoesNkhExist()
         {
             if (File.Exists(nkhEXE))

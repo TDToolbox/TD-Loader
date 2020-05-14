@@ -8,6 +8,7 @@ using System.IO;
 using Ionic.Zip;
 using System.Windows.Forms;
 using System.Diagnostics;
+using System.Threading;
 
 namespace TD_Loader.Classes
 {
@@ -20,11 +21,19 @@ namespace TD_Loader.Classes
         string toolbox_updater_zipName = "TD Loader Updater.zip";
         string gitURL = "https://raw.githubusercontent.com/TDToolbox/BTDToolbox-2019_LiveFIles/master/Version";
 
+        public static void CheckForUpdates()
+        {
+            new Thread(() => {
+                UpdateHandler update = new UpdateHandler();
+                update.HandleUpdates();
+            }).Start();
+        }
+
         public void HandleUpdates()
         {
             if (!reinstall)
             {
-                if (CheckForUpdates())
+                if (CheckGitForUpdates())
                 {
                     if (AskToUpdate())
                     {
@@ -46,7 +55,8 @@ namespace TD_Loader.Classes
             }
 
         }
-        private bool CheckForUpdates()
+
+        private bool CheckGitForUpdates()
         {
             if (File.Exists(Environment.CurrentDirectory + "\\" + toolbox_updater_zipName))
                 File.Delete(Environment.CurrentDirectory + "\\" + toolbox_updater_zipName);
@@ -64,8 +74,8 @@ namespace TD_Loader.Classes
                 Log.OutputNotice("Something went wrong when checking for updates.. Failed to check for updates");
                 return false;
             }
-
         }
+
         private void DownloadUpdate()
         {
             reader = new WebHandler();
@@ -80,6 +90,7 @@ namespace TD_Loader.Classes
             File.Move("Update", toolbox_updater_zipName);
             Log.Output("Updater successfully downloaded!");
         }
+
         private void ExtractUpdate()
         {
             string zipPath = Environment.CurrentDirectory + "\\" + toolbox_updater_zipName;
@@ -93,6 +104,7 @@ namespace TD_Loader.Classes
             archive.Dispose();
             Log.Output("TD Loader updater has been successfully downloaded and extracted...");
         }
+
         private bool AskToUpdate()
         {
             Log.Output("There is a new update availible for TD Loader! Do you want to download it?");

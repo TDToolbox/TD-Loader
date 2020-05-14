@@ -76,10 +76,11 @@ namespace TD_Loader.Classes
         /// <summary>
         /// Sets the properties of the game file based on the game
         /// </summary>
-        public static void SetGameFile()
+        public static void SetGameFile(string gameName)
         {
             game = new GameFile();
-            if(settings.GameName == "BTD5")
+
+            if (gameName == "BTD5")
             {
                 game.GameName = "BTD5";
                 game.Password = "Q%_{6#Px]]";
@@ -90,7 +91,7 @@ namespace TD_Loader.Classes
                 game.ModsDir = settings.BTD5ModsDir;
                 game.LoadedMods = settings.BTD5LoadedMods;
             }
-            else if (settings.GameName == "BTDB")
+            else if (gameName == "BTDB")
             {
                 game.GameName = "BTDB";
                 game.Password = "";
@@ -101,7 +102,7 @@ namespace TD_Loader.Classes
                 game.ModsDir = settings.BTDBModsDir;
                 game.LoadedMods = settings.BTDBLoadedMods;
             }
-            else if (settings.GameName == "BMC")
+            else if (gameName == "BMC")
             {
                 game.GameName = "BMC";
                 game.Password = "Q%_{6#Px]]";
@@ -112,6 +113,9 @@ namespace TD_Loader.Classes
                 game.ModsDir = settings.BMCModsDir;
                 game.LoadedMods = settings.BMCLoadedMods;
             }
+
+            if(game.LoadedMods == null)
+                game.LoadedMods = new List<string>();
         }
         
         /// <summary>
@@ -197,17 +201,14 @@ namespace TD_Loader.Classes
                 CreateSettings();
 
             string json = File.ReadAllText(settingsPath);
-            if (JSON.IsJsonValid(json))
-            {
-                settings = JsonConvert.DeserializeObject<SettingsFile>(json);
-            }
-            else
+            if (!JSON.IsJsonValid(json) || json.Length <= 0)
             {
                 Log.Output("Settings file has invalid json, generating a new settings file.");
                 CreateSettings();
             }
+            settings = JsonConvert.DeserializeObject<SettingsFile>(json);
 
-            SetGameFile();
+            SetGameFile(settings.GameName);
             return settings;
         }
         public static void SaveSettings()

@@ -56,8 +56,6 @@ namespace TD_Loader
                 if (Plugins_ListBox.Items.Contains(mod))
                     continue;
 
-                Log.Output(mod.Name);
-
                 PluginItem_UserControl item = new PluginItem_UserControl();
                 if ((Plugins_ListBox.ActualWidth - 31) > 0)
                     item.MinWidth = Plugins_ListBox.ActualWidth - 31;
@@ -77,7 +75,12 @@ namespace TD_Loader
             }
 
             foreach (var item in loadedPlugins)
+            {
+                if (!item.Name.EndsWith(".dll") || item.Name == "NKHook5.dll" || item.Name == "NKHook5-CLR.dll")
+                    continue;
+
                 AddToSelectedModLB(item.FullName);
+            }
 
 
             SelectedPlugins_ListBox.SelectedIndex = 0;

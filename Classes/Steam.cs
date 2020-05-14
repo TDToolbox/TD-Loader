@@ -48,6 +48,20 @@ namespace TD_Loader.Classes
                 return UnixPath.Replace("/", "\\");
             }
         }
+        
+        public static UInt64 GetGameID(string gameName)
+        {
+            if (gameName == "BTD5")
+                return BTD5AppID;
+            if (gameName == "BTDB")
+                return BTDBAppID;
+            if (gameName == "BMC")
+                return BMCAppID;
+            if (gameName == "BTD6")
+                return BTD6AppID;
+
+            return 0;
+        }
 
         public static bool IsGameRunning(UInt64 appid)
         {
@@ -173,8 +187,38 @@ namespace TD_Loader.Classes
 
             done = false;
             Log.Output("Validation finished.");
-            //validationProc.Kill();
-            Windows.CloseWindow(" - 100% ");    //For all the Mallis's out there whose PC is in Italian
+            Windows.CloseWindow(" - 100% ");
+
+            return true;
+        }
+        public bool ValidateGame(string game)
+        {
+            string url = "";
+
+            switch (game)
+            {
+                case "BTD5":
+                    url = "steam://validate/306020";
+                    break;
+                case "BTDB":
+                    url = "steam://validate/444640";
+                    break;
+                case "BMC":
+                    url = "steam://validate/1252780";
+                    break;
+            }
+
+            Log.Output("Validating " + game);
+            Process validationProc = Process.Start(url);
+
+            Thread thread = new Thread(delegate () { SteamValidate("stop"); });
+            thread.Start();
+            while (!done)
+                Thread.Sleep(250);
+
+            done = false;
+            Log.Output("Validation finished.");
+            Windows.CloseWindow(" - 100% ");
 
             return true;
         }
