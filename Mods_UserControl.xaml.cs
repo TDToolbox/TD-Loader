@@ -42,9 +42,9 @@ namespace TD_Loader
             if (!Guard.IsStringValid(Settings.game.ModsDir))
                 return;
 
+            Mods_ListBox.Items.Clear();
             modPaths = new List<string>();
             modItems = new List<ModItem_UserControl>();
-
             var mods = new DirectoryInfo(Settings.game.ModsDir).GetFiles("*.*");
             foreach (var mod in mods)
             {
@@ -73,8 +73,6 @@ namespace TD_Loader
                 Mods_ListBox.Items.Add(item);
             }
 
-            /*if (Settings.game.LoadedMods == null)
-                return;*/
             foreach (var selected in Settings.game.LoadedMods)
                 AddToSelectedModLB(selected);
 
