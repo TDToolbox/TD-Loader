@@ -67,7 +67,8 @@ namespace TD_Loader.Classes
             reader = new WebHandler();
             try
             {
-                return reader.CheckForUpdate(gitURL, "TDLoader: ", 5, Settings.settings.TDLoaderVersion);
+                var a = new Version(Application.ProductVersion);
+                return reader.CheckForUpdate(gitURL, "TDLoader: ", 5, a.ToString());
             }
             catch
             {

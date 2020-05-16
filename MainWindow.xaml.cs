@@ -40,7 +40,7 @@ namespace TD_Loader
         {
             InitializeComponent();
             instance = this;
-
+            
             Startup();
             BTD5_Image.IsMouseDirectlyOverChanged += BTD5_Image_IsMouseDirectlyOverChanged;
             BTDB_Image.IsMouseDirectlyOverChanged += BTDB_Image_IsMouseDirectlyOverChanged;
