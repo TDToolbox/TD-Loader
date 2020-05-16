@@ -87,11 +87,12 @@ namespace TD_Loader.Classes
         {
             new Thread(() =>
             {
+                Thread t1;
                 Thread t2 = new Thread(MakeMod);
                 t2.Start();
                 if (MainWindow.resetGameFiles)
                 {
-                    Thread t1 = new Thread(Game.ResetGameFiles);
+                    t1 = new Thread(Game.ResetGameFiles);
                     t1.Start();
                     t1.Join();
                 }

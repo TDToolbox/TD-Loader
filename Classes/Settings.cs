@@ -134,7 +134,7 @@ namespace TD_Loader.Classes
             {
                 settings.GameName = game.GameName;
                 settings.BTD5Version = game.GameVersion;
-                settings.BTD5Dir = game.GameDir;
+                settings.BTD5Dir = game.GameDir.Replace("\\\\", "\\");
                 settings.BTD5BackupDir = game.GameBackupDir;
                 settings.BTD5ModsDir = game.ModsDir;
                 settings.BTD5LoadedMods = game.LoadedMods;
@@ -143,7 +143,7 @@ namespace TD_Loader.Classes
             {
                 settings.GameName = game.GameName;
                 settings.BTDBVersion = game.GameVersion;
-                settings.BTDBDir = game.GameDir;
+                settings.BTDBDir = game.GameDir.Replace("\\\\", "\\"); ;
                 settings.BTDBBackupDir = game.GameBackupDir;
                 settings.BTDBModsDir = game.ModsDir;
                 settings.BTDBLoadedMods = game.LoadedMods;
@@ -152,7 +152,7 @@ namespace TD_Loader.Classes
             {
                 settings.GameName = game.GameName;
                 settings.BMCVersion = game.GameVersion;
-                settings.BMCDir = game.GameDir;
+                settings.BMCDir = game.GameDir.Replace("\\\\", "\\"); ;
                 settings.BMCBackupDir = game.GameBackupDir;
                 settings.BMCModsDir = game.ModsDir;
                 settings.BMCLoadedMods = game.LoadedMods;

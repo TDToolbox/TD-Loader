@@ -12,6 +12,7 @@ namespace TD_Loader.Classes
 {
     class NKHook
     {
+        public static bool enableNKH = false;
         public static string nkhDir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\NKHook5";
         public static string nkhEXE = nkhDir + "\\NKHook5-Injector.exe";
         public static string pathTowerLoadPlugin = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\NKHook5\\Plugins\\NewTowerLoader.dll";
@@ -39,7 +40,7 @@ namespace TD_Loader.Classes
         }
         public static bool CanUseNKH()
         {
-            if (Settings.game.GameName != "BTD5" || Settings.game == null)
+            if (!enableNKH || Settings.game.GameName != "BTD5" || Settings.game == null)
                 return false;
 
             if (!DoesNkhExist())

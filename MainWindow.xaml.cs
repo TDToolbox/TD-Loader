@@ -197,7 +197,7 @@ namespace TD_Loader
         }
         private void ShowHidePlugins()
         {
-            if (Settings.game.GameName == "BTD5" && Settings.game != null)
+            if (NKHook.CanUseNKH() && Settings.game.GameName == "BTD5" && Settings.game != null)
             {
                 Plugins_Tab.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() => { Plugins_Tab.Visibility = Visibility.Visible; }));
                 LaunchGrid.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() => { LaunchGrid.MinHeight = 195; }));

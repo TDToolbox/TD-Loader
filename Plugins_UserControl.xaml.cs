@@ -40,6 +40,9 @@ namespace TD_Loader
         }
         public void PopulateMods()
         {
+            if (Settings.game.GameName != "BTD5")
+                return;
+
             modPaths = new List<string>();
             Plugins_ListBox.Items.Clear();
             SelectedPlugins_ListBox.Items.Clear();

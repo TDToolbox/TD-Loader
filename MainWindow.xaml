@@ -126,7 +126,7 @@
        VerticalAlignment="Top" Margin="-5,0,0,0" Background="{x:Null}">
             <StackPanel Orientation="Vertical" HorizontalAlignment="Left" 
                 VerticalAlignment="Bottom" Margin="0,0">
-                <CheckBox x:Name="ResetGameFiles_CB" Content="Reset Game Files" Foreground="White" FontSize="18" Click="ResetGameFiles_CB_Click" />
+                <CheckBox x:Name="ResetGameFiles_CB" Content="Reset Game Files" Foreground="White" FontSize="18" Click="ResetGameFiles_CB_Click" ToolTip="Check this to replace your game files with the backup when launching. Useful for switching between mods" />
                 <Button x:Name="Launch_Button" Margin="0,0" FontSize="25" Content="Launch" MinHeight="45" MinWidth="160" Background="#FF68C93A" Foreground="White" Click="Launch_Button_Clicked"/>
             </StackPanel>
             

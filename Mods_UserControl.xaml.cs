@@ -43,6 +43,7 @@ namespace TD_Loader
                 return;
 
             Mods_ListBox.Items.Clear();
+            SelectedMods_ListBox.Items.Clear();
             modPaths = new List<string>();
             modItems = new List<ModItem_UserControl>();
             var mods = new DirectoryInfo(Settings.game.ModsDir).GetFiles("*.*");

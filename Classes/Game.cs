@@ -31,7 +31,7 @@ namespace TD_Loader.Classes
                     path = Steam.GetGameDir(Steam.BMCAppID);
                     break;
             }
-            if (path == "" || path == null)
+            if (!Guard.IsStringValid(path))
             {
                 Log.Output("Failed to automatically find " + Settings.game.GameName);
                 MessageBox.Show("Failed to automatically find " + Settings.game.GameName + " . Please browse for the game's .exe file to set the game directory");

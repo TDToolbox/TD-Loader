@@ -23,6 +23,8 @@ namespace TD_Loader.Classes
             if (!canRepeat && output == log.lastMessage)
                 return;
 
+            if (output == "input string is null" || output == "input string is empty")
+                return;
 
             MainWindow.instance.OutputLog.Dispatcher.BeginInvoke((Action)(() =>
             {
