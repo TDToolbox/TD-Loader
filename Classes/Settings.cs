@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using BTD_Backend;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -201,7 +202,7 @@ namespace TD_Loader.Classes
                 CreateSettings();
 
             string json = File.ReadAllText(settingsPath);
-            if (!JSON.IsJsonValid(json) || json.Length <= 0)
+            if (!Guard.IsJsonValid(json) || json.Length <= 0)
             {
                 Log.Output("Settings file has invalid json, generating a new settings file.");
                 CreateSettings();
@@ -214,7 +215,7 @@ namespace TD_Loader.Classes
         public static void SaveSettings()
         {
             if (!Guard.IsStringValid(settingsPath))
-                Log.OutputNotice("Unknown error occured... Path to settings is invalid...");
+                Log.Output("Unknown error occured... Path to settings is invalid...");
 
             string output = JsonConvert.SerializeObject(settings, Formatting.Indented);
 

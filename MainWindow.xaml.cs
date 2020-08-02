@@ -8,15 +8,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Windows.Threading;
 using TD_Loader.Classes;
+using BTD_Backend;
+using BTD_Backend.Web;
+using BTD_Backend.NKHook5;
+using BTD_Backend.Persistence;
+using TD_Loader.UserControls;
 
 namespace TD_Loader
 {
@@ -42,12 +40,28 @@ namespace TD_Loader
             instance = this;
             
             Startup();
-            BTD5_Image.IsMouseDirectlyOverChanged += BTD5_Image_IsMouseDirectlyOverChanged;
-            BTDB_Image.IsMouseDirectlyOverChanged += BTDB_Image_IsMouseDirectlyOverChanged;
-            BMC_Image.IsMouseDirectlyOverChanged += BMC_Image_IsMouseDirectlyOverChanged;
+            
+            
+            
+            
 
             Main.Closing += Main_Closing;
             JetReader.FinishedStagingMods += JetReader_FinishedStagingMods;
+            Log.MessageLogged += Log_MessageLogged;
+        }
+
+        private void Log_MessageLogged(object sender, Log.LogEvents e)
+        {
+            if (e.UseMsgBox)
+                MessageBox.Show(e.Message);
+            else
+            {
+                OutputLog.Dispatcher.BeginInvoke((Action)(() =>
+                {
+                    OutputLog.AppendText(e.Message);
+                    OutputLog.ScrollToEnd();
+                }));
+            }
         }
 
         private void Startup()
@@ -58,17 +72,41 @@ namespace TD_Loader
 
             Log.Output("Program initializing...");
 
-            ResetGamePictures();
-            CreateModsTab();
-            ShowHidePlugins();
+            //removed for cleanup
+            //
+            //ResetGamePictures();
+            //CreateModsTab();
+            //ShowHidePlugins();
 
 
-            UpdateHandler.CheckForUpdates();
+            /*UpdateHandler update = new UpdateHandler()
+            {
+                GitApiReleasesURL = "https://api.github.com/repos/TDToolbox/TD-Loader/releases",
+                ProjectExePath = Environment.CurrentDirectory + "\\TD Loader.exe",
+                InstallDirectory = Environment.CurrentDirectory,
+                ProjectName = "TD Loader",
+                UpdatedZipName = "TD Loader.zip"
+            };
+            BgThread.AddToQueue(() => update.HandleUpdates(false));*/
 
             FinishedGameHandling += MainWindow_FinishedGameHandling;
         }
         private void FinishedLoading()
         {
+            string tdloaderDir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\TD Loader";
+            UserData.MainProgramExePath = Environment.CurrentDirectory + "\\TD Loader.exe";
+            UserData.MainProgramName = "TD Loader";
+            UserData.MainSettingsDir = tdloaderDir;
+            UserData.UserDataFilePath = tdloaderDir + "\\userdata.json";
+
+            BgThread.AddToQueue(() =>
+            {
+                UserData.LoadUserData();
+                UserData.SaveUserData();
+            });
+            
+
+
             if (!Guard.IsStringValid(Settings.game.GameDir) || !Guard.IsStringValid(Settings.game.GameName))
             {
                 Settings.settings.GameName = "";
@@ -77,8 +115,13 @@ namespace TD_Loader
                 return;
             }
 
-            switch (Settings.game.GameName)
+            //removed for cleanup
+            //
+            /*switch (Settings.game.GameName)
             {
+                case "BTD6":
+                    BTD6_Image.Source = new BitmapImage(new Uri("Resources/btd6.png", UriKind.Relative));
+                    break;
                 case "BTD5":
                         BTD5_Image.Source = new BitmapImage(new Uri("Resources/btd5.png", UriKind.Relative));
                     break;
@@ -88,7 +131,7 @@ namespace TD_Loader
                 case "BMC":
                         BMC_Image.Source = new BitmapImage(new Uri("Resources/bmc.png", UriKind.Relative));
                     break;
-            }
+            }*/
             GameHandling();
         }
         private void GameHandling()
@@ -113,11 +156,7 @@ namespace TD_Loader
 
                 Game.ValidateBackup();
 
-                if(NKHook.CanUseNKH() && !checkedNKH)
-                {
-                    NKHook nkh = new NKHook();
-                    nkh.DoInitialNKH();
-                }
+                NKHook5Manager.HandleUpdates();
 
                 doingWork = false;
                 workType = "";
@@ -134,8 +173,8 @@ namespace TD_Loader
                 Mods_UserControl.instance.PopulateMods(Settings.game.GameName);
                 Mods_UserControl.instance.Mods_TextBlock.Text = Settings.game.GameName + " Mods";
 
-                if (NKHook.CanUseNKH() && plugin_User == null)
-                    CreatePluginsTab();
+                
+                CreatePluginsTab();
             }));
             
         }
@@ -162,7 +201,7 @@ namespace TD_Loader
         }
         private void Launch_Button_Clicked(object sender, RoutedEventArgs e)
         {
-            if (Guard.IsDoingWork(workType))
+            if (TempGuard.IsDoingWork(workType))
                 return;
 
             Game.DoLaunchWithMods();
@@ -197,7 +236,7 @@ namespace TD_Loader
         }
         private void ShowHidePlugins()
         {
-            if (NKHook.CanUseNKH() && Settings.game.GameName == "BTD5" && Settings.game != null)
+            /*if (Settings.game.GameName == "BTD5" && Settings.game != null)
             {
                 Plugins_Tab.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() => { Plugins_Tab.Visibility = Visibility.Visible; }));
                 LaunchGrid.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() => { LaunchGrid.MinHeight = 195; }));
@@ -206,23 +245,47 @@ namespace TD_Loader
             {
                 Plugins_Tab.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() => { Plugins_Tab.Visibility = Visibility.Collapsed; }));
                 LaunchGrid.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() => { LaunchGrid.MinHeight = 165; }));
-            }
+            }*/
         }
         private void ResetGameFiles_CB_Click(object sender, RoutedEventArgs e)
         {
             resetGameFiles = !resetGameFiles;
         }
 
-        public void ResetGamePictures()
+        private void ConsoleColapsed(object sender, RoutedEventArgs e)
         {
-            workType = "";  //We're doing this to clear the last opperation, if it wasnt cleared
-            BTD5_Image.Source = new BitmapImage(new Uri("Resources/btd5_not loaded.png", UriKind.Relative));
-            BTDB_Image.Source = new BitmapImage(new Uri("Resources/btdb 2_not loaded.png", UriKind.Relative));
-            BMC_Image.Source = new BitmapImage(new Uri("Resources/bmc_not loaded.png", UriKind.Relative));
+            if (OutputLog.Visibility == Visibility.Collapsed)
+            {
+                OutputLog.Visibility = Visibility.Visible;
+                CollapseConsole_Button.Content = "Hide Console";
+            }
+            else
+            {
+                OutputLog.Visibility = Visibility.Collapsed;
+                CollapseConsole_Button.Content = "Show Console";
+            }
+        }
+
+        //removed for cleanup
+        //
+        /*private void BTD6_Image_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (TempGuard.IsDoingWork(workType))
+                return;
+
+            if (Settings.game == null || Settings.game.GameName != "BTD6")
+            {
+                ResetGamePictures();
+                Settings.SaveGameFile();
+                Settings.SetGameFile("BTD6");
+                BTD6_Image.Source = new BitmapImage(new Uri("Resources/btd6.png", UriKind.Relative));
+
+                GameHandling();
+            }
         }
         private void BTD5_Image_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (Guard.IsDoingWork(workType))
+            if (TempGuard.IsDoingWork(workType))
                 return;
 
             if (Settings.game == null || Settings.game.GameName != "BTD5")
@@ -237,7 +300,7 @@ namespace TD_Loader
         }
         private void BTDB_Image_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (Guard.IsDoingWork(workType))
+            if (TempGuard.IsDoingWork(workType))
                 return;
 
             if (Settings.game == null || Settings.game.GameName != "BTDB")
@@ -253,7 +316,7 @@ namespace TD_Loader
         }
         private void BMC_Image_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (Guard.IsDoingWork(workType))
+            if (TempGuard.IsDoingWork(workType))
                 return;
 
             if (Settings.game == null || Settings.game.GameName != "BMC")
@@ -296,5 +359,15 @@ namespace TD_Loader
                     BTD5_Image.Source = new BitmapImage(new Uri("Resources/btd5.png", UriKind.Relative));
             }
         }
+        private void BTD6_Image_IsMouseDirectlyOverChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (Settings.game == null || Settings.game.GameName != "BTD6")
+            {
+                if (!BTD6_Image.IsMouseOver)
+                    BTD6_Image.Source = new BitmapImage(new Uri("Resources/btd6_not loaded.png", UriKind.Relative));
+                else
+                    BTD6_Image.Source = new BitmapImage(new Uri("Resources/btd6.png", UriKind.Relative));
+            }
+        }*/
     }
 }

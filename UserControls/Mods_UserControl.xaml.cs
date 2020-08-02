@@ -15,8 +15,9 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using TD_Loader.Classes;
+using BTD_Backend;
 
-namespace TD_Loader
+namespace TD_Loader.UserControls
 {
     /// <summary>
     /// Interaction logic for Mods_UserControl.xaml
@@ -120,7 +121,7 @@ namespace TD_Loader
 
         private void AddMods_Button_Click(object sender, RoutedEventArgs e)
         {
-            if (Guard.IsDoingWork(MainWindow.workType)) return;
+            if (TempGuard.IsDoingWork(MainWindow.workType)) return;
 
             MainWindow.doingWork = true;
             MainWindow.workType = "Adding mods";

@@ -10,6 +10,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Input;
+using BTD_Backend;
+using BTD_Backend.NKHook5;
 
 namespace TD_Loader.Classes
 {
@@ -122,15 +124,12 @@ namespace TD_Loader.Classes
                 return;
             }
 
-            if (NKHook.CanUseNKH())
-            {
-                if (MainWindow.plugin_User != null && MainWindow.plugin_User.SelectedPlugins_ListBox != null
+            if (MainWindow.plugin_User != null && MainWindow.plugin_User.SelectedPlugins_ListBox != null
                     && MainWindow.plugin_User.SelectedPlugins_ListBox.Items.Count > 0)
-                {
-                    Log.Output("Plugins are enabled. Launching NKHook");
-                    Process.Start(NKHook.nkhEXE);
-                    return;
-                }
+            {
+                Log.Output("Plugins are enabled. Launching NKHook");
+                NKHook5Manager.LaunchNKH();
+                return;
             }
             Process.Start(Settings.game.GameDir + "\\" + Settings.game.ExeName);
         }
@@ -501,6 +500,7 @@ namespace TD_Loader.Classes
             Settings.SaveSettings();
             return;
         }
+
         public void GetUpdatedGameFiles(string version)
         {
             MainWindow.workType = "Game has been updated... Reaquiring files...";
@@ -564,7 +564,10 @@ namespace TD_Loader.Classes
             if (!Guard.IsStringValid(dir))
             {
                 Log.Output("Something went wrong... Failed to aquire game directory...");
-                MainWindow.instance.ResetGamePictures();
+
+                //removed for cleanup
+                //
+                //MainWindow.instance.ResetGamePictures();
                 return;
             }
 

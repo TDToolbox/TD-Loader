@@ -1,0 +1,142 @@
+﻿<UserControl x:Class="TD_Loader.UserControls.GamesList"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:TD_Loader.UserControls"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800" Loaded="UserControl_Loaded">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/../Resources/Resources.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <Style x:Key="GameViewbox" TargetType="{x:Type Viewbox}">
+                <Setter Property="MaxWidth" Value="175"/>
+                <Setter Property="MaxHeight" Value="100"/>
+                <Setter Property="Margin"  Value="35,0"/>
+            </Style>
+
+        </ResourceDictionary>
+    </UserControl.Resources>
+    
+    <Grid>
+        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="40"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="40"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="25"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="20"/>
+        </Grid.RowDefinitions>
+
+        <Grid x:Name="Game1_Grid" Grid.Column="1" Grid.Row="1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- BTD6 -->
+                <Viewbox Style="{StaticResource GameViewbox}" Grid.Row="0">
+                    <TextBlock x:Name="BTD6_Text" Text="BTD6" Style="{StaticResource VBTexbox}"/>
+                </Viewbox>
+                <Image x:Name="BTD6_Image" Grid.Row="1" Source="{Binding Path=Btd6ImgBinding, Mode=TwoWay}" Margin="10,0" MouseDown="BTD6_Image_MouseDown" IsMouseDirectlyOverChanged="BTD6_Image_IsMouseDirectlyOverChanged"/>
+            </Grid>
+        </Grid>
+
+        <Grid x:Name="Game2_Grid" Grid.Column="2" Grid.Row="1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- BTD5 -->
+                <Viewbox Grid.Column="0" Grid.Row="0" Style="{StaticResource GameViewbox}">
+                    <TextBlock x:Name="BTD5_Text" Text="BTD5" Style="{StaticResource VBTexbox}"/>
+                </Viewbox>
+                <Image x:Name="BTD5_Image" Grid.Column="0" Grid.Row="1" Source="{Binding Path=Btd5ImgBinding, Mode=TwoWay}" Margin="10,0" MouseDown="BTD5_Image_MouseDown" IsMouseDirectlyOverChanged="BTD5_Image_IsMouseDirectlyOverChanged"/>
+            </Grid>
+        </Grid>
+
+        <Grid x:Name="Game3_Grid" Grid.Column="3" Grid.Row="1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- BTDB -->
+                <Viewbox Grid.Column="0" Grid.Row="0" Style="{StaticResource GameViewbox}">
+                    <TextBlock x:Name="BTDB_Text" Text="BTDB" Style="{StaticResource VBTexbox}"/>
+                </Viewbox>
+                <Image x:Name="BTDB_Image" Grid.Column="0" Grid.Row="1" Source="{Binding Path=BtdbImgBinding, Mode=TwoWay}" Margin="10,0" MouseDown="BTDB_Image_MouseDown" IsMouseDirectlyOverChanged="BTDB_Image_IsMouseDirectlyOverChanged"/>
+            </Grid>
+        </Grid>
+
+        <Grid x:Name="Game4_Grid" Grid.Column="1" Grid.Row="3">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- BMC -->
+                <Viewbox Grid.Column="0" Grid.Row="0" Style="{StaticResource GameViewbox}">
+                    <TextBlock x:Name="BMC_Text" Text="BMC " Style="{StaticResource VBTexbox}"/>
+                </Viewbox>
+                <Image x:Name="BMC_Image" Grid.Column="0" Grid.Row="1" Source="{Binding Path=BmcImgBinding, Mode=TwoWay}" Margin="10,0" MouseDown="BMC_Image_MouseDown" IsMouseDirectlyOverChanged="BMC_Image_IsMouseDirectlyOverChanged"/>
+            </Grid>
+        </Grid>
+
+        <Grid x:Name="Game5_Grid" Grid.Column="2" Grid.Row="3">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+
+            </Grid>
+        </Grid>
+
+        <Grid x:Name="Game6_Grid" Grid.Column="3" Grid.Row="3">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

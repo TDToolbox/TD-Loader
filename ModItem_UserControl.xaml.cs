@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using TD_Loader.Classes;
+using TD_Loader.UserControls;
 
 namespace TD_Loader
 {
@@ -32,7 +33,7 @@ namespace TD_Loader
 
         private void CheckBox_Clicked(object sender, RoutedEventArgs e)
         {
-            if (Guard.IsDoingWork(MainWindow.workType))
+            if (TempGuard.IsDoingWork(MainWindow.workType))
                 return;
 
             CheckBox cb = (CheckBox)(sender);

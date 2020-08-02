@@ -14,6 +14,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using TD_Loader.Classes;
+using BTD_Backend;
+using BTD_Backend.NKHook5;
 
 namespace TD_Loader
 {
@@ -49,8 +51,8 @@ namespace TD_Loader
             modItems = new List<PluginItem_UserControl>();
 
 
-            var mods = new DirectoryInfo(NKHook.nkhDir).GetFiles("*.*", SearchOption.AllDirectories);
-            var loadedPlugins = new DirectoryInfo(NKHook.nkhDir + "\\Plugins").GetFiles("*.*");
+            var mods = new DirectoryInfo(NKHook5Manager.nkhDir).GetFiles("*.*", SearchOption.AllDirectories);
+            var loadedPlugins = new DirectoryInfo(NKHook5Manager.nkhDir + "\\Plugins").GetFiles("*.*");
             foreach (var mod in mods)
             {
                 if (!mod.Name.EndsWith(".dll") || mod.Name == "NKHook5.dll" || mod.Name == "NKHook5-CLR.dll")
@@ -114,7 +116,7 @@ namespace TD_Loader
 
         private void AddMods_Button_Click(object sender, RoutedEventArgs e)
         {
-            if (Guard.IsDoingWork(MainWindow.workType)) return;
+            if (TempGuard.IsDoingWork(MainWindow.workType)) return;
 
             MainWindow.doingWork = true;
             MainWindow.workType = "Adding Plugins";
@@ -126,8 +128,8 @@ namespace TD_Loader
             }
 
             List<string> mods = FileIO.BrowseForFiles("Browse for mods", "", "dll files (*.dll)|*.dll", "");
-            if (!Directory.Exists(NKHook.nkhDir + "\\UnloadedPlugins"))
-                Directory.CreateDirectory(NKHook.nkhDir + "\\UnloadedPlugins");
+            if (!Directory.Exists(NKHook5Manager.nkhDir + "\\UnloadedPlugins"))
+                Directory.CreateDirectory(NKHook5Manager.nkhDir + "\\UnloadedPlugins");
 
             MainWindow.workType = "Copying Plugins";
 
@@ -145,7 +147,7 @@ namespace TD_Loader
                     Log.Output("You selected an invalid plugin. All plugins must end in .dll");
                     continue;
                 }
-                string dest = Mods.IncrementName(NKHook.nkhDir + "\\UnloadedPlugins\\" + file.Name);
+                string dest = Mods.IncrementName(NKHook5Manager.nkhDir + "\\UnloadedPlugins\\" + file.Name);
                 File.Copy(mod, dest);
 
                 string copiedMod = dest;

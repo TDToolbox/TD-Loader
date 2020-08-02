@@ -63,9 +63,9 @@ namespace TD_Loader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap bmc {
+        internal static System.Drawing.Bitmap BMC_loaded {
             get {
-                object obj = ResourceManager.GetObject("bmc", resourceCulture);
+                object obj = ResourceManager.GetObject("BMC_loaded", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -73,9 +73,9 @@ namespace TD_Loader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap bmc_not_loaded {
+        internal static System.Drawing.Bitmap BMC_not_loaded {
             get {
-                object obj = ResourceManager.GetObject("bmc_not_loaded", resourceCulture);
+                object obj = ResourceManager.GetObject("BMC_not_loaded", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -83,9 +83,9 @@ namespace TD_Loader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap btd5 {
+        internal static System.Drawing.Bitmap BTD5_loaded {
             get {
-                object obj = ResourceManager.GetObject("btd5", resourceCulture);
+                object obj = ResourceManager.GetObject("BTD5_loaded", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -93,9 +93,9 @@ namespace TD_Loader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap btd5_not_loaded {
+        internal static System.Drawing.Bitmap BTD5_not_loaded {
             get {
-                object obj = ResourceManager.GetObject("btd5_not_loaded", resourceCulture);
+                object obj = ResourceManager.GetObject("BTD5_not_loaded", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -103,9 +103,9 @@ namespace TD_Loader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap btdb_2 {
+        internal static System.Drawing.Bitmap BTD6_loaded {
             get {
-                object obj = ResourceManager.GetObject("btdb_2", resourceCulture);
+                object obj = ResourceManager.GetObject("BTD6_loaded", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -113,9 +113,29 @@ namespace TD_Loader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap btdb_2_not_loaded {
+        internal static System.Drawing.Bitmap BTD6_not_loaded {
             get {
-                object obj = ResourceManager.GetObject("btdb_2_not_loaded", resourceCulture);
+                object obj = ResourceManager.GetObject("BTD6_not_loaded", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap BTDB_loaded {
+            get {
+                object obj = ResourceManager.GetObject("BTDB_loaded", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap BTDB_not_loaded {
+            get {
+                object obj = ResourceManager.GetObject("BTDB_not_loaded", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

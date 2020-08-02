@@ -14,6 +14,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using TD_Loader.Classes;
+using BTD_Backend;
+using BTD_Backend.NKHook5;
 
 namespace TD_Loader
 {
@@ -33,7 +35,7 @@ namespace TD_Loader
 
         private void CheckBox_Clicked(object sender, RoutedEventArgs e)
         {
-            if (Guard.IsDoingWork(MainWindow.workType))
+            if (TempGuard.IsDoingWork(MainWindow.workType))
                 return;
 
             CheckBox cb = (CheckBox)(sender);
@@ -43,12 +45,12 @@ namespace TD_Loader
                 // Is checked
                 if (!Plugins_UserControl.instance.SelectedPlugins_ListBox.Items.Contains(modName))
                 {
-                    if (!File.Exists(NKHook.nkhDir + "\\Plugins\\" + modName))
+                    if (!File.Exists(NKHook5Manager.nkhDir + "\\Plugins\\" + modName))
                     {
-                        if (File.Exists(NKHook.nkhDir + "\\UnloadedPlugins\\" + modName))
+                        if (File.Exists(NKHook5Manager.nkhDir + "\\UnloadedPlugins\\" + modName))
                         {
-                            string dest = Mods.IncrementName(NKHook.nkhDir + "\\Plugins\\" + modName);
-                            File.Move(NKHook.nkhDir + "\\UnloadedPlugins\\" + modName, dest);
+                            string dest = Mods.IncrementName(NKHook5Manager.nkhDir + "\\Plugins\\" + modName);
+                            File.Move(NKHook5Manager.nkhDir + "\\UnloadedPlugins\\" + modName, dest);
                         }
                     }
                     
@@ -61,13 +63,13 @@ namespace TD_Loader
                 // Is not checked
                 if (Plugins_UserControl.instance.SelectedPlugins_ListBox.Items.Contains(modName))
                 {
-                    if (File.Exists(NKHook.nkhDir + "\\Plugins\\" + modName))
+                    if (File.Exists(NKHook5Manager.nkhDir + "\\Plugins\\" + modName))
                     {
-                        if (File.Exists(NKHook.nkhDir + "\\UnloadedPlugins\\" + modName))
-                            File.Delete(NKHook.nkhDir + "\\UnloadedPlugins\\" + modName);
+                        if (File.Exists(NKHook5Manager.nkhDir + "\\UnloadedPlugins\\" + modName))
+                            File.Delete(NKHook5Manager.nkhDir + "\\UnloadedPlugins\\" + modName);
 
-                        string dest = Mods.IncrementName(NKHook.nkhDir + "\\UnloadedPlugins\\" + modName);
-                        File.Move(NKHook.nkhDir + "\\Plugins\\" + modName, dest);
+                        string dest = Mods.IncrementName(NKHook5Manager.nkhDir + "\\UnloadedPlugins\\" + modName);
+                        File.Move(NKHook5Manager.nkhDir + "\\Plugins\\" + modName, dest);
                     }
 
                     int selected = Plugins_UserControl.instance.SelectedPlugins_ListBox.SelectedIndex;

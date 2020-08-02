@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using BTD_Backend;
+using BTD_Backend.Web;
 
 namespace TD_Loader.Classes
 {

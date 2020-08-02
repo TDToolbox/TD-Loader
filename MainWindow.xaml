@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TD_Loader"
+        xmlns:userControls="clr-namespace:TD_Loader.UserControls"
         mc:Ignorable="d"
         Title="TD Loader" Height="450" Width="800" WindowState="Maximized" WindowStyle="SingleBorderWindow" MinHeight="520" MinWidth="720" Activated="Main_Activated">
 
@@ -19,21 +20,49 @@
                 <Setter Property="Margin"  Value="35,0"/>
             </Style>
 
+            <SolidColorBrush x:Key="TabItem.Selected.Background" Color="#FFFFFF"/>
+            <SolidColorBrush x:Key="TabItem.Selected.Border" Color="#ACACAC"/>
+            <Style x:Key="TabControlStyle1" TargetType="{x:Type TabControl}">
+                <Setter Property="TabStripPlacement" Value="Left"/>
+                <Setter Property="Padding" Value="2"/>
+                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                <Setter Property="Background" Value="{StaticResource TabItem.Selected.Background}"/>
+                <Setter Property="BorderBrush" Value="{StaticResource TabItem.Selected.Border}"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+
+                        <ControlTemplate TargetType="{x:Type TabControl}">
+                            <Grid x:Name="templateRoot" ClipToBounds="true" SnapsToDevicePixels="true" KeyboardNavigation.TabNavigation="Local">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition x:Name="RowDefinition0" Height="Auto"/>
+                                    <RowDefinition x:Name="RowDefinition1" Height="*"/>
+                                </Grid.RowDefinitions>
+                                <!-- here is the edit -->
+                                <DockPanel x:Name="headerPanel" Background="Transparent" Grid.Column="0" IsItemsHost="true" Margin="2,2,2,0" Grid.Row="0" KeyboardNavigation.TabIndex="1" Panel.ZIndex="1" />
+                                <Border x:Name="contentPanel" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Grid.Column="0" KeyboardNavigation.DirectionalNavigation="Contained" Grid.Row="1" KeyboardNavigation.TabIndex="2" KeyboardNavigation.TabNavigation="Local">
+                                    <ContentPresenter x:Name="PART_SelectedContentHost" ContentSource="SelectedContent" Margin="{TemplateBinding Padding}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                                </Border>
+                            </Grid>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsEnabled" Value="false">
+                                    <Setter Property="TextElement.Foreground" TargetName="templateRoot" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
         </ResourceDictionary>
     </Window.Resources>
 
-    <!--<Window.Background>
-        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-            <GradientStop Color="Black" Offset="0"/>
-            <GradientStop Color="White" Offset="5"/>
-        </LinearGradientBrush>
-    </Window.Background>-->
-
     <Grid Background="{StaticResource BrushBackgroundL}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="26" />
             <RowDefinition Height="*" />
-            <RowDefinition Height="200" />
+            <RowDefinition Height="auto" />
         </Grid.RowDefinitions>
 
         <ToolBar Visibility="Collapsed">
@@ -44,62 +73,18 @@
 
 
         <TabControl x:Name="Main_TabController" TabStripPlacement="Left" VerticalAlignment="Stretch" 
-                    HorizontalAlignment="Stretch" Grid.Row="1" Background="Black" BorderBrush="Black">
-            <TabItem Header="Games">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="40"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="40"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="auto"/>
-                        <RowDefinition Height="20"/>
-                        <RowDefinition Height="auto"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="0"/>
-                    </Grid.RowDefinitions>
-
-
-                    <Viewbox Grid.Row="2" Grid.Column="1" Style="{StaticResource GameViewbox}">
-                        <TextBlock x:Name="BTD5_Text" Text="BTD5" Style="{StaticResource VBTexbox}"/>
-                    </Viewbox>
-                    <Image x:Name="BTD5_Image" Grid.Column="1" Grid.Row="3" Source="Resources/btd5_not loaded.png" Margin="10,0" MouseDown="BTD5_Image_MouseDown"/>
-
-                    <Viewbox Grid.Row="2" Grid.Column="2" Style="{StaticResource GameViewbox}">
-                        <TextBlock x:Name="BTDB_Text" Text="BTDB" Style="{StaticResource VBTexbox}"/>
-                    </Viewbox>
-                    <Image x:Name="BTDB_Image" Grid.Column="2" Grid.Row="3" Source="Resources/btdb 2_not loaded.png" Margin="10,0" MouseDown="BTDB_Image_MouseDown"/>
-
-                    <Viewbox Grid.Row="2" Grid.Column="3" Style="{StaticResource GameViewbox}">
-                        <TextBlock x:Name="BMC_Text" Text="BMC" Style="{StaticResource VBTexbox}"/>
-                    </Viewbox>
-                    <Image x:Name="BMC_Image" Grid.Row="3" Grid.Column="3" Source="Resources/bmc_not loaded.png" Margin="10,0" MouseDown="BMC_Image_MouseDown"/>
-                </Grid>
-
-
+                    HorizontalAlignment="Stretch" Grid.Row="0" Background="Black" BorderBrush="Black"
+                     Style="{DynamicResource TabControlStyle1}">
+            <TabItem Header="News">
+                <userControls:GamesList/>
+            </TabItem>
+            <TabItem Header="Game">
+                <userControls:Game_UC/>
             </TabItem>
             <TabItem x:Name="Mods_Tab" Header="Mods">
 
                 <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="20"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="20"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="20"/>
-                        <RowDefinition Height="auto"/>
-                        <RowDefinition Height="15"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="20"/>
-                    </Grid.RowDefinitions>
-
-
+                    <userControls:Mods_UserControl/>
                 </Grid>
 
 
@@ -121,33 +106,28 @@
         </TabControl>
 
 
-        <!--Change MinHeight to 220 when all tabs are enabled-->
-        <Grid Name="LaunchGrid" Grid.Row="1" MinHeight="185" 
+        <!--Change MinHeight to 220 when all tabs are enabled. MinHeight was originally 185-->
+        
+        <!--<Grid Name="LaunchGrid" Grid.Row="1"
        VerticalAlignment="Top" Margin="-5,0,0,0" Background="{x:Null}">
             <StackPanel Orientation="Vertical" HorizontalAlignment="Left" 
                 VerticalAlignment="Bottom" Margin="0,0">
                 <CheckBox x:Name="ResetGameFiles_CB" Content="Reset Game Files" Foreground="White" FontSize="18" Click="ResetGameFiles_CB_Click" ToolTip="Check this to replace your game files with the backup when launching. Useful for switching between mods" />
                 <Button x:Name="Launch_Button" Margin="0,0" FontSize="25" Content="Launch" MinHeight="45" MinWidth="160" Background="#FF68C93A" Foreground="White" Click="Launch_Button_Clicked"/>
             </StackPanel>
-            
-            
-        </Grid>
+        </Grid>-->
+
+
         <Grid Grid.Row="2" >
             <Grid Background="{StaticResource BrushBackgroundL}">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="150"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="25"/>
                     <RowDefinition Height="*"/>
-                    <RowDefinition Height="10"/>
                 </Grid.RowDefinitions>
-                
-                <RichTextBox x:Name="OutputLog" Grid.Column="1" Grid.Row="1" Background="#FF272727" Foreground="White" FontSize="16" FontFamily="Consolas" VerticalScrollBarVisibility="Auto" BorderThickness="0.5,0.5,0,0">
-                    </RichTextBox>
+
+                <Button x:Name="CollapseConsole_Button" Grid.Row="0" Content="Show Console" Click="ConsoleColapsed"/>
+                <RichTextBox x:Name="OutputLog" Grid.Row="1" Visibility="Collapsed" Background="#FF272727" Foreground="White" FontSize="16" FontFamily="Consolas" VerticalScrollBarVisibility="Auto" BorderThickness="0.5,0.5,0,0" IsReadOnly="True" MinHeight="100"/>
             </Grid>
         </Grid>
-
     </Grid>
 </Window>
