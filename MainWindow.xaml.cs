@@ -15,6 +15,7 @@ using BTD_Backend.Web;
 using BTD_Backend.NKHook5;
 using BTD_Backend.Persistence;
 using TD_Loader.UserControls;
+using BTD_Backend.Game;
 
 namespace TD_Loader
 {
@@ -91,6 +92,7 @@ namespace TD_Loader
 
             FinishedGameHandling += MainWindow_FinishedGameHandling;
         }
+
         private void FinishedLoading()
         {
             string tdloaderDir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\TD Loader";
@@ -266,108 +268,74 @@ namespace TD_Loader
             }
         }
 
-        //removed for cleanup
-        //
-        /*private void BTD6_Image_MouseDown(object sender, MouseButtonEventArgs e)
+        private void CollapseGamesList_Button_Click(object sender, RoutedEventArgs e)
         {
-            if (TempGuard.IsDoingWork(workType))
-                return;
-
-            if (Settings.game == null || Settings.game.GameName != "BTD6")
+           /* if (GameScrollViewer.Visibility == Visibility.Collapsed)
             {
-                ResetGamePictures();
-                Settings.SaveGameFile();
-                Settings.SetGameFile("BTD6");
-                BTD6_Image.Source = new BitmapImage(new Uri("Resources/btd6.png", UriKind.Relative));
-
-                GameHandling();
+                GameScrollViewer.Visibility = Visibility.Visible;
+                CollapseGamesList_Button.Content = "Hide Games";
             }
-        }
-        private void BTD5_Image_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (TempGuard.IsDoingWork(workType))
-                return;
-
-            if (Settings.game == null || Settings.game.GameName != "BTD5")
+            else
             {
-                ResetGamePictures();
-                Settings.SaveGameFile();
-                Settings.SetGameFile("BTD5");
-                BTD5_Image.Source = new BitmapImage(new Uri("Resources/btd5.png", UriKind.Relative));
-
-                GameHandling();
-            }
+                GameScrollViewer.Visibility = Visibility.Collapsed;
+                CollapseGamesList_Button.Content = "Show Games";
+            }*/
         }
-        private void BTDB_Image_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (TempGuard.IsDoingWork(workType))
-                return;
 
-            if (Settings.game == null || Settings.game.GameName != "BTDB")
-            {
-                ResetGamePictures();
-                Settings.SaveGameFile();
-                Settings.SetGameFile("BTDB");
-                BTDB_Image.Source = new BitmapImage(new Uri("Resources/btdb 2.png", UriKind.Relative));
+        private void Mods_Tab_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            
+        }
 
-                GameHandling();
-            }
+        private void Mods_Tab_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            
+        }
 
-        }
-        private void BMC_Image_MouseDown(object sender, MouseButtonEventArgs e)
+        private void Main_TabController_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            if (TempGuard.IsDoingWork(workType))
-                return;
+            Game_UC.Instance.SetGamePicture();
+        }
 
-            if (Settings.game == null || Settings.game.GameName != "BMC")
-            {
-                ResetGamePictures();
-                Settings.SaveGameFile();
-                Settings.SetGameFile("BMC");
-                BMC_Image.Source = new BitmapImage(new Uri("Resources/bmc.png", UriKind.Relative));
+        private void Mods_Tab_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            
+        }
 
-                GameHandling();
-            }
-        }
-        private void BMC_Image_IsMouseDirectlyOverChanged(object sender, DependencyPropertyChangedEventArgs e)
+        private void TabItem_MouseUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            if (Settings.game == null || Settings.game.GameName != "BMC")
+            var btd6Info = GameInfo.GetGame(GameType.BTD6);
+            if (!BTD_Backend.Natives.Windows.IsProgramRunning(btd6Info.ProcName, out Process process))
+                Process.Start("steam://rungameid/" + btd6Info.SteamID);
+
+            Thread inject = new Thread(() =>
             {
-                if (!BMC_Image.IsMouseOver)
-                    BMC_Image.Source = new BitmapImage(new Uri("Resources/bmc_not loaded.png", UriKind.Relative));
-                else
-                    BMC_Image.Source = new BitmapImage(new Uri("Resources/bmc.png", UriKind.Relative));
-            }
+                bool injected = false;
+                
+                while (!injected)
+                {
+                    if (BTD_Backend.Natives.Windows.IsProgramRunning(btd6Info.ProcName, out Process process2))
+                    {
+                        Thread.Sleep(12000);
+
+                        foreach (var modPath in SessionData.LoadedMods)
+                        {
+                            //string modPath = Environment.CurrentDirectory + "\\HypersonicTowers.btd6mod";
+                            if (!File.Exists(modPath))
+                            {
+                                Log.Output("Mod does not exist");
+                                break;
+                            }
+                            Log.Output("Mod exists");
+                            BTD_Backend.Natives.Injector.InjectDll(modPath, process2);
+                            Log.Output("Dll injected");
+                        }
+                        
+                        injected = true;
+                    }
+                }
+            });
+            BgThread.AddToQueue(inject);
         }
-        private void BTDB_Image_IsMouseDirectlyOverChanged(object sender, DependencyPropertyChangedEventArgs e)
-        {
-            if (Settings.game == null || Settings.game.GameName != "BTDB")
-            {
-                if (!BTDB_Image.IsMouseOver)
-                    BTDB_Image.Source = new BitmapImage(new Uri("Resources/btdb 2_not loaded.png", UriKind.Relative));
-                else
-                    BTDB_Image.Source = new BitmapImage(new Uri("Resources/btdb 2.png", UriKind.Relative));
-            }                
-        }
-        private void BTD5_Image_IsMouseDirectlyOverChanged(object sender, DependencyPropertyChangedEventArgs e)
-        {
-            if (Settings.game == null || Settings.game.GameName != "BTD5")
-            {
-                if (!BTD5_Image.IsMouseOver)
-                    BTD5_Image.Source = new BitmapImage(new Uri("Resources/btd5_not loaded.png", UriKind.Relative));
-                else
-                    BTD5_Image.Source = new BitmapImage(new Uri("Resources/btd5.png", UriKind.Relative));
-            }
-        }
-        private void BTD6_Image_IsMouseDirectlyOverChanged(object sender, DependencyPropertyChangedEventArgs e)
-        {
-            if (Settings.game == null || Settings.game.GameName != "BTD6")
-            {
-                if (!BTD6_Image.IsMouseOver)
-                    BTD6_Image.Source = new BitmapImage(new Uri("Resources/btd6_not loaded.png", UriKind.Relative));
-                else
-                    BTD6_Image.Source = new BitmapImage(new Uri("Resources/btd6.png", UriKind.Relative));
-            }
-        }*/
     }
 }

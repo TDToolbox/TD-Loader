@@ -38,7 +38,7 @@
                 
                 <!-- Original fill color #FF212121 -->
                 <Rectangle Fill="#FF323232" Grid.RowSpan="3" Margin="14"/>
-                <TextBlock Grid.Column="0" Grid.Row="0" Margin="25" HorizontalAlignment="Stretch" Foreground="#FFC3C3C3">
+                <!-- <TextBlock Grid.Column="0" Grid.Row="0" Margin="25" HorizontalAlignment="Stretch" Foreground="#FFC3C3C3">
                 The Bloons are back and better than ever! Get ready for a massive 3D tower 
                     defense game designed to give you hours and hours of the best strategy gaming available.
                 </TextBlock>
@@ -46,7 +46,7 @@
                 <TextBlock Grid.Column="0" Grid.Row="1" Margin="25" HorizontalAlignment="Stretch" Foreground="#FFC3C3C3">
                 Craft your perfect defense from a combination of awesome monkey towers, upgrades, Heroes, 
                     and activated abilities, then pop every last Bloon that comes your way!
-                </TextBlock>
+                </TextBlock> -->
 
             </Grid>
 

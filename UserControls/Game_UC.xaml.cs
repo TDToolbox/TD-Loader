@@ -1,8 +1,11 @@
-﻿using System;
+﻿using Microsoft.WindowsAPICodePack.Shell.Interop;
+using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
+using TD_Loader.Classes;
 
 namespace TD_Loader.UserControls
 {
@@ -11,16 +14,20 @@ namespace TD_Loader.UserControls
     /// </summary>
     public partial class Game_UC : INotifyPropertyChanged
     {
+        public static Game_UC Instance;
 
         public Game_UC()
         {
             DataContext = this;
             InitializeComponent();
-            GamePicture = new BitmapImage(new Uri("../Resources/BTD6 loaded.png", UriKind.Relative));
+            Instance = this;
+
+            GamePicture = new BitmapImage(new Uri("../Resources/" + SessionData.CurrentGame.ToString() +" loaded.png", UriKind.Relative));
+            //GamePicture = new BitmapImage(new Uri("../Resources/BTD6 loaded.png", UriKind.Relative));
+
+            //SessionData.CurrentGame.ToString()
         }
-
-
-
+        
 
         #region Properties
         private BitmapImage gamePicture;
@@ -46,5 +53,10 @@ namespace TD_Loader.UserControls
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
         #endregion
+
+        public void SetGamePicture()
+        {
+            GamePicture = new BitmapImage(new Uri("../Resources/" + SessionData.CurrentGame.ToString() + " loaded.png", UriKind.Relative));
+        }
     }
 }

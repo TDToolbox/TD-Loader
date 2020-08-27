@@ -12,7 +12,7 @@ namespace TD_Loader.Classes
     {
         public static List<string> AddMods()
         {
-            return FileIO.BrowseForFiles("Browse for mods", "", "Jet files (*.jet)|*.jet|Zip files (*.zip)|*.zip|Rar files (*.rar)|*.rar|7z files (*.7z)|*.7z", "");
+            return FileIO.BrowseForFiles("Browse for mods", "", "Jet files (*.jet)|*.jet|Zip files (*.zip)|*.zip|Rar files (*.rar)|*.rar|7z files (*.7z)|*.7z|BTD6 Mods (*.btd6mod)|*.btd6mod", "");
         }
         public static string CopyMod(string source, string dest)
         {

@@ -10,5 +10,7 @@ namespace TD_Loader.Classes
     class SessionData
     {
         public static GameType CurrentGame = GameType.None;
+        public static string CurrentGameModDir;
+        public static List<string> LoadedMods = new List<string>();
     }
 }

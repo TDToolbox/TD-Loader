@@ -46,6 +46,7 @@ namespace TD_Loader
                     Mods_UserControl.instance.SelectedMods_ListBox.Items.Add(modName);
                     Mods_UserControl.instance.SelectedMods_ListBox.SelectedIndex = Mods_UserControl.instance.SelectedMods_ListBox.Items.Count - 1;
                     Mods_UserControl.instance.modPaths.Add(modPath);
+                    SessionData.LoadedMods.Add(modPath);
                 }
                 
             }
@@ -57,6 +58,7 @@ namespace TD_Loader
                     int selected = Mods_UserControl.instance.SelectedMods_ListBox.SelectedIndex;
                     Mods_UserControl.instance.SelectedMods_ListBox.Items.Remove(modName);
                     Mods_UserControl.instance.modPaths.Remove(modPath);
+                    SessionData.LoadedMods.Remove(modPath);
 
                     if (selected == 0 && Mods_UserControl.instance.SelectedMods_ListBox.Items.Count >= 1)
                         Mods_UserControl.instance.SelectedMods_ListBox.SelectedIndex = selected;

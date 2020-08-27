@@ -119,13 +119,65 @@ namespace TD_Loader.UserControls
             }
         }
 
+
         private void AddMods_Button_Click(object sender, RoutedEventArgs e)
+        {
+            if (TempGuard.IsDoingWork(MainWindow.workType)) return;
+
+            if (SessionData.CurrentGame == BTD_Backend.Game.GameType.None)
+            {
+                Log.Output("You need to choose a game before you can add mods!");
+                return;
+            }
+
+            MainWindow.doingWork = true;
+            MainWindow.workType = "Adding mods";
+
+            List<string> mods = Mods.AddMods();
+
+            if (mods == null || mods.Count == 0)
+            {
+                MainWindow.doingWork = false;
+                return;
+            }
+
+            foreach (string mod in mods)
+            {
+                AddItemToModsList(mod);
+                Log.Output("Added " + mod);
+            }
+
+            MainWindow.doingWork = false;
+            MainWindow.workType = "";
+        }
+
+        public void AddItemToModsList(string modPath) => AddItemToModsList(new FileInfo(modPath));
+        public void AddItemToModsList(FileInfo modFile)
+        {
+            ModItem_UserControl item = new ModItem_UserControl();
+            item.MinWidth = Mods_ListBox.ActualWidth - 31;
+            item.ModName.Text = modFile.Name;
+            item.modName = modFile.Name;
+            item.modPath = modFile.FullName;
+
+            Thickness margin = item.Margin;
+            if (Mods_ListBox.Items.Count == 0)
+            {
+                margin.Top = 10;
+                item.Margin = margin;
+            }
+            
+            Mods_ListBox.Items.Add(item);
+        }
+
+        /*private void AddMods_Button_Click(object sender, RoutedEventArgs e)
         {
             if (TempGuard.IsDoingWork(MainWindow.workType)) return;
 
             MainWindow.doingWork = true;
             MainWindow.workType = "Adding mods";
-            if (Settings.settings.GameName != "" && Settings.settings.GameName != null)
+            //if (Settings.settings.GameName != "" && Settings.settings.GameName != null)
+            if (SessionData.CurrentGame != BTD_Backend.Game.GameType.None)
             {
                 List<string> mods = Mods.AddMods();
                 string modD = Settings.game.ModsDir;
@@ -181,7 +233,7 @@ namespace TD_Loader.UserControls
 
             MainWindow.doingWork = false;
             MainWindow.workType = "";
-        }
+        }*/
 
         public void HandlePriorityButtons()
         {

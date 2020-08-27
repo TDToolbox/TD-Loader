@@ -56,6 +56,7 @@ namespace TD_Loader.Classes
             public string BMCModsDir { get; set; }
             public List<string> BMCLoadedMods { get; set; }
 
+            public string BTD6ModsDir { get; set; }
 
             public bool AdvancedConflictMenu { get; set; }
         }

@@ -61,8 +61,9 @@
 
     <Grid Background="{StaticResource BrushBackgroundL}">
         <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
             <RowDefinition Height="*" />
-            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
 
         <ToolBar Visibility="Collapsed">
@@ -71,29 +72,48 @@
             <Button x:Name="Help_Button">Help</Button>
         </ToolBar>
 
+        <Grid Grid.Row="0" >
+            <Grid Background="{StaticResource BrushBackgroundL}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- <Button x:Name="CollapseGamesList_Button" Grid.Row="0" Content="Show Games" Click="CollapseGamesList_Button_Click"/> -->
+                <!-- <ScrollViewer x:Name="GameScrollViewer" Grid.Row="1" Visibility="Visible" VerticalScrollBarVisibility="Disabled" 
+                              HorizontalScrollBarVisibility="Visible">
+                    <Canvas Height="150" Width="1260" HorizontalAlignment="Left" Margin="100,0,0,0">
+                        <Image Grid.Row="1" Source="Resources/BTD6 loaded.png" Canvas.Left="0" MaxHeight="150" Margin="10,0"/>
+                        <Image Grid.Row="1" Source="Resources/BTD5 loaded.png" Canvas.Left="420" MaxHeight="150" Margin="10,0"/>
+                        <Image Grid.Row="1" Source="Resources/BTDB loaded.png" Canvas.Left="840" MaxHeight="150" Margin="10,0"/>
+                        <Image Grid.Row="1" Source="Resources/BMC loaded.png" Canvas.Left="1260" MaxHeight="150" Margin="10,0"/>
+                    </Canvas>
+                </ScrollViewer>-->
+            </Grid>
+        </Grid>
+
 
         <TabControl x:Name="Main_TabController" TabStripPlacement="Left" VerticalAlignment="Stretch" 
-                    HorizontalAlignment="Stretch" Grid.Row="0" Background="Black" BorderBrush="Black"
-                     Style="{DynamicResource TabControlStyle1}">
-            <TabItem Header="News">
+                    HorizontalAlignment="Stretch" Grid.Row="1" Background="Black" BorderBrush="Black"
+                     Style="{DynamicResource TabControlStyle1}" MouseDown="Main_TabController_MouseDown">
+            <TabItem Header="Home">
+
+            </TabItem>
+
+
+            <TabItem Header="Games">
                 <userControls:GamesList/>
             </TabItem>
-            <TabItem Header="Game">
+            <TabItem x:Name="Mods_Tab" Header="Mods" MouseLeftButtonDown="Mods_Tab_MouseLeftButtonDown" MouseDown="Mods_Tab_MouseDown" IsVisibleChanged="Mods_Tab_IsVisibleChanged">
                 <userControls:Game_UC/>
             </TabItem>
-            <TabItem x:Name="Mods_Tab" Header="Mods">
 
-                <Grid>
-                    <userControls:Mods_UserControl/>
-                </Grid>
-
-
-            </TabItem>
             <TabItem Name="Plugins_Tab" Header="Plugins">
                 <Grid x:Name="PluginsUserControl">
 
                 </Grid>
             </TabItem>
+            <TabItem Header="Launch" Background="#FF17FF00" BorderBrush="#FF68FF00" Foreground="#FF68FF00" MouseUp="TabItem_MouseUp"/>
 
             <TabItem Header="Saves" Visibility="Collapsed" >
                 <Grid/>
@@ -105,9 +125,8 @@
             </TabItem>
         </TabControl>
 
-
         <!--Change MinHeight to 220 when all tabs are enabled. MinHeight was originally 185-->
-        
+
         <!--<Grid Name="LaunchGrid" Grid.Row="1"
        VerticalAlignment="Top" Margin="-5,0,0,0" Background="{x:Null}">
             <StackPanel Orientation="Vertical" HorizontalAlignment="Left" 
