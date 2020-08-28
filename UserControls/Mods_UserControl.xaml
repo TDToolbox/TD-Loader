@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:TD_Loader.UserControls"
              mc:Ignorable="d" x:Name="ModsUC"
              d:DesignHeight="450" d:DesignWidth="800">
-    
+
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -15,7 +15,7 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <Grid x:Name="ModsUserControl" Background="#FF323232" SizeChanged="ModsUserControl_SizeChanged">
+    <Grid x:Name="ModsUserControl" Background="#FF323232" SizeChanged="ModsUserControl_SizeChanged" Loaded="ModsUserControl_Loaded">
         <Grid.RowDefinitions>
             <RowDefinition Height="10"/>
             <RowDefinition Height="60"/>
@@ -34,7 +34,7 @@
         <Canvas Grid.Row="1" Grid.Column="1" Background="{StaticResource BrushOrangeMid}" MaxHeight="50"/>
         <Button x:Name="AddMods_Button" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Right" Margin="20,0" MinWidth="230" MaxHeight="43" Style="{StaticResource BlueButton}" Click="AddMods_Button_Click">Add Mods</Button>
 
-        
+
         <Viewbox Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" Margin="35,0">
             <TextBlock x:Name="Mods_TextBlock" Text="Mods" Style="{StaticResource VBTexbox}"/>
         </Viewbox>
@@ -50,8 +50,8 @@
         <Viewbox  Grid.Row="5" Grid.Column="1" HorizontalAlignment="Left" Margin="0,0">
             <TextBlock Foreground="#FFFF00D1">^^^ Put highest proirity mods at the top of the list above ^^^</TextBlock>
         </Viewbox>
-        
-        
+
+
         <Grid x:Name="SelectedMods" Grid.Row="4" Grid.Column="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
@@ -62,7 +62,7 @@
             </Grid.ColumnDefinitions>
 
             <ListBox x:Name="SelectedMods_ListBox" Grid.Row="0" Grid.Column="0" ScrollViewer.VerticalScrollBarVisibility="Auto" 
-                     Background="{StaticResource BrushBackground}" Foreground="{StaticResource BrushFont}" SelectionChanged="SelectedMods_ListBox_SelectionChanged_1"/>
+                     Background="{StaticResource BrushBackground}" Foreground="{StaticResource BrushFont}" SelectionChanged="SelectedMods_ListBox_SelectionChanged"/>
             <Grid x:Name="PriorityButtonsGrid" Grid.Column="1" Background="{StaticResource BrushBackground}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="20"/>
@@ -86,12 +86,12 @@
                         <RowDefinition Height="auto"/>
                     </Grid.RowDefinitions>
 
-                    <Button x:Name="HighestPriority" Grid.Row="0" MaxHeight="35" Grid.ColumnSpan="2" Click="HighestPriority_Click" >
+                    <Button x:Name="HighestPriority" Grid.Row="0" MaxHeight="35" Grid.ColumnSpan="2" Click="HighestPriority_Click" IsEnabled="False" >
                         <Viewbox HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0">
                             <TextBlock Text="Top"></TextBlock>
                         </Viewbox>
                     </Button>
-                    <Button x:Name="RaisePriority" Grid.Row="1" VerticalContentAlignment="Top" MaxHeight="35" Grid.ColumnSpan="2" Click="RaisePriority_Click">
+                    <Button x:Name="RaisePriority" Grid.Row="1" VerticalContentAlignment="Top" MaxHeight="35" Grid.ColumnSpan="2" Click="RaisePriority_Click" IsEnabled="False">
                         <Viewbox MinHeight="20" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0">
                             <TextBlock>⮝</TextBlock>
                         </Viewbox>
@@ -104,12 +104,12 @@
                         <RowDefinition Height="auto"/>
                     </Grid.RowDefinitions>
 
-                    <Button x:Name="LowerPriority" Grid.Row="0" Grid.Column="1" VerticalContentAlignment="Center" MaxHeight="35" Click="LowerPriority_Click">
+                    <Button x:Name="LowerPriority" Grid.Row="0" Grid.Column="1" VerticalContentAlignment="Center" MaxHeight="35" Click="LowerPriority_Click" IsEnabled="False">
                         <Viewbox HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0">
                             <TextBlock>⮟</TextBlock>
                         </Viewbox>
                     </Button>
-                    <Button x:Name="LowestPriority" Grid.Row="2" Grid.Column="1" VerticalContentAlignment="Center" MaxHeight="35" Click="LowestPriority_Click">
+                    <Button x:Name="LowestPriority" Grid.Row="2" Grid.Column="1" VerticalContentAlignment="Center" MaxHeight="35" Click="LowestPriority_Click" IsEnabled="False">
                         <Viewbox HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0">
                             <TextBlock>Bottom</TextBlock>
                         </Viewbox>

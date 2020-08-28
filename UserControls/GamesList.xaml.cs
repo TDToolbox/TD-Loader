@@ -14,6 +14,7 @@ namespace TD_Loader.UserControls
 {
     public partial class GamesList : INotifyPropertyChanged
     {
+        public static GamesList Instance;
         public Dictionary<GameType, BitmapImage> GameImgBindings;
         public Dictionary<BitmapImage, Image> ImageBindings;
 
@@ -22,6 +23,7 @@ namespace TD_Loader.UserControls
         public GamesList()
         {
             DataContext = this;
+            Instance = this;
             InitializeComponent();
             Startup();
         }
@@ -92,6 +94,13 @@ namespace TD_Loader.UserControls
         private void Startup()
         {
             UnloadAllGames();
+            GameChanged += GamesList_GameChanged;
+        }
+
+        private void GamesList_GameChanged(object sender, GameListEventArgs e)
+        {
+            if (SessionData.CurrentGame != GameType.None)
+                TempSettings.SaveSettings();
         }
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
@@ -121,9 +130,18 @@ namespace TD_Loader.UserControls
 
             if (SessionData.CurrentGame != GameType.None && keepLoadedGame)
             {
-                var gameImgBinding = GameImgBindings[SessionData.CurrentGame];
-                var image = ImageBindings[gameImgBinding];
-                SetImage(image, true);
+                try
+                {
+                    var gameImgBinding = GameImgBindings[SessionData.CurrentGame];
+                    var image = ImageBindings[gameImgBinding];
+                    SetImage(image, true);
+                }
+                catch 
+                {
+                    SessionData.CurrentGame = GameType.None;
+                    TempSettings.SaveSettings();
+                    Instance.OnGameChanged(new GameListEventArgs());
+                }
             }
         }
 
@@ -146,11 +164,26 @@ namespace TD_Loader.UserControls
 
 
         #region Events
+
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        public static event EventHandler<GameListEventArgs> GameChanged;
+        public class GameListEventArgs : EventArgs
+        {
+
+        }
+
+        public void OnGameChanged(GameListEventArgs e)
+        {
+            EventHandler<GameListEventArgs> handler = GameChanged;
+            if (handler != null)
+                handler(this, e);
+        }
+
         #endregion
 
         #region UI Events
@@ -160,6 +193,9 @@ namespace TD_Loader.UserControls
                 return;
 
             SessionData.CurrentGame = GameType.BTD6;
+
+            var args = new GameListEventArgs();
+            OnGameChanged(args);
         }
 
         private void BTD5_Image_MouseDown(object sender, MouseButtonEventArgs e)
@@ -168,6 +204,8 @@ namespace TD_Loader.UserControls
                 return;
 
             SessionData.CurrentGame = GameType.BTD5;
+            var args = new GameListEventArgs();
+            OnGameChanged(args);
         }
 
         private void BTDB_Image_MouseDown(object sender, MouseButtonEventArgs e)
@@ -176,6 +214,8 @@ namespace TD_Loader.UserControls
                 return;
 
             SessionData.CurrentGame = GameType.BTDB;
+            var args = new GameListEventArgs();
+            OnGameChanged(args);
         }
 
         private void BMC_Image_MouseDown(object sender, MouseButtonEventArgs e)
@@ -184,6 +224,8 @@ namespace TD_Loader.UserControls
                 return;
 
             SessionData.CurrentGame = GameType.BMC;
+            var args = new GameListEventArgs();
+            OnGameChanged(args);
         }
 
         private void BTD6_Image_IsMouseDirectlyOverChanged(object sender, DependencyPropertyChangedEventArgs e)

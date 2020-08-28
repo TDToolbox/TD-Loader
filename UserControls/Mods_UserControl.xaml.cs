@@ -1,21 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Windows.Threading;
 using TD_Loader.Classes;
 using BTD_Backend;
+using BTD_Backend.Game;
+using System.Resources;
+using System.Windows.Threading;
+using System.Windows.Media;
 
 namespace TD_Loader.UserControls
 {
@@ -30,65 +23,53 @@ namespace TD_Loader.UserControls
         public Mods_UserControl()
         {
             InitializeComponent();
+            GamesList.GameChanged += GamesList_GameChanged;
             instance = this;
 
-            HighestPriority.IsEnabled = false;
-            RaisePriority.IsEnabled = false;
-            LowestPriority.IsEnabled = false;
-            LowerPriority.IsEnabled = false;
-            SelectedMods_ListBox.SelectionChanged += SelectedMods_ListBox_SelectionChanged;
+            PopulateMods(SessionData.CurrentGame);
         }
-        public void PopulateMods(string game)
+
+        public void PopulateMods(GameType game)
         {
-            if (!Guard.IsStringValid(Settings.game.ModsDir))
+            string modsDir = TempSettings.Instance.GetModsDir(game);
+            if (String.IsNullOrEmpty(modsDir) || !Directory.Exists(modsDir))
                 return;
 
             Mods_ListBox.Items.Clear();
             SelectedMods_ListBox.Items.Clear();
             modPaths = new List<string>();
             modItems = new List<ModItem_UserControl>();
-            var mods = new DirectoryInfo(Settings.game.ModsDir).GetFiles("*.*");
+
+            var mods = new DirectoryInfo(modsDir).GetFiles("*.*");
+            List<string> fileExtensions = new List<string>() { ".jet", ".zip", ".rar", ".7z", ".btd6mod" };
+
             foreach (var mod in mods)
             {
-                if (!mod.Name.EndsWith(".jet") && !mod.Name.EndsWith(".zip") && !mod.Name.EndsWith(".rar") && !mod.Name.EndsWith(".7z"))
-                    continue;
-
-                if (Mods_ListBox.Items.Contains(mod))
-                    continue;
-
-                ModItem_UserControl item = new ModItem_UserControl();
-
-                if ((Mods_ListBox.ActualWidth - 31) > 0)
-                    item.MinWidth = Mods_ListBox.ActualWidth - 31;
-                item.ModName.Text = mod.Name;
-
-                Thickness margin = item.Margin;
-                if (Mods_ListBox.Items.Count == 0)
+                bool goodExtension = false;
+                foreach (var item in fileExtensions)
                 {
-                    margin.Top = 10;
-                    item.Margin = margin;
+                    if (!mod.Name.EndsWith(item))
+                        continue;
+                    
+                    goodExtension = true;
+                    break;
                 }
-                item.modName = mod.Name;
-                item.modPath = mod.FullName;
 
-                modItems.Add(item);
-                Mods_ListBox.Items.Add(item);
+                if (!goodExtension || Mods_ListBox.Items.Contains(mod))
+                    continue;
+
+                AddItemToModsList(mod);
             }
 
-            foreach (var selected in Settings.game.LoadedMods)
+            foreach (var selected in TempSettings.Instance.LastUsedMods)
                 AddToSelectedModLB(selected);
 
-            Settings.game.LoadedMods.Clear();
-            Settings.game.LoadedMods = modPaths;
-            Settings.SaveGameFile();
-            Settings.SaveSettings();
-            
             SelectedMods_ListBox.SelectedIndex = 0;
-
         }
+
         private void AddToSelectedModLB(string modPath)
         {
-            if(!File.Exists(modPath) || !Guard.IsStringValid(modPath))
+            if(!File.Exists(modPath) || String.IsNullOrEmpty(modPath))
             {
                 Log.Output("Attempted to load a selected mod that doesnt exist!");
                 if(modPaths.Contains(modPath))
@@ -96,19 +77,143 @@ namespace TD_Loader.UserControls
                 return;
             }
 
-            string[] split = modPath.Split('\\');
-            string modname = split[split.Length - 1];
+            FileInfo f = new FileInfo(modPath);
 
             modPaths.Add(modPath);
-            SelectedMods_ListBox.Items.Add(modname);
+            SelectedMods_ListBox.Items.Add(f.Name);
 
             foreach (var modItem in modItems)
             {
                 if (modItem.ToString() == modPath)
                     modItem.Enable_CheckBox.IsChecked = true;
             }
+
+            SelectedMods_ListBox.SelectedIndex = SelectedMods_ListBox.Items.Count - 1;
+        }
+        
+
+        public void AddItemToModsList(string modPath) => AddItemToModsList(new FileInfo(modPath));
+        public void AddItemToModsList(FileInfo modFile)
+        {
+            if (Mods_ListBox.ActualWidth <= 0)
+                return;
+
+            ModItem_UserControl item = new ModItem_UserControl();
+            item.MinWidth = Mods_ListBox.ActualWidth - 31;
+            item.ModName.Text = modFile.Name;
+            item.modName = modFile.Name;
+            item.modPath = modFile.FullName;
+
+            Thickness margin = item.Margin;
+            if (Mods_ListBox.Items.Count == 0)
+            {
+                margin.Top = 10;
+                item.Margin = margin;
+            }
+            
+            Mods_ListBox.Items.Add(item);
+            modItems.Add(item);
         }
 
+
+        public void HandlePriorityButtons()
+        {
+            List<Button> priorityButtons = new List<Button>() { HighestPriority, RaisePriority, LowerPriority, LowestPriority };
+            foreach (var item in priorityButtons)
+                item.IsEnabled = false;
+
+            if (SelectedMods_ListBox.Items.Count <= 1)
+                return;
+
+            int index = SelectedMods_ListBox.SelectedIndex;
+            if (index == 0)
+            {
+                priorityButtons[3].IsEnabled = true;
+                priorityButtons[2].IsEnabled = true;
+            }
+            else if (index == SelectedMods_ListBox.Items.Count - 1)
+            {
+                priorityButtons[0].IsEnabled = true;
+                priorityButtons[1].IsEnabled = true;
+            }
+            else
+            {
+                foreach (var item in priorityButtons)
+                    item.IsEnabled = true;
+            }
+        }
+        
+
+        
+
+        
+
+        private void GamesList_GameChanged(object sender, GamesList.GameListEventArgs e)
+        {
+            Mods_ListBox.Items.Clear();
+            SelectedMods_ListBox.Items.Clear();
+
+            if (SessionData.CurrentGame == GameType.None)
+            {
+                MainWindow.instance.Mods_Tab.Visibility = Visibility.Collapsed;
+                return;
+            }
+
+            if (MainWindow.instance.Mods_Tab.Visibility == Visibility.Collapsed)
+            {
+                MainWindow.instance.Mods_Tab.Visibility = Visibility.Visible;
+                blinkTimer.Start();
+            }
+
+            PopulateMods(SessionData.CurrentGame);
+            Mods_TextBlock.Text = SessionData.CurrentGame.ToString() + " Mods";
+        }
+
+        // The timer's Tick event.
+        private bool BlinkOn = false;
+        private int blinkCount = 0;
+        public void FlashTab(object sender, EventArgs e)
+        {
+            if (blinkCount >= 8)
+            {
+                BlinkOn = false;
+                blinkCount = 0;
+                MainWindow.instance.Mods_Tab.Foreground = Brushes.White;
+                blinkTimer.Stop();
+                return;
+            }
+
+            if (BlinkOn)
+                MainWindow.instance.Mods_Tab.Foreground = Brushes.Black;
+            else
+                MainWindow.instance.Mods_Tab.Foreground = Brushes.White;
+
+            BlinkOn = !BlinkOn;
+            blinkCount++;
+        }
+
+
+        #region UI Events
+
+        bool controlInitialized = false;
+        GameType lastGame = GameType.None;
+        DispatcherTimer blinkTimer = new DispatcherTimer();
+        private void ModsUserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            blinkTimer.Tick += FlashTab;
+            blinkTimer.Interval = new TimeSpan(0, 0, 0, 0, 75);
+
+            if (controlInitialized)
+            {
+                if (SessionData.CurrentGame != GameType.None && SessionData.CurrentGame != lastGame)
+                {
+                    PopulateMods(SessionData.CurrentGame);
+                    lastGame = SessionData.CurrentGame;
+                }
+            }
+
+            controlInitialized = true;
+        }
 
         private void ModsUserControl_SizeChanged(object sender, SizeChangedEventArgs e)
         {
@@ -124,11 +229,25 @@ namespace TD_Loader.UserControls
         {
             if (TempGuard.IsDoingWork(MainWindow.workType)) return;
 
-            if (SessionData.CurrentGame == BTD_Backend.Game.GameType.None)
+            if (SessionData.CurrentGame == GameType.None)
             {
                 Log.Output("You need to choose a game before you can add mods!");
                 return;
             }
+
+            if (String.IsNullOrEmpty(TempSettings.Instance.GetModsDir(SessionData.CurrentGame)))
+            {
+                Game_UC.Instance.SetModsDir();
+                if (String.IsNullOrEmpty(TempSettings.Instance.GetModsDir(SessionData.CurrentGame)))
+                {
+                    Log.Output("Can't add mods. You need to set a mods directory.");
+                    return;
+                }
+            }
+
+            string modFolder = TempSettings.Instance.GetModsDir(SessionData.CurrentGame);
+            if (!Directory.Exists(modFolder))
+                Directory.CreateDirectory(modFolder);
 
             MainWindow.doingWork = true;
             MainWindow.workType = "Adding mods";
@@ -143,138 +262,17 @@ namespace TD_Loader.UserControls
 
             foreach (string mod in mods)
             {
+                FileInfo f = new FileInfo(mod);
                 AddItemToModsList(mod);
-                Log.Output("Added " + mod);
+                Log.Output("Added " + f.Name);
+                File.Copy(mod, modFolder + "\\" + f.Name);
             }
 
             MainWindow.doingWork = false;
             MainWindow.workType = "";
         }
 
-        public void AddItemToModsList(string modPath) => AddItemToModsList(new FileInfo(modPath));
-        public void AddItemToModsList(FileInfo modFile)
-        {
-            ModItem_UserControl item = new ModItem_UserControl();
-            item.MinWidth = Mods_ListBox.ActualWidth - 31;
-            item.ModName.Text = modFile.Name;
-            item.modName = modFile.Name;
-            item.modPath = modFile.FullName;
-
-            Thickness margin = item.Margin;
-            if (Mods_ListBox.Items.Count == 0)
-            {
-                margin.Top = 10;
-                item.Margin = margin;
-            }
-            
-            Mods_ListBox.Items.Add(item);
-        }
-
-        /*private void AddMods_Button_Click(object sender, RoutedEventArgs e)
-        {
-            if (TempGuard.IsDoingWork(MainWindow.workType)) return;
-
-            MainWindow.doingWork = true;
-            MainWindow.workType = "Adding mods";
-            //if (Settings.settings.GameName != "" && Settings.settings.GameName != null)
-            if (SessionData.CurrentGame != BTD_Backend.Game.GameType.None)
-            {
-                List<string> mods = Mods.AddMods();
-                string modD = Settings.game.ModsDir;
-                if (modD == "" || modD == null)
-                {
-                    Log.Output("Your mods directory is invalid");
-                    Game.SetModsDir(Settings.settings.GameName);
-                }
-
-                if (mods != null && (modD != "" && modD != null))
-                {
-                    MainWindow.workType = "Copying mods";
-                    foreach (string mod in mods)
-                    {
-                        string[] split = mod.Split('\\');
-                        string filename = split[split.Length - 1];
-                        string copiedMod = Mods.CopyMod(mod, modD + "\\" + filename);
-
-                        if (copiedMod != "" && copiedMod != " ")
-                        {
-                            FileInfo f = new FileInfo(copiedMod);
-
-                            ModItem_UserControl item = new ModItem_UserControl();
-                            item.MinWidth = Mods_ListBox.ActualWidth - 31;
-                            item.ModName.Text = f.Name;
-
-                            Thickness margin = item.Margin;
-                            if (Mods_ListBox.Items.Count == 0)
-                            {
-                                margin.Top = 10;
-                                item.Margin = margin;
-                            }
-                            item.modName = f.Name;
-                            item.modPath = f.FullName;
-
-                            Mods_ListBox.Items.Add(item);
-                            Log.Output("Added " + item);
-                        }
-                    }
-                }
-                else
-                {
-                    Log.Output("Mods directory not found... Please try again");
-                    MainWindow.doingWork = false;
-                }
-
-            }
-            else
-            {
-                Log.Output("You need to choose a game before you can add mods!");
-                MainWindow.doingWork = false; ;
-            }
-
-            MainWindow.doingWork = false;
-            MainWindow.workType = "";
-        }*/
-
-        public void HandlePriorityButtons()
-        {
-            HighestPriority.IsEnabled = false;
-            RaisePriority.IsEnabled = false;
-            LowestPriority.IsEnabled = false;
-            LowerPriority.IsEnabled = false;
-            
-            if(SelectedMods_ListBox.Items.Count == 1)
-            {
-                SelectedMods_ListBox.SelectedIndex = 0;
-            }
-            else if (SelectedMods_ListBox.SelectedIndex == SelectedMods_ListBox.Items.Count +1)
-            {
-                SelectedMods_ListBox.SelectedIndex = SelectedMods_ListBox.Items.Count - 1;
-            }
-            else if (SelectedMods_ListBox.Items.Count > 1)
-            {
-                if (SelectedMods_ListBox.SelectedIndex == 0)
-                {
-                    LowestPriority.IsEnabled = true;
-                    LowerPriority.IsEnabled = true;
-                }
-                else if (SelectedMods_ListBox.SelectedIndex == SelectedMods_ListBox.Items.Count - 1)
-                {
-                    HighestPriority.IsEnabled = true;
-                    RaisePriority.IsEnabled = true;
-                }
-                else
-                {
-                    HighestPriority.IsEnabled = true;
-                    RaisePriority.IsEnabled = true;
-                    LowestPriority.IsEnabled = true;
-                    LowerPriority.IsEnabled = true;
-                }
-            }
-        }
-        private void SelectedMods_ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            HandlePriorityButtons();
-        }
+        private void SelectedMods_ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e) => HandlePriorityButtons();
 
         private void RaisePriority_Click(object sender, RoutedEventArgs e)
         {
@@ -371,21 +369,12 @@ namespace TD_Loader.UserControls
 
 
             modPaths.Remove(tempPath);
-            modPaths.Insert(SelectedMods_ListBox.Items.Count-1, tempPath);
+            modPaths.Insert(SelectedMods_ListBox.Items.Count - 1, tempPath);
 
 
-            SelectedMods_ListBox.SelectedIndex = SelectedMods_ListBox.Items.Count-1;
+            SelectedMods_ListBox.SelectedIndex = SelectedMods_ListBox.Items.Count - 1;
         }
 
-        private void SelectedMods_ListBox_SelectionChanged_1(object sender, SelectionChangedEventArgs e)
-        {
-            if(SelectedMods_ListBox.Items.Contains("") || SelectedMods_ListBox.Items.Contains(" "))
-            {
-                modPaths.Remove("");
-                modPaths.Remove(" ");
-                SelectedMods_ListBox.Items.Remove("");
-                SelectedMods_ListBox.Items.Remove(" ");
-            }
-        }
+        #endregion
     }
 }

@@ -16,6 +16,7 @@ using BTD_Backend.NKHook5;
 using BTD_Backend.Persistence;
 using TD_Loader.UserControls;
 using BTD_Backend.Game;
+using System.Windows.Media;
 
 namespace TD_Loader
 {
@@ -35,20 +36,12 @@ namespace TD_Loader
         public static MainWindow instance;
         public static Mods_UserControl mods_User;
         public static Plugins_UserControl plugin_User;
+
         public MainWindow()
         {
             InitializeComponent();
             instance = this;
-            
             Startup();
-            
-            
-            
-            
-
-            Main.Closing += Main_Closing;
-            JetReader.FinishedStagingMods += JetReader_FinishedStagingMods;
-            Log.MessageLogged += Log_MessageLogged;
         }
 
         private void Log_MessageLogged(object sender, Log.LogEvents e)
@@ -63,15 +56,36 @@ namespace TD_Loader
                     OutputLog.ScrollToEnd();
                 }));
             }
+
+            if (TempSettings.Instance.ConsoleFlash && OutputLog.Visibility == Visibility.Collapsed)
+                blinkTimer.Start();
         }
 
         private void Startup()
         {
-            Settings.LoadSettings();
-            if (Settings.game == null)
-                Settings.SetGameFile(Settings.settings.GameName);
+            Log.MessageLogged += Log_MessageLogged;
+            JetReader.FinishedStagingMods += JetReader_FinishedStagingMods;
+            FinishedGameHandling += MainWindow_FinishedGameHandling;
+            GamesList.GameChanged += GamesList_GameChanged;
 
             Log.Output("Program initializing...");
+
+            /*Settings.LoadSettings();
+            if (Settings.game == null)
+                Settings.SetGameFile(Settings.settings.GameName);*/
+
+            if (TempSettings.Instance.LastGame == GameType.None)
+            {
+                Mods_Tab.Visibility = Visibility.Collapsed;
+                return;
+            }
+
+            SessionData.CurrentGame = TempSettings.Instance.LastGame;
+            SessionData.LoadedMods = TempSettings.Instance.LastUsedMods;
+            var args = new GamesList.GameListEventArgs();
+            GamesList.Instance.OnGameChanged(args);
+
+            
 
             //removed for cleanup
             //
@@ -79,7 +93,7 @@ namespace TD_Loader
             //CreateModsTab();
             //ShowHidePlugins();
 
-
+            //Enable later
             /*UpdateHandler update = new UpdateHandler()
             {
                 GitApiReleasesURL = "https://api.github.com/repos/TDToolbox/TD-Loader/releases",
@@ -89,8 +103,14 @@ namespace TD_Loader
                 UpdatedZipName = "TD Loader.zip"
             };
             BgThread.AddToQueue(() => update.HandleUpdates(false));*/
+        }
 
-            FinishedGameHandling += MainWindow_FinishedGameHandling;
+        private void GamesList_GameChanged(object sender, GamesList.GameListEventArgs e)
+        {
+            if (SessionData.CurrentGame != GameType.BTD5)
+                Plugins_Tab.Visibility = Visibility.Collapsed;
+            else
+                Plugins_Tab.Visibility = Visibility.Visible;
         }
 
         private void FinishedLoading()
@@ -106,10 +126,10 @@ namespace TD_Loader
                 UserData.LoadUserData();
                 UserData.SaveUserData();
             });
-            
 
 
-            if (!Guard.IsStringValid(Settings.game.GameDir) || !Guard.IsStringValid(Settings.game.GameName))
+
+            /*if (!Guard.IsStringValid(Settings.game.GameDir) || !Guard.IsStringValid(Settings.game.GameName))
             {
                 Settings.settings.GameName = "";
                 Settings.SaveSettings();
@@ -117,24 +137,7 @@ namespace TD_Loader
                 return;
             }
 
-            //removed for cleanup
-            //
-            /*switch (Settings.game.GameName)
-            {
-                case "BTD6":
-                    BTD6_Image.Source = new BitmapImage(new Uri("Resources/btd6.png", UriKind.Relative));
-                    break;
-                case "BTD5":
-                        BTD5_Image.Source = new BitmapImage(new Uri("Resources/btd5.png", UriKind.Relative));
-                    break;
-                case "BTDB":
-                        BTDB_Image.Source = new BitmapImage(new Uri("Resources/btdb 2.png", UriKind.Relative));
-                    break;
-                case "BMC":
-                        BMC_Image.Source = new BitmapImage(new Uri("Resources/bmc.png", UriKind.Relative));
-                    break;
-            }*/
-            GameHandling();
+            GameHandling();*/
         }
         private void GameHandling()
         {
@@ -170,7 +173,7 @@ namespace TD_Loader
         }
         private void MainWindow_FinishedGameHandling(object source, ProcFinished_BoolEventArgs e)
         {
-            Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() => {
+            /*Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() => {
                 ShowHidePlugins();
                 Mods_UserControl.instance.PopulateMods(Settings.game.GameName);
                 Mods_UserControl.instance.Mods_TextBlock.Text = Settings.game.GameName + " Mods";
@@ -178,7 +181,7 @@ namespace TD_Loader
                 
                 CreatePluginsTab();
             }));
-            
+            */
         }
 
         //
@@ -201,13 +204,7 @@ namespace TD_Loader
             Settings.SaveSettings();
             Process.GetCurrentProcess().Kill();
         }
-        private void Launch_Button_Clicked(object sender, RoutedEventArgs e)
-        {
-            if (TempGuard.IsDoingWork(workType))
-                return;
 
-            Game.DoLaunchWithMods();
-        }
         private void JetReader_FinishedStagingMods(object sender, EventArgs e)
         {
             Game.LaunchGame();
@@ -282,60 +279,162 @@ namespace TD_Loader
             }*/
         }
 
-        private void Mods_Tab_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        
+
+
+        private void ToolBar_Loaded(object sender, RoutedEventArgs e)
         {
-            
+            ToolBar toolBar = sender as ToolBar;
+            var overflowGrid = toolBar.Template.FindName("OverflowGrid", toolBar) as FrameworkElement;
+            if (overflowGrid != null)
+                overflowGrid.Visibility = Visibility.Collapsed;
+
+            var mainPanelBorder = toolBar.Template.FindName("MainPanelBorder", toolBar) as FrameworkElement;
+            if (mainPanelBorder != null)
+                mainPanelBorder.Margin = new Thickness();
         }
 
-        private void Mods_Tab_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void Launch_Button_Click(object sender, RoutedEventArgs e)
         {
-            
-        }
-
-        private void Main_TabController_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-            Game_UC.Instance.SetGamePicture();
-        }
-
-        private void Mods_Tab_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
-        {
-            
-        }
-
-        private void TabItem_MouseUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-            var btd6Info = GameInfo.GetGame(GameType.BTD6);
-            if (!BTD_Backend.Natives.Windows.IsProgramRunning(btd6Info.ProcName, out Process process))
-                Process.Start("steam://rungameid/" + btd6Info.SteamID);
-
-            Thread inject = new Thread(() =>
+            if (String.IsNullOrEmpty(TempSettings.Instance.GetModsDir(SessionData.CurrentGame)))
             {
-                bool injected = false;
-                
-                while (!injected)
-                {
-                    if (BTD_Backend.Natives.Windows.IsProgramRunning(btd6Info.ProcName, out Process process2))
-                    {
-                        Thread.Sleep(12000);
+                Log.Output("Error! You can't launch yet because you need to set a mods directory for your selected game");
+                return; 
+            }
 
-                        foreach (var modPath in SessionData.LoadedMods)
-                        {
-                            //string modPath = Environment.CurrentDirectory + "\\HypersonicTowers.btd6mod";
-                            if (!File.Exists(modPath))
-                            {
-                                Log.Output("Mod does not exist");
-                                break;
-                            }
-                            Log.Output("Mod exists");
-                            BTD_Backend.Natives.Injector.InjectDll(modPath, process2);
-                            Log.Output("Dll injected");
-                        }
-                        
-                        injected = true;
-                    }
-                }
-            });
-            BgThread.AddToQueue(inject);
+            Launcher.Launch(SessionData.CurrentGame);
         }
+
+        private void OpenSettingsDir_Button_Click(object sender, RoutedEventArgs e)
+        {
+            if (!Directory.Exists(TempSettings.Instance.MainSettingsDir))
+            {
+                Directory.CreateDirectory(TempSettings.Instance.MainSettingsDir);
+                TempSettings.SaveSettings();
+                UserData.SaveUserData();
+            }
+
+            Process.Start(TempSettings.Instance.MainSettingsDir);
+        }
+
+        private void Settings_Button_Click(object sender, RoutedEventArgs e)
+        {
+            string settingsPath = TempSettings.Instance.MainSettingsDir + "\\" + TempSettings.Instance.settingsFileName;
+
+            if (!File.Exists(settingsPath))
+                TempSettings.SaveSettings();
+
+            Process.Start(settingsPath);
+        }
+
+
+        // The timer's Tick event.
+        private bool BlinkOn = false;
+        private int blinkCount = 0;
+        private void timer_Tick(object sender, EventArgs e)
+        {
+            var consoleButtonColor = new SolidColorBrush(Color.FromArgb(255, 221, 221, 221));
+            var consoleDarkButtonColor = new SolidColorBrush(Color.FromArgb(255, 62, 62, 62));
+
+            if (blinkCount >= 3)
+            {
+                BlinkOn = false;
+                blinkCount = 0;
+                CollapseConsole_Button.Background = consoleButtonColor;
+                CollapseConsole_Button.Foreground = Brushes.Black;
+                blinkTimer.Stop();
+                return;
+            }
+
+            if (BlinkOn)
+            {
+                CollapseConsole_Button.Foreground = Brushes.Black;
+                CollapseConsole_Button.Background = consoleButtonColor;
+            }
+            else
+            {
+                CollapseConsole_Button.Background = consoleDarkButtonColor;
+                CollapseConsole_Button.Foreground = Brushes.White;
+            }
+
+            BlinkOn = !BlinkOn;
+            blinkCount++;
+        }
+
+        DispatcherTimer blinkTimer = new DispatcherTimer();
+        private void Main_Loaded(object sender, RoutedEventArgs e)
+        {
+            blinkTimer.Tick += timer_Tick;
+            blinkTimer.Interval = new TimeSpan(0, 0, 0, 0, 350);
+        }
+
+        private void OpenModsDirHandling()
+        {
+            if (!Directory.Exists(TempSettings.Instance.MainSettingsDir))
+            {
+                Directory.CreateDirectory(TempSettings.Instance.MainSettingsDir);
+                TempSettings.SaveSettings();
+                UserData.SaveUserData();
+            }
+        }
+
+        private void OpenBTD6_ModDir_Button_Click(object sender, RoutedEventArgs e)
+        {
+            OpenModsDirHandling();
+            TempSettings.LoadSettings();
+
+            string dir = TempSettings.Instance.GetModsDir(GameType.BTD6);
+            if (String.IsNullOrEmpty(dir))
+                return;
+
+            if (!Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
+            
+            Process.Start(dir);
+        }
+
+        private void OpenBTD5_ModDir_Button_Click(object sender, RoutedEventArgs e)
+        {
+            OpenModsDirHandling();
+
+            string dir = TempSettings.Instance.GetModsDir(GameType.BTD5);
+            if (String.IsNullOrEmpty(dir))
+                return;
+
+            if (!Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
+
+            Process.Start(dir);
+        }
+
+        private void OpenBTDB_ModDir_Button_Click(object sender, RoutedEventArgs e)
+        {
+            OpenModsDirHandling();
+
+            string dir = TempSettings.Instance.GetModsDir(GameType.BTDB);
+            if (String.IsNullOrEmpty(dir))
+                return;
+
+            if (!Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
+
+            Process.Start(dir);
+        }
+
+        private void OpenBMC_ModDir_Button_Click(object sender, RoutedEventArgs e)
+        {
+            OpenModsDirHandling();
+
+            string dir = TempSettings.Instance.GetModsDir(GameType.BMC);
+            if (String.IsNullOrEmpty(dir))
+                return;
+
+            if (!Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
+
+            Process.Start(dir);
+        }
+
+        private void Discord_Button_Click(object sender, RoutedEventArgs e) => Process.Start("https://discord.gg/jj5Q7mA");
     }
 }

@@ -3,10 +3,11 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:local="clr-namespace:TD_Loader"
         xmlns:userControls="clr-namespace:TD_Loader.UserControls"
         mc:Ignorable="d"
-        Title="TD Loader" Height="450" Width="800" WindowState="Maximized" WindowStyle="SingleBorderWindow" MinHeight="520" MinWidth="720" Activated="Main_Activated">
+        Title="TD Loader" Height="450" Width="800" WindowState="Maximized" WindowStyle="SingleBorderWindow" MinHeight="520" MinWidth="720" Activated="Main_Activated" Closing="Main_Closing" Loaded="Main_Loaded">
 
     <Window.Resources>
         <ResourceDictionary>
@@ -66,12 +67,6 @@
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
 
-        <ToolBar Visibility="Collapsed">
-            <Button x:Name="File_Button">File</Button>
-            <Button x:Name="View_Button">View</Button>
-            <Button x:Name="Help_Button">Help</Button>
-        </ToolBar>
-
         <Grid Grid.Row="0" >
             <Grid Background="{StaticResource BrushBackgroundL}">
                 <Grid.RowDefinitions>
@@ -92,10 +87,57 @@
             </Grid>
         </Grid>
 
+        <ToolBarPanel DockPanel.Dock="Top">
+            <ToolBar ToolBarTray.IsLocked="True" Background="#FF191919" Loaded="ToolBar_Loaded">
+                <xctk:DropDownButton x:Name="File_Button" Background="#FF191919" Content="File" Foreground="White" FontSize="18" DropDownContentBackground="Black">
+                    <xctk:DropDownButton.DropDownContent>
+                        <Menu>
+                            <Menu.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <VirtualizingStackPanel Orientation="Vertical"/>
+                                </ItemsPanelTemplate>
+                            </Menu.ItemsPanel>
+
+                            <MenuItem x:Name="Settings_Button" Header="Settings" FontSize="16" Foreground="White" Background="#FF191919" BorderThickness="0" Click="Settings_Button_Click"/>
+                            <MenuItem x:Name="OpenSettingsDir_Button" Header="Open Settings Dir" FontSize="16"  Foreground="White" Background="#FF191919" BorderThickness="0" Click="OpenSettingsDir_Button_Click"/>
+                        </Menu>
+                    </xctk:DropDownButton.DropDownContent>
+                </xctk:DropDownButton>
+
+                <xctk:DropDownButton x:Name="Open_Button" Background="#FF191919" Content="Open" Foreground="White" FontSize="18" DropDownContentBackground="Black">
+                    <xctk:DropDownButton.DropDownContent>
+                        <Menu>
+                            <Menu.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <VirtualizingStackPanel Orientation="Vertical"/>
+                                </ItemsPanelTemplate>
+                            </Menu.ItemsPanel>
+
+                            <MenuItem x:Name="OpenBTD6_ModDir_Button" Header="BTD6 Mods Directory" FontSize="16" Foreground="White" Background="#FF191919" BorderThickness="0" Click="OpenBTD6_ModDir_Button_Click"/>
+                            <MenuItem x:Name="OpenBTD5_ModDir_Button" Header="BTD5 Mods Directory" FontSize="16" Foreground="White" Background="#FF191919" BorderThickness="0" Click="OpenBTD5_ModDir_Button_Click"/>
+                            <MenuItem x:Name="OpenBTDB_ModDir_Button" Header="BTDB Mods Directory" FontSize="16" Foreground="White" Background="#FF191919" BorderThickness="0" Click="OpenBTDB_ModDir_Button_Click"/>
+                            <MenuItem x:Name="OpenBMC_ModDir_Button" Header="BMC Mods Directory" FontSize="16" Foreground="White" Background="#FF191919" BorderThickness="0" Click="OpenBMC_ModDir_Button_Click"/>
+
+                        </Menu>
+                    </xctk:DropDownButton.DropDownContent>
+                </xctk:DropDownButton>
+
+                <Separator Margin="8,0,8,0"/>
+                <Button x:Name="Discord_Button" Background="#FF69B2FB" Width="100" Height="30" BorderBrush="Black" FontSize="16" Click="Discord_Button_Click" VerticalAlignment="Bottom">
+                    <DockPanel>
+                        <TextBlock Text=" Discord " Foreground="White"/>
+                        <Image Source="discord logo.png" Margin="2"/>
+                    </DockPanel>
+                </Button>
+                
+                <Separator Margin="8,0,8,0"/>
+                <Button x:Name="Launch_Button" Content="Launch" Background="#FF5BC900" Width="100" Height="30" BorderBrush="Black" FontSize="16" Click="Launch_Button_Click" Foreground="White"/>
+            </ToolBar>
+        </ToolBarPanel>
 
         <TabControl x:Name="Main_TabController" TabStripPlacement="Left" VerticalAlignment="Stretch" 
                     HorizontalAlignment="Stretch" Grid.Row="1" Background="Black" BorderBrush="Black"
-                     Style="{DynamicResource TabControlStyle1}" MouseDown="Main_TabController_MouseDown">
+                     Style="{DynamicResource TabControlStyle1}" Margin="0" >
             <TabItem Header="Home">
 
             </TabItem>
@@ -104,16 +146,15 @@
             <TabItem Header="Games">
                 <userControls:GamesList/>
             </TabItem>
-            <TabItem x:Name="Mods_Tab" Header="Mods" MouseLeftButtonDown="Mods_Tab_MouseLeftButtonDown" MouseDown="Mods_Tab_MouseDown" IsVisibleChanged="Mods_Tab_IsVisibleChanged">
+            <TabItem x:Name="Mods_Tab" Header="Mods">
                 <userControls:Game_UC/>
             </TabItem>
 
-            <TabItem Name="Plugins_Tab" Header="Plugins">
+            <TabItem Name="Plugins_Tab" Header="Plugins" Visibility="Collapsed">
                 <Grid x:Name="PluginsUserControl">
 
                 </Grid>
             </TabItem>
-            <TabItem Header="Launch" Background="#FF17FF00" BorderBrush="#FF68FF00" Foreground="#FF68FF00" MouseUp="TabItem_MouseUp"/>
 
             <TabItem Header="Saves" Visibility="Collapsed" >
                 <Grid/>

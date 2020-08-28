@@ -96,7 +96,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Classes\Launcher.cs" />
     <Compile Include="Classes\SessionData.cs" />
+    <Compile Include="Classes\TempSettings.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -222,6 +224,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\BTD6 picture1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\discord logo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="discord logo.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -142,4 +142,7 @@
   <data name="BTDB_not_loaded" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\BTDB not loaded.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="discord_logo" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\discord logo.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>
