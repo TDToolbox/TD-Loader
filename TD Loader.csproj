@@ -99,10 +99,16 @@
     <Compile Include="Classes\Launcher.cs" />
     <Compile Include="Classes\SessionData.cs" />
     <Compile Include="Classes\TempSettings.cs" />
+    <Compile Include="DevManager.xaml.cs">
+      <DependentUpon>DevManager.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="RenameWindow.xaml.cs">
+      <DependentUpon>RenameWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="UserControls\GamesList.xaml.cs">
       <DependentUpon>GamesList.xaml</DependentUpon>
@@ -110,6 +116,10 @@
     <Compile Include="UserControls\Game_UC.xaml.cs">
       <DependentUpon>Game_UC.xaml</DependentUpon>
     </Compile>
+    <Page Include="DevManager.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -143,6 +153,10 @@
     <Page Include="Plugins_UserControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="RenameWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UserControls\Mods_UserControl.xaml">
       <SubType>Designer</SubType>

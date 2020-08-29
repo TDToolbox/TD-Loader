@@ -139,7 +139,7 @@
                     HorizontalAlignment="Stretch" Grid.Row="1" Background="Black" BorderBrush="Black"
                      Style="{DynamicResource TabControlStyle1}" Margin="0" >
             <TabItem Header="Home">
-
+                <WebBrowser x:Name="News_WebBrowser"/>
             </TabItem>
 
 

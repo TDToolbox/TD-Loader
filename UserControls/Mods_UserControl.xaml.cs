@@ -263,9 +263,13 @@ namespace TD_Loader.UserControls
             foreach (string mod in mods)
             {
                 FileInfo f = new FileInfo(mod);
-                AddItemToModsList(mod);
                 Log.Output("Added " + f.Name);
-                File.Copy(mod, modFolder + "\\" + f.Name);
+
+                string dest = BTD_Backend.IO.FileIO.IncrementFileName(modFolder + "\\" + f.Name);
+                File.Copy(mod, dest);
+                f = new FileInfo(dest);
+                
+                AddItemToModsList(f.FullName);
             }
 
             MainWindow.doingWork = false;

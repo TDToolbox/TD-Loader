@@ -17,6 +17,7 @@ using BTD_Backend.Persistence;
 using TD_Loader.UserControls;
 using BTD_Backend.Game;
 using System.Windows.Media;
+using System.Reflection;
 
 namespace TD_Loader
 {
@@ -127,7 +128,14 @@ namespace TD_Loader
                 UserData.SaveUserData();
             });
 
+            dynamic activeX = this.News_WebBrowser.GetType().InvokeMember("ActiveXInstance",
+                    BindingFlags.GetProperty | BindingFlags.Instance | BindingFlags.NonPublic,
+                    null, this.News_WebBrowser, new object[] { });
 
+            activeX.Silent = true;
+
+            string newsUrl = "https://gurrenm4.wixsite.com/td-toolbox";
+            //BgThread.AddToQueue(() => News_WebBrowser.Navigate(new Uri(newsUrl)));
 
             /*if (!Guard.IsStringValid(Settings.game.GameDir) || !Guard.IsStringValid(Settings.game.GameName))
             {
@@ -336,7 +344,7 @@ namespace TD_Loader
             var consoleButtonColor = new SolidColorBrush(Color.FromArgb(255, 221, 221, 221));
             var consoleDarkButtonColor = new SolidColorBrush(Color.FromArgb(255, 62, 62, 62));
 
-            if (blinkCount >= 3)
+            if (blinkCount >= 6)
             {
                 BlinkOn = false;
                 blinkCount = 0;
@@ -365,7 +373,7 @@ namespace TD_Loader
         private void Main_Loaded(object sender, RoutedEventArgs e)
         {
             blinkTimer.Tick += timer_Tick;
-            blinkTimer.Interval = new TimeSpan(0, 0, 0, 0, 350);
+            blinkTimer.Interval = new TimeSpan(0, 0, 0, 0, 250);
         }
 
         private void OpenModsDirHandling()
