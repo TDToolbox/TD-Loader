@@ -34,7 +34,6 @@
                 <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
                 <Setter Property="Template">
                     <Setter.Value>
-
                         <ControlTemplate TargetType="{x:Type TabControl}">
                             <Grid x:Name="templateRoot" ClipToBounds="true" SnapsToDevicePixels="true" KeyboardNavigation.TabNavigation="Local">
                                 <Grid.RowDefinitions>
@@ -117,11 +116,24 @@
                             <MenuItem x:Name="OpenBTD5_ModDir_Button" Header="BTD5 Mods Directory" FontSize="16" Foreground="White" Background="#FF191919" BorderThickness="0" Click="OpenBTD5_ModDir_Button_Click"/>
                             <MenuItem x:Name="OpenBTDB_ModDir_Button" Header="BTDB Mods Directory" FontSize="16" Foreground="White" Background="#FF191919" BorderThickness="0" Click="OpenBTDB_ModDir_Button_Click"/>
                             <MenuItem x:Name="OpenBMC_ModDir_Button" Header="BMC Mods Directory" FontSize="16" Foreground="White" Background="#FF191919" BorderThickness="0" Click="OpenBMC_ModDir_Button_Click"/>
-
                         </Menu>
                     </xctk:DropDownButton.DropDownContent>
                 </xctk:DropDownButton>
 
+                <xctk:DropDownButton x:Name="Testing_Button" Background="#FF191919" Content="Testing" Foreground="White" FontSize="18" DropDownContentBackground="Black">
+                    <xctk:DropDownButton.DropDownContent>
+                        <Menu>
+                            <Menu.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <VirtualizingStackPanel Orientation="Vertical"/>
+                                </ItemsPanelTemplate>
+                            </Menu.ItemsPanel>
+
+                            <MenuItem x:Name="Test_Button1" Header="Test Button 1" FontSize="16" Foreground="White" Background="#FF191919" BorderThickness="0" Click="Test_Button1_Click"/>
+                        </Menu>
+                    </xctk:DropDownButton.DropDownContent>
+                </xctk:DropDownButton>
+                
                 <Separator Margin="8,0,8,0"/>
                 <Button x:Name="Discord_Button" Background="#FF69B2FB" Width="100" Height="30" BorderBrush="Black" FontSize="16" Click="Discord_Button_Click" VerticalAlignment="Bottom">
                     <DockPanel>
@@ -137,12 +149,30 @@
 
         <TabControl x:Name="Main_TabController" TabStripPlacement="Left" VerticalAlignment="Stretch" 
                     HorizontalAlignment="Stretch" Grid.Row="1" Background="Black" BorderBrush="Black"
-                     Style="{DynamicResource TabControlStyle1}" Margin="0" >
+                     Style="{DynamicResource TabControlStyle1}" Margin="0">
             <TabItem Header="Home">
                 <WebBrowser x:Name="News_WebBrowser"/>
             </TabItem>
 
-
+            <!--<TabItem Name="GamesTab">
+                <TabItem.Template>
+                    <ControlTemplate>
+                        <xctk:DropDownButton x:Name="Games_Button" Content="Games" Background="{DynamicResource BrushForeground}" BorderThickness="0" Foreground="White" Click="Games_Button_Click">
+                            <xctk:DropDownButton.DropDownContent>
+                                <ScrollViewer>
+                                    <Canvas x:Name="GamesCanvas" Height="850" Width="350" HorizontalAlignment="Left" Margin="25,0,0,0">
+                                        <Image x:Name="BTD6_Image" Canvas.Top="50" MaxHeight="150" Source="{Binding Path=Btd6ImgBinding, Mode=TwoWay}" Margin="10,0" MouseDown="BTD6_Image_MouseDown" IsMouseDirectlyOverChanged="BTD6_Image_IsMouseDirectlyOverChanged"/>
+                                        <Image x:Name="BTD5_Image" Canvas.Top="250" Source="{Binding Path=Btd5ImgBinding, Mode=TwoWay}" Margin="10,0" MouseDown="BTD5_Image_MouseDown" IsMouseDirectlyOverChanged="BTD5_Image_IsMouseDirectlyOverChanged"/>
+                                        <Image x:Name="BTDB_Image" Canvas.Top="450" MaxHeight="150" Source="{Binding Path=BtdbImgBinding, Mode=TwoWay}" Margin="10,0" MouseDown="BTDB_Image_MouseDown" IsMouseDirectlyOverChanged="BTDB_Image_IsMouseDirectlyOverChanged"/>
+                                        <Image x:Name="BMC_Image" Canvas.Top="650" MaxHeight="150" Source="{Binding Path=BmcImgBinding, Mode=TwoWay}" Margin="10,0" MouseDown="BMC_Image_MouseDown" IsMouseDirectlyOverChanged="BMC_Image_IsMouseDirectlyOverChanged"/>
+                                    </Canvas>
+                                </ScrollViewer>
+                            </xctk:DropDownButton.DropDownContent>
+                        </xctk:DropDownButton>
+                    </ControlTemplate>
+                </TabItem.Template>
+            </TabItem>-->
+            
             <TabItem Header="Games">
                 <userControls:GamesList/>
             </TabItem>

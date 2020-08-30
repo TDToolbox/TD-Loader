@@ -24,6 +24,9 @@ namespace TD_Loader.Classes
 
         public void LaunchBTD6()
         {
+            BTD6_CrashHandler handler = new BTD6_CrashHandler();
+            handler.EnableCrashLog();
+
             int injectWaitTime = 12000;
             var btd6Info = GameInfo.GetGame(GameType.BTD6);
 
@@ -36,6 +39,8 @@ namespace TD_Loader.Classes
                 Thread.Sleep(1000);
 
             Thread.Sleep(injectWaitTime);
+
+            handler.CheckForCrashes();
 
             foreach (var modPath in SessionData.LoadedMods)
             {

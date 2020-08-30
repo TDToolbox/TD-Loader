@@ -61,21 +61,27 @@ namespace TD_Loader.UserControls
                 AddItemToModsList(mod);
             }
 
+            List<string> TempList = new List<string>();
             foreach (var selected in TempSettings.Instance.LastUsedMods)
+            {
+                if (!File.Exists(selected) || String.IsNullOrEmpty(selected))
+                {
+                    Log.Output("Attempted to add a mod that doesnt exist to the Selected Mods list");
+                    continue;
+                }
+                TempList.Add(selected);
                 AddToSelectedModLB(selected);
+            }
+
+            if (TempList.Count != TempSettings.Instance.LastUsedMods.Count)
+                TempSettings.Instance.LastUsedMods = TempList;
 
             SelectedMods_ListBox.SelectedIndex = 0;
         }
 
         private void AddToSelectedModLB(string modPath)
         {
-            if(!File.Exists(modPath) || String.IsNullOrEmpty(modPath))
-            {
-                Log.Output("Attempted to load a selected mod that doesnt exist!");
-                if(modPaths.Contains(modPath))
-                    modPaths.Remove(modPath);
-                return;
-            }
+            
 
             FileInfo f = new FileInfo(modPath);
 
@@ -252,7 +258,8 @@ namespace TD_Loader.UserControls
             MainWindow.doingWork = true;
             MainWindow.workType = "Adding mods";
 
-            List<string> mods = Mods.AddMods();
+            string allModTypes = "All Mod Types|*.jet;*.zip;*.rar;*.7z;*.btd6mod";
+            List<string> mods = FileIO.BrowseForFiles("Browse for mods", "", allModTypes + "|Jet files (*.jet)|*.jet|Zip files (*.zip)|*.zip|Rar files (*.rar)|*.rar|7z files (*.7z)|*.7z|BTD6 Mods (*.btd6mod)|*.btd6mod", "");
 
             if (mods == null || mods.Count == 0)
             {

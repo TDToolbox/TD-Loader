@@ -93,6 +93,9 @@ namespace TD_Loader.UserControls
        
         private void Startup()
         {
+            GameImgBindings = new Dictionary<GameType, BitmapImage>();
+            ImageBindings = new Dictionary<BitmapImage, Image>();
+
             UnloadAllGames();
             GameChanged += GamesList_GameChanged;
         }
@@ -187,47 +190,34 @@ namespace TD_Loader.UserControls
         #endregion
 
         #region UI Events
-        private void BTD6_Image_MouseDown(object sender, MouseButtonEventArgs e)
+        private void BTD6_Image_MouseDown(object sender, MouseButtonEventArgs e) => ImgMouseDown(GameType.BTD6);
+        private void BTD5_Image_MouseDown(object sender, MouseButtonEventArgs e) => ImgMouseDown(GameType.BTD5);
+        private void BTDB_Image_MouseDown(object sender, MouseButtonEventArgs e) => ImgMouseDown(GameType.BTDB);
+        private void BMC_Image_MouseDown(object sender, MouseButtonEventArgs e) => ImgMouseDown(GameType.BMC);
+        private void ImgMouseDown(GameType game)
         {
-            if (SessionData.CurrentGame == GameType.BTD6)
+            if (SessionData.CurrentGame == game)
                 return;
 
-            SessionData.CurrentGame = GameType.BTD6;
+            SessionData.CurrentGame = game;
 
             var args = new GameListEventArgs();
             OnGameChanged(args);
         }
 
-        private void BTD5_Image_MouseDown(object sender, MouseButtonEventArgs e)
+
+        /*private void BTD6_Image_IsMouseDirectlyOverChanged(object sender, DependencyPropertyChangedEventArgs e) => ImgMouseOver(ref BTD6_Image, GameType.BTD6, ref btd6ImgBinding);
+        private void BTD5_Image_IsMouseDirectlyOverChanged(object sender, DependencyPropertyChangedEventArgs e) => ImgMouseOver(ref BTD5_Image, GameType.BTD5, ref btd5ImgBinding);
+        private void BTDB_Image_IsMouseDirectlyOverChanged(object sender, DependencyPropertyChangedEventArgs e) => ImgMouseOver(ref BTDB_Image, GameType.BTDB, ref btdbImgBinding);
+        private void BMC_Image_IsMouseDirectlyOverChanged(object sender, DependencyPropertyChangedEventArgs e) => ImgMouseOver(ref BMC_Image, GameType.BMC, ref bmcImgBinding);
+        private void ImgMouseOver(ref Image img, GameType game, ref BitmapImage imgBinding)
         {
-            if (SessionData.CurrentGame == GameType.BTD5)
-                return;
+            UnloadAllGames();
 
-            SessionData.CurrentGame = GameType.BTD5;
-            var args = new GameListEventArgs();
-            OnGameChanged(args);
-        }
-
-        private void BTDB_Image_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (SessionData.CurrentGame == GameType.BTDB)
-                return;
-
-            SessionData.CurrentGame = GameType.BTDB;
-            var args = new GameListEventArgs();
-            OnGameChanged(args);
-        }
-
-        private void BMC_Image_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (SessionData.CurrentGame == GameType.BMC)
-                return;
-
-            SessionData.CurrentGame = GameType.BMC;
-            var args = new GameListEventArgs();
-            OnGameChanged(args);
-        }
-
+            if (img.IsMouseOver || SessionData.CurrentGame == game)
+                imgBinding = GetBitmapImg(game, true);
+        }*/
+       
         private void BTD6_Image_IsMouseDirectlyOverChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             UnloadAllGames();

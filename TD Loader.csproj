@@ -96,6 +96,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Classes\BTD6-CrashHandler.cs" />
     <Compile Include="Classes\Launcher.cs" />
     <Compile Include="Classes\SessionData.cs" />
     <Compile Include="Classes\TempSettings.cs" />

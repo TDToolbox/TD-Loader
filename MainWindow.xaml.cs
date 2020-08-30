@@ -18,6 +18,10 @@ using TD_Loader.UserControls;
 using BTD_Backend.Game;
 using System.Windows.Media;
 using System.Reflection;
+using System.Windows.Media.Imaging;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using Xceed.Wpf.Toolkit;
 
 namespace TD_Loader
 {
@@ -27,6 +31,9 @@ namespace TD_Loader
     public partial class MainWindow : Window
     {
         public event ProcFinished_BoolEventHandler FinishedGameHandling;
+        public Dictionary<GameType, BitmapImage> GameImgBindings;
+        public Dictionary<BitmapImage, Image> ImageBindings;
+
 
         bool checkedNKH = false;
         bool finishedLoading = false;
@@ -38,6 +45,8 @@ namespace TD_Loader
         public static Mods_UserControl mods_User;
         public static Plugins_UserControl plugin_User;
 
+        #region Constructors
+
         public MainWindow()
         {
             InitializeComponent();
@@ -45,22 +54,8 @@ namespace TD_Loader
             Startup();
         }
 
-        private void Log_MessageLogged(object sender, Log.LogEvents e)
-        {
-            if (e.UseMsgBox)
-                MessageBox.Show(e.Message);
-            else
-            {
-                OutputLog.Dispatcher.BeginInvoke((Action)(() =>
-                {
-                    OutputLog.AppendText(e.Message);
-                    OutputLog.ScrollToEnd();
-                }));
-            }
+        #endregion
 
-            if (TempSettings.Instance.ConsoleFlash && OutputLog.Visibility == Visibility.Collapsed)
-                blinkTimer.Start();
-        }
 
         private void Startup()
         {
@@ -70,29 +65,6 @@ namespace TD_Loader
             GamesList.GameChanged += GamesList_GameChanged;
 
             Log.Output("Program initializing...");
-
-            /*Settings.LoadSettings();
-            if (Settings.game == null)
-                Settings.SetGameFile(Settings.settings.GameName);*/
-
-            if (TempSettings.Instance.LastGame == GameType.None)
-            {
-                Mods_Tab.Visibility = Visibility.Collapsed;
-                return;
-            }
-
-            SessionData.CurrentGame = TempSettings.Instance.LastGame;
-            SessionData.LoadedMods = TempSettings.Instance.LastUsedMods;
-            var args = new GamesList.GameListEventArgs();
-            GamesList.Instance.OnGameChanged(args);
-
-            
-
-            //removed for cleanup
-            //
-            //ResetGamePictures();
-            //CreateModsTab();
-            //ShowHidePlugins();
 
             //Enable later
             /*UpdateHandler update = new UpdateHandler()
@@ -106,13 +78,7 @@ namespace TD_Loader
             BgThread.AddToQueue(() => update.HandleUpdates(false));*/
         }
 
-        private void GamesList_GameChanged(object sender, GamesList.GameListEventArgs e)
-        {
-            if (SessionData.CurrentGame != GameType.BTD5)
-                Plugins_Tab.Visibility = Visibility.Collapsed;
-            else
-                Plugins_Tab.Visibility = Visibility.Visible;
-        }
+        private void GamesList_GameChanged(object sender, GamesList.GameListEventArgs e) => GameHandling();
 
         private void FinishedLoading()
         {
@@ -122,11 +88,23 @@ namespace TD_Loader
             UserData.MainSettingsDir = tdloaderDir;
             UserData.UserDataFilePath = tdloaderDir + "\\userdata.json";
 
-            BgThread.AddToQueue(() =>
+            UserData.LoadUserData();
+            BgThread.AddToQueue(() => UserData.SaveUserData());
+
+            if (TempSettings.Instance.LastGame == GameType.None)
             {
-                UserData.LoadUserData();
-                UserData.SaveUserData();
-            });
+                Mods_Tab.Visibility = Visibility.Collapsed;
+                return;
+            }
+
+            SessionData.CurrentGame = TempSettings.Instance.LastGame;
+            SessionData.LoadedMods = TempSettings.Instance.LastUsedMods;
+            var args = new GamesList.GameListEventArgs();
+
+            if (GamesList.Instance == null)
+                GamesList.Instance = new GamesList();
+            GamesList.Instance.OnGameChanged(args);
+
 
             dynamic activeX = this.News_WebBrowser.GetType().InvokeMember("ActiveXInstance",
                     BindingFlags.GetProperty | BindingFlags.Instance | BindingFlags.NonPublic,
@@ -135,51 +113,58 @@ namespace TD_Loader
             activeX.Silent = true;
 
             string newsUrl = "https://gurrenm4.wixsite.com/td-toolbox";
-            //BgThread.AddToQueue(() => News_WebBrowser.Navigate(new Uri(newsUrl)));
-
-            /*if (!Guard.IsStringValid(Settings.game.GameDir) || !Guard.IsStringValid(Settings.game.GameName))
-            {
-                Settings.settings.GameName = "";
-                Settings.SaveSettings();
-                Settings.game = null;
-                return;
-            }
-
-            GameHandling();*/
+            //News_WebBrowser.Navigate(new Uri(newsUrl));
+            //BgThread.AddToQueue(() => );
         }
+        
         private void GameHandling()
         {
-            if (Settings.game == null)
-                return;
+            var game = SessionData.CurrentGame;
+            if (game != GameType.BTD5)
+                Plugins_Tab.Visibility = Visibility.Collapsed;
+            else
+                Plugins_Tab.Visibility = Visibility.Visible;
 
-            Settings.SaveGameFile();
-            doingWork = true;
-
-            Log.Output("Game: " + Settings.game.GameName);
-            workType = "Initializing mod loader for " + Settings.game.GameName;
-            ShowHidePlugins();
-            new Thread(() =>
+            if (game == GameType.BTD6)
             {
-                Game.CloseGameIfOpen(Settings.game.GameName);
-                Game.ValidateGameDir();
-                Game.WasGameUpdated();
-
-                if (!Guard.IsStringValid(Settings.game.ModsDir))
-                    Game.SetModsDir(Settings.game.GameName);
-
-                Game.ValidateBackup();
-
-                NKHook5Manager.HandleUpdates();
-
-                doingWork = false;
-                workType = "";
-
-                if (FinishedGameHandling != null)
-                    FinishedGameHandling(this, new ProcFinished_BoolEventArgs(true));
-                
-            }).Start();
+                BTD6_CrashHandler handler = new BTD6_CrashHandler();
+                handler.EnableCrashLog();
+            }
         }
-        private void MainWindow_FinishedGameHandling(object source, ProcFinished_BoolEventArgs e)
+
+            /*private void GameHandling()
+            {
+                if (Settings.game == null)
+                    return;
+
+                Settings.SaveGameFile();
+                doingWork = true;
+
+                Log.Output("Game: " + Settings.game.GameName);
+                workType = "Initializing mod loader for " + Settings.game.GameName;
+                new Thread(() =>
+                {
+                    Game.CloseGameIfOpen(Settings.game.GameName);
+                    Game.ValidateGameDir();
+                    Game.WasGameUpdated();
+
+                    if (!Guard.IsStringValid(Settings.game.ModsDir))
+                        Game.SetModsDir(Settings.game.GameName);
+
+                    Game.ValidateBackup();
+
+                    NKHook5Manager.HandleUpdates();
+
+                    doingWork = false;
+                    workType = "";
+
+                    if (FinishedGameHandling != null)
+                        FinishedGameHandling(this, new ProcFinished_BoolEventArgs(true));
+
+                }).Start();
+            }*/
+
+            private void MainWindow_FinishedGameHandling(object source, ProcFinished_BoolEventArgs e)
         {
             /*Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() => {
                 ShowHidePlugins();
@@ -199,6 +184,34 @@ namespace TD_Loader
         {
             await Task.Delay(time);
         }
+        
+
+        private void JetReader_FinishedStagingMods(object sender, EventArgs e)
+        {
+            Game.LaunchGame();
+        }
+
+
+        #region UI Events
+        //========================================================
+
+        DispatcherTimer blinkTimer = new DispatcherTimer();
+        private void Main_Loaded(object sender, RoutedEventArgs e)
+        {
+            blinkTimer.Tick += Console_Timer_Tick;
+            blinkTimer.Interval = new TimeSpan(0, 0, 0, 0, 250);
+        }
+        private void ToolBar_Loaded(object sender, RoutedEventArgs e)
+        {
+            ToolBar toolBar = sender as ToolBar;
+            var overflowGrid = toolBar.Template.FindName("OverflowGrid", toolBar) as FrameworkElement;
+            if (overflowGrid != null)
+                overflowGrid.Visibility = Visibility.Collapsed;
+
+            var mainPanelBorder = toolBar.Template.FindName("MainPanelBorder", toolBar) as FrameworkElement;
+            if (mainPanelBorder != null)
+                mainPanelBorder.Margin = new Thickness();
+        }
         private void Main_Activated(object sender, EventArgs e)
         {
             if (finishedLoading == false)
@@ -207,57 +220,7 @@ namespace TD_Loader
                 FinishedLoading();
             }
         }
-        private void Main_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            Settings.SaveSettings();
-            Process.GetCurrentProcess().Kill();
-        }
-
-        private void JetReader_FinishedStagingMods(object sender, EventArgs e)
-        {
-            Game.LaunchGame();
-        }
-
-
-
-        //
-        //UI events
-        //
-        private void CreateModsTab()
-        {
-            mods_User = new Mods_UserControl();
-            var tab = new TabItem();
-            tab.Header = "     Mods     ";
-            tab.Padding = new Thickness(5);
-            tab.FontSize = 25;
-            tab.Content = mods_User;
-            Main_TabController.Items[1] = tab;
-        }
-        private void CreatePluginsTab()
-        {
-            plugin_User = new Plugins_UserControl()
-            {
-                isPlugins = true
-            };
-            Plugins_Tab.Content = plugin_User;
-        }
-        private void ShowHidePlugins()
-        {
-            /*if (Settings.game.GameName == "BTD5" && Settings.game != null)
-            {
-                Plugins_Tab.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() => { Plugins_Tab.Visibility = Visibility.Visible; }));
-                LaunchGrid.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() => { LaunchGrid.MinHeight = 195; }));
-            }
-            else
-            {
-                Plugins_Tab.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() => { Plugins_Tab.Visibility = Visibility.Collapsed; }));
-                LaunchGrid.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() => { LaunchGrid.MinHeight = 165; }));
-            }*/
-        }
-        private void ResetGameFiles_CB_Click(object sender, RoutedEventArgs e)
-        {
-            resetGameFiles = !resetGameFiles;
-        }
+        private void Main_Closing(object sender, CancelEventArgs e) => TempSettings.SaveSettings();
 
         private void ConsoleColapsed(object sender, RoutedEventArgs e)
         {
@@ -273,46 +236,6 @@ namespace TD_Loader
             }
         }
 
-        private void CollapseGamesList_Button_Click(object sender, RoutedEventArgs e)
-        {
-           /* if (GameScrollViewer.Visibility == Visibility.Collapsed)
-            {
-                GameScrollViewer.Visibility = Visibility.Visible;
-                CollapseGamesList_Button.Content = "Hide Games";
-            }
-            else
-            {
-                GameScrollViewer.Visibility = Visibility.Collapsed;
-                CollapseGamesList_Button.Content = "Show Games";
-            }*/
-        }
-
-        
-
-
-        private void ToolBar_Loaded(object sender, RoutedEventArgs e)
-        {
-            ToolBar toolBar = sender as ToolBar;
-            var overflowGrid = toolBar.Template.FindName("OverflowGrid", toolBar) as FrameworkElement;
-            if (overflowGrid != null)
-                overflowGrid.Visibility = Visibility.Collapsed;
-
-            var mainPanelBorder = toolBar.Template.FindName("MainPanelBorder", toolBar) as FrameworkElement;
-            if (mainPanelBorder != null)
-                mainPanelBorder.Margin = new Thickness();
-        }
-
-        private void Launch_Button_Click(object sender, RoutedEventArgs e)
-        {
-            if (String.IsNullOrEmpty(TempSettings.Instance.GetModsDir(SessionData.CurrentGame)))
-            {
-                Log.Output("Error! You can't launch yet because you need to set a mods directory for your selected game");
-                return; 
-            }
-
-            Launcher.Launch(SessionData.CurrentGame);
-        }
-
         private void OpenSettingsDir_Button_Click(object sender, RoutedEventArgs e)
         {
             if (!Directory.Exists(TempSettings.Instance.MainSettingsDir))
@@ -324,7 +247,6 @@ namespace TD_Loader
 
             Process.Start(TempSettings.Instance.MainSettingsDir);
         }
-
         private void Settings_Button_Click(object sender, RoutedEventArgs e)
         {
             string settingsPath = TempSettings.Instance.MainSettingsDir + "\\" + TempSettings.Instance.settingsFileName;
@@ -334,12 +256,64 @@ namespace TD_Loader
 
             Process.Start(settingsPath);
         }
+        private void Launch_Button_Click(object sender, RoutedEventArgs e)
+        {
+            if (String.IsNullOrEmpty(TempSettings.Instance.GetModsDir(SessionData.CurrentGame)))
+            {
+                Log.Output("Error! You can't launch yet because you need to set a mods directory for your selected game");
+                return;
+            }
 
+            Launcher.Launch(SessionData.CurrentGame);
+        }
+        private void Discord_Button_Click(object sender, RoutedEventArgs e) => Process.Start("https://discord.gg/jj5Q7mA");
+
+        private void OpenBTD6_ModDir_Button_Click(object sender, RoutedEventArgs e) => OpenGameDir(GameType.BTD6);
+        private void OpenBTD5_ModDir_Button_Click(object sender, RoutedEventArgs e) => OpenGameDir(GameType.BTD5);
+        private void OpenBTDB_ModDir_Button_Click(object sender, RoutedEventArgs e) => OpenGameDir(GameType.BTDB);
+        private void OpenBMC_ModDir_Button_Click(object sender, RoutedEventArgs e) => OpenGameDir(GameType.BMC);
+        private void OpenGameDir(GameType game)
+        {
+            if (!Directory.Exists(TempSettings.Instance.MainSettingsDir))
+            {
+                Directory.CreateDirectory(TempSettings.Instance.MainSettingsDir);
+                TempSettings.SaveSettings();
+                UserData.SaveUserData();
+            }
+
+            string dir = TempSettings.Instance.GetModsDir(game);
+            if (String.IsNullOrEmpty(dir))
+                return;
+
+            if (!Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
+
+            Process.Start(dir);
+        }
+
+        private void Log_MessageLogged(object sender, Log.LogEvents e)
+        {
+            if (e.UseMsgBox)
+                System.Windows.Forms.MessageBox.Show(e.Message);
+            else
+            {
+                OutputLog.Dispatcher.BeginInvoke((Action)(() =>
+                {
+                    OutputLog.AppendText(e.Message);
+                    OutputLog.ScrollToEnd();
+                }));
+            }
+
+            if (TempSettings.Instance.ConsoleFlash && OutputLog.Visibility == Visibility.Collapsed)
+                blinkTimer.Start();
+        }
+
+        #endregion
 
         // The timer's Tick event.
         private bool BlinkOn = false;
         private int blinkCount = 0;
-        private void timer_Tick(object sender, EventArgs e)
+        private void Console_Timer_Tick(object sender, EventArgs e)
         {
             var consoleButtonColor = new SolidColorBrush(Color.FromArgb(255, 221, 221, 221));
             var consoleDarkButtonColor = new SolidColorBrush(Color.FromArgb(255, 62, 62, 62));
@@ -369,80 +343,10 @@ namespace TD_Loader
             blinkCount++;
         }
 
-        DispatcherTimer blinkTimer = new DispatcherTimer();
-        private void Main_Loaded(object sender, RoutedEventArgs e)
+        private void Test_Button1_Click(object sender, RoutedEventArgs e)
         {
-            blinkTimer.Tick += timer_Tick;
-            blinkTimer.Interval = new TimeSpan(0, 0, 0, 0, 250);
+            BTD6_CrashHandler bTD6_CrashHandler = new BTD6_CrashHandler();
+            bTD6_CrashHandler.CheckForCrashes();
         }
-
-        private void OpenModsDirHandling()
-        {
-            if (!Directory.Exists(TempSettings.Instance.MainSettingsDir))
-            {
-                Directory.CreateDirectory(TempSettings.Instance.MainSettingsDir);
-                TempSettings.SaveSettings();
-                UserData.SaveUserData();
-            }
-        }
-
-        private void OpenBTD6_ModDir_Button_Click(object sender, RoutedEventArgs e)
-        {
-            OpenModsDirHandling();
-            TempSettings.LoadSettings();
-
-            string dir = TempSettings.Instance.GetModsDir(GameType.BTD6);
-            if (String.IsNullOrEmpty(dir))
-                return;
-
-            if (!Directory.Exists(dir))
-                Directory.CreateDirectory(dir);
-            
-            Process.Start(dir);
-        }
-
-        private void OpenBTD5_ModDir_Button_Click(object sender, RoutedEventArgs e)
-        {
-            OpenModsDirHandling();
-
-            string dir = TempSettings.Instance.GetModsDir(GameType.BTD5);
-            if (String.IsNullOrEmpty(dir))
-                return;
-
-            if (!Directory.Exists(dir))
-                Directory.CreateDirectory(dir);
-
-            Process.Start(dir);
-        }
-
-        private void OpenBTDB_ModDir_Button_Click(object sender, RoutedEventArgs e)
-        {
-            OpenModsDirHandling();
-
-            string dir = TempSettings.Instance.GetModsDir(GameType.BTDB);
-            if (String.IsNullOrEmpty(dir))
-                return;
-
-            if (!Directory.Exists(dir))
-                Directory.CreateDirectory(dir);
-
-            Process.Start(dir);
-        }
-
-        private void OpenBMC_ModDir_Button_Click(object sender, RoutedEventArgs e)
-        {
-            OpenModsDirHandling();
-
-            string dir = TempSettings.Instance.GetModsDir(GameType.BMC);
-            if (String.IsNullOrEmpty(dir))
-                return;
-
-            if (!Directory.Exists(dir))
-                Directory.CreateDirectory(dir);
-
-            Process.Start(dir);
-        }
-
-        private void Discord_Button_Click(object sender, RoutedEventArgs e) => Process.Start("https://discord.gg/jj5Q7mA");
     }
 }
